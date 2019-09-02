@@ -1,9 +1,13 @@
 <template>
   <el-container class="home">
+    <el-header>
+      <peotry-header></peotry-header>
+      <login-dialog></login-dialog>
+      <peotry-create :showCreate="showCreate" :peotry="updatePeotry" @on-close="onPeotryClose"></peotry-create>
+    </el-header>
+
     <el-main ref="mainEl">
       <el-scrollbar>
-        <peotry-create :showCreate="showCreate" :peotry="updatePeotry" @on-close="onPeotryClose"></peotry-create>
-
         <el-dialog title="个人信息" :visible.sync="showUser">
           <el-form label-width="60px">
             <el-form-item label="ID" v-if="true">
@@ -85,8 +89,9 @@ import { resetUserIconUrl } from '@/common/util-icon'
 export default {
   name: 'HomePeotry',
   components: {
-    peotry: Peotry,
-    'peotry-create': PeotryCreate
+    'peotry-header': () => import('./peotry-header'),
+    Peotry,
+    PeotryCreate
   },
   data () {
     return {
@@ -399,7 +404,7 @@ export default {
       padding: 0 0 20px 0;
 
       .peotry {
-        padding-left: 0px;
+        padding-left: 10px;
       }
     }
   }
@@ -422,6 +427,14 @@ export default {
   .image-error-slot {
     .el-icon-picture-outline {
       font-size: 50px;
+    }
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .home {
+    .el-dialog {
+      width: 100%;
     }
   }
 }

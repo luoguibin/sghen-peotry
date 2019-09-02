@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    user: {
+    user: JSON.parse(sessionStorage.getItem('sghen_user_info')) || {
       id: 0,
       name: '',
       iconUrl: '',

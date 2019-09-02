@@ -3,6 +3,7 @@
     :title="signUpValue ? '注册' : '登录'"
     :visible.sync="visible"
     :close-on-click-modal="false"
+    custom-class="login-dialog"
   >
     <el-form ref="ruleForm" :model="account" :rules="formRules" label-width="80px">
       <el-form-item label="账 号" prop="uId">
@@ -150,5 +151,9 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
+.login-dialog {
+  width: 80%;
+  max-width: 500px;
+}
 </style>

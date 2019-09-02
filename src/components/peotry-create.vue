@@ -4,6 +4,7 @@
     :visible.sync="visible"
     @opened="onDialogOpened"
     @closed="onDialogClosed"
+    custom-class="peotry-create"
   >
     <el-form :model="newPeotry" :rules="formRules" ref="ruleForm" label-width="60px">
       <el-form-item label="选集" prop="sId">
@@ -241,7 +242,12 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+.peotry-create {
+  width: 80%;
+  max-width: 500px;
+}
+
 .peotry-set-add {
   margin-left: 10px;
   cursor: pointer;
