@@ -45,4 +45,4 @@ Vue.use(Switch)
 Vue.use(Select)
 Vue.use(Scrollbar)
 
-Vue.prototype.$message = Message;
+Vue.prototype.$message = Message
