@@ -265,10 +265,12 @@ export default {
       this.updatePeotry = peotry
     },
 
-    onPeotryClose (createValue) {
+    onPeotryClose ({ createValue, currentId }) {
       this.updatePeotry = null
       this.showCreate = false
-
+      if (!currentId) {
+        return
+      }
       if (createValue) {
         if (this.totalCount % this.limit === 0) {
           this.totalPage++
@@ -370,6 +372,7 @@ export default {
 
   .el-main {
     height: 100%;
+    padding: 0;
 
     .el-scrollbar {
       background-color: transparent;
@@ -401,8 +404,6 @@ export default {
 @media screen and (max-width: 500px) {
   .home {
     .el-main {
-      padding: 0 0 20px 0;
-
       .peotry {
         padding-left: 10px;
       }

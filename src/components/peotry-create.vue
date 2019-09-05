@@ -172,6 +172,7 @@ export default {
       createPeotry(data).then(resp => {
         if (resp.data.code === 1000) {
           this.$message('创建成功')
+          this.currentId = resp.data.data
           this.$refs.ruleForm.resetFields()
           this.visible = false
         } else {
@@ -194,6 +195,7 @@ export default {
       }).then(resp => {
         if (resp.data.code === 1000) {
           this.$message('保存成功')
+          this.currentId = peotry.id
           this.visible = false
         } else {
           this.$message(resp.data.msg)
@@ -201,7 +203,6 @@ export default {
       })
     },
 
-    setCreateChange () {},
     addPeotrySet () {
       this.$prompt('请输入选集名字', '创建选集', {
         confirmButtonText: '确定',
@@ -234,7 +235,8 @@ export default {
       this.inRequest = false
     },
     onDialogClosed () {
-      this.$emit('on-close', this.createValue)
+      this.$emit('on-close', { createValue: this.createValue, currentId: this.currentId })
+      this.currentId = null
       this.createValue = true
       this.inRequest = false
     }
