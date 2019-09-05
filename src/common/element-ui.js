@@ -14,6 +14,7 @@ import {
   Header,
   Input,
   Image,
+  Message,
   Main,
   Option,
   Pagination,
@@ -41,3 +42,5 @@ Vue.use(Pagination)
 Vue.use(Switch)
 Vue.use(Select)
 Vue.use(Scrollbar)
+
+Vue.prototype.$message = Message;

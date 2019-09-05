@@ -1,9 +1,10 @@
 <template>
   <div class="peotry">
-    <!-- <img
+    <img
       class="peotry-user"
+      img-type="user-self"
       :src="userMap[peotry.user.id] ? userMap[peotry.user.id].iconUrl : './favicon.ico'"
-    >-->
+    >
     <div class="title">
       <span v-if="peotry.set" class="tooltip" :tooltip="'选集：' + peotry.set.name">{{peotry.set.name}}</span>
       <span v-if="peotry.set && peotry.title">*</span>
@@ -34,7 +35,7 @@
 
     <div class="peotry-more">
       <el-dropdown @command="onCommandMore">
-        <i class="el-icon-more-outline"></i>
+        <i class="peotry-more_icon el-icon-more-outline"></i>
 
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item command="comment">
@@ -386,15 +387,15 @@ $padding-set: 12px;
 
 .peotry {
   position: relative;
-  padding-left: 30px;
+  padding-left: 38px;
 
   .peotry-user {
     width: 26px;
     height: 26px;
     object-fit: contain;
     position: absolute;
-    left: 0;
-    top: 5px;
+    left: 3px;
+    top: 0;
   }
 
   .title {
@@ -459,15 +460,24 @@ $padding-set: 12px;
 
   .peotry-more {
     margin: 5px 0;
-    padding-right: 5px;
+    padding-right: 15px;
     text-align: right;
+
+    .peotry-more_icon {
+      font-size: 20px;
+      cursor: pointer;
+
+      &:active {
+        color: #148acf;
+      }
+    }
   }
 
   .comments {
     position: relative;
     margin-top: 15px;
-    padding: 5px 5px 5px 20px;
-    background-color: #ddd;
+    padding: 5px 5px 5px 15px;
+    background-color: rgba(222, 222, 222, 0.2);
     border-radius: 8px;
 
     .praise-users {
@@ -499,7 +509,7 @@ $padding-set: 12px;
       left: 8px;
       top: -10px;
       border: solid 10px transparent;
-      border-bottom-color: #ddd;
+      border-bottom-color: rgba(222, 222, 222, 0.2);
       border-top-width: 0;
     }
 
