@@ -473,8 +473,9 @@ $padding-set: 12px;
 
   .comments {
     position: relative;
-    margin-top: 15px;
-    padding: 5px 5px 5px 15px;
+    margin: 15px 0 0 -15px;
+    padding: 5px 10px;
+    margin-right: 10px;
     background-color: rgba(222, 222, 222, 0.2);
     border-radius: 8px;
 
