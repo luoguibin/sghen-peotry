@@ -6,11 +6,9 @@ import store from './store'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 
-import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
+import './common/element-ui'
 
 import LoginDialog from '@/components/login-dialog'
-Vue.use(ElementUI)
 
 Vue.config.productionTip = false
 
