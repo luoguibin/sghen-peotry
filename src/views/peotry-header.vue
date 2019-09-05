@@ -1,6 +1,6 @@
 <template>
   <div class="peotry-header">
-    <el-button v-if="!userInfo.token" class="float-right" type="text" @click="onShowLogin">登录</el-button>
+    <el-button v-if="!userInfo.token" class="float-right" type="text" @click="onShowLogin">登录~~</el-button>
 
     <el-dropdown v-else class="float-right" @command="handleCommand" trigger="click">
       <span style="cursor: pointer;">
