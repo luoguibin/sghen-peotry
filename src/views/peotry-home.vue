@@ -24,7 +24,7 @@
           </el-form>
         </el-dialog>
 
-        <div class="list" ref="listEl" @click="onClickImage($event)">
+        <div class="list" ref="listEl" @click="onClickImage($event)" v-loading="isLoading">
           <peotry
             v-for="(peotry, index) in peotries"
             :key="peotry.id"
@@ -64,7 +64,7 @@
         :current-page="curPage"
         :page-sizes="[10, 20, 30, 40]"
         :page-size="limit"
-        layout="total, sizes, prev, pager, next, jumper"
+        layout="prev, pager, next, total, sizes, jumper"
         :total="totalCount"
       ></el-pagination>
     </el-footer>
@@ -72,28 +72,28 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions } from "vuex";
 
-import Peotry from '@/components/peotry'
-import PeotryCreate from '@/components/peotry-create'
+import Peotry from "@/components/peotry";
+import PeotryCreate from "@/components/peotry-create";
 import {
   queryUsers,
   queryPeotries,
   deletePeotry,
   createComment,
   deleteComment
-} from '@/api'
+} from "@/api";
 
-import { resetUserIconUrl } from '@/common/util-icon'
+import { resetUserIconUrl } from "@/common/util-icon";
 
 export default {
-  name: 'HomePeotry',
+  name: "HomePeotry",
   components: {
-    'peotry-header': () => import('./peotry-header'),
+    "peotry-header": () => import("./peotry-header"),
     Peotry,
     PeotryCreate
   },
-  data () {
+  data() {
     return {
       userMap: {},
 
@@ -101,7 +101,7 @@ export default {
       showUser: false,
       showUserInfo: {},
       showImage: false,
-      showImageUrl: '',
+      showImageUrl: "",
       updatePeotry: null,
 
       limit: 10,
@@ -109,18 +109,19 @@ export default {
       totalPage: 1,
       totalCount: 0,
       peotries: [],
+      isLoading: false,
 
       iconDialogVisible: false
-    }
+    };
   },
-  provide () {
+  provide() {
     return {
       userMap: this.userMap
-    }
+    };
   },
-  created () {
-    window.homePeotry = this
-    this.getPeotries()
+  created() {
+    window.homePeotry = this;
+    this.getPeotries();
   },
   computed: {
     ...mapState({
@@ -131,91 +132,94 @@ export default {
   watch: {
     userInfo: {
       immediate: true,
-      handler () {
-        const userInfo = this.userInfo
+      handler() {
+        const userInfo = this.userInfo;
         if (userInfo.token) {
           // 重换登录后评论的fromId需要更新
           this.peotries.forEach(peotry => {
             if (peotry.comment) {
-              peotry.comment.fromId = userInfo.id
+              peotry.comment.fromId = userInfo.id;
             }
-          })
+          });
 
-          this.userMap[userInfo.id] = JSON.parse(JSON.stringify(userInfo))
+          this.userMap[userInfo.id] = JSON.parse(JSON.stringify(userInfo));
 
           if (this.showUserInfo.id) {
-            this.showUserInfo = this.userMap[this.showUserInfo.id]
+            this.showUserInfo = this.userMap[this.showUserInfo.id];
           }
         } else {
           // 相应token清空
-          const userMap = this.userMap
+          const userMap = this.userMap;
           for (const key in userMap) {
             if (userMap.hasOwnProperty(key) && userMap[key].token) {
-              userMap[key].token = ''
+              userMap[key].token = "";
             }
           }
         }
       }
     },
-    peotryCreate () {
-      this.showCreate = true
+    peotryCreate() {
+      this.showCreate = true;
     }
   },
   methods: {
-    handleCurrentChange (val) {
-      this.curPage = val
-      this.getPeotries()
+    handleCurrentChange(val) {
+      this.curPage = val;
+      this.getPeotries();
     },
 
-    handleSizeChange (val) {
-      this.limit = val
-      this.getPeotries()
+    handleSizeChange(val) {
+      this.limit = val;
+      this.getPeotries();
     },
 
-    updatePeotriesData (datas) {
-      const idsSet = new Set()
+    updatePeotriesData(datas) {
+      const idsSet = new Set();
       datas.forEach(peotry => {
         if (peotry.user && peotry.user.id) {
-          idsSet.add(peotry.user.id)
+          idsSet.add(peotry.user.id);
         }
 
-        const comments = peotry.comments
+        const comments = peotry.comments;
         if (comments && comments.length) {
           comments.forEach(comment => {
             if (comment.fromId > 1) {
-              idsSet.add(comment.fromId)
+              idsSet.add(comment.fromId);
             }
             if (comment.toId > 1) {
-              idsSet.add(comment.toId)
+              idsSet.add(comment.toId);
             }
-          })
+          });
         } else {
-          peotry.comments = []
+          peotry.comments = [];
         }
-      })
+      });
 
       if (idsSet.size) {
-        const ids = Array.from(idsSet)
+        const ids = Array.from(idsSet);
         queryUsers(ids).then(resp => {
           if (resp.data.code === 1000) {
-            const users = resp.data.data
-            const userMap = this.userMap
+            const users = resp.data.data;
+            const userMap = this.userMap;
 
             users.forEach(user => {
               if (!userMap[user.id]) {
-                resetUserIconUrl(user)
-                userMap[user.id] = user
+                resetUserIconUrl(user);
+                userMap[user.id] = user;
               }
-            })
-            this.$forceUpdate()
+            });
+            this.$forceUpdate();
           } else {
-            this.$message(resp.data.msg)
+            this.$message(resp.data.msg);
           }
-        })
+        });
       }
     },
 
-    getPeotries (bottom) {
+    getPeotries(bottom) {
+      this.isLoading = true;
+      this.peotries = [];
+
       queryPeotries({
         limit: this.limit,
         page: this.curPage,
@@ -223,153 +227,171 @@ export default {
       })
         .then(resp => {
           if (resp.data.code === 1000) {
-            const data = resp.data
-            this.curPage = data.curPage
-            this.totalPage = data.totalPage
-            this.totalCount = data.totalCount
-            this.updatePeotriesData(data.data)
-            this.peotries = data.data
+            const data = resp.data;
+            this.curPage = data.curPage;
+            this.totalPage = data.totalPage;
+            this.totalCount = data.totalCount;
+            this.updatePeotriesData(data.data);
+            this.peotries = data.data;
 
             this.$nextTick(() => {
-              const main = this.$refs.mainEl.$el
-              main.scrollTop = bottom ? main.scrollHeight : 0
-            })
+              const main = this.$refs.mainEl.$el;
+              main.scrollTop = bottom ? main.scrollHeight : 0;
+            });
           } else {
-            this.$message(resp.data.msg)
+            this.$message(resp.data.msg);
           }
         })
         .catch(err => {
-          this.$message.error(err)
+          this.$message.error(err);
         })
+        .finally(() => {
+          this.isLoading = false;
+        });
     },
 
-    onDelete (peotry) {
-      if (!peotry || !peotry.id) return
+    onDelete(peotry) {
+      if (!peotry || !peotry.id) return;
 
       deletePeotry(peotry.id).then(resp => {
         if (resp.data.code === 1000) {
-          this.$message('删除成功')
+          this.$message("删除成功");
           if (this.peotries.length === 1) {
-            this.curPage--
+            this.curPage--;
           } else {
-            this.getPeotries()
+            this.getPeotries();
           }
         } else {
-          this.$message(resp.data.msg)
+          this.$message(resp.data.msg);
         }
-      })
+      });
     },
 
-    onUpdate (peotry) {
-      if (!peotry || !peotry.id) return
-      this.updatePeotry = peotry
+    onUpdate(peotry) {
+      if (!peotry || !peotry.id) return;
+      this.updatePeotry = peotry;
     },
 
-    onPeotryClose (createValue) {
-      this.updatePeotry = null
-      this.showCreate = false
-
+    onPeotryClose({ createValue, currentId }) {
+      this.updatePeotry = null;
+      this.showCreate = false;
+      if (!currentId) {
+        return;
+      }
       if (createValue) {
         if (this.totalCount % this.limit === 0) {
-          this.totalPage++
+          this.totalPage++;
         }
         if (this.curPage !== this.totalPage) {
-          this.curPage = this.totalPage
+          this.curPage = this.totalPage;
         }
       }
-      this.getPeotries(createValue)
+      this.getPeotries(createValue);
     },
 
-    onComment (comment, peotryId) {
+    onComment(comment, peotryId) {
       if (!this.userInfo.token) {
-        this.$message('请登录后再操作')
-        this.showLogin()
-        return
+        this.$message("请登录后再操作");
+        this.showLogin();
+        return;
       }
       createComment(comment).then(resp => {
         if (resp.data.code === 1000) {
-          comment.id = resp.data.data
+          comment.id = resp.data.data;
           if (comment.toId > 0) {
-            this.$message('评论成功')
-            this.addComment(peotryId, comment)
-            return
+            this.$message("评论成功");
+            this.addComment(peotryId, comment);
+            return;
           }
-          if (comment.content.indexOf('unpraise') !== -1 && peotryId) {
-            this.spliceComment(peotryId, comment.id)
+          if (comment.content.indexOf("unpraise") !== -1 && peotryId) {
+            this.spliceComment(peotryId, comment.id);
           } else {
-            this.addComment(peotryId, comment)
+            this.addComment(peotryId, comment);
           }
         } else {
-          this.$message(resp.data.msg)
+          this.$message(resp.data.msg);
         }
-      })
+      });
     },
 
-    addComment (peotryId, comment) {
-      const peotry = this.peotries.find(o => o.id === peotryId)
+    addComment(peotryId, comment) {
+      const peotry = this.peotries.find(o => o.id === peotryId);
       if (peotry) {
-        window.testPeotry = peotry
-        const newComment = JSON.parse(JSON.stringify(comment))
-        newComment.createTime = new Date().toJSON()
-        peotry.comments.push(newComment)
+        window.testPeotry = peotry;
+        const newComment = JSON.parse(JSON.stringify(comment));
+        newComment.createTime = new Date().toJSON();
+        peotry.comments.push(newComment);
       }
     },
 
-    spliceComment (peotryId, id) {
+    spliceComment(peotryId, id) {
       this.peotries.forEach(peotry => {
         if (peotry.id === peotryId && peotry.comments) {
-          const index = peotry.comments.findIndex(comment => comment.id === id)
+          const index = peotry.comments.findIndex(comment => comment.id === id);
           if (index !== -1) {
-            peotry.comments.splice(index, 1)
+            peotry.comments.splice(index, 1);
           }
         }
-      })
+      });
     },
 
-    onCommentDelete (id, peotryId) {
+    onCommentDelete(id, peotryId) {
       deleteComment({ id, fromId: this.userInfo.id }).then(resp => {
         if (resp.data.code === 1000) {
-          this.$message('删除成功')
-          this.spliceComment(peotryId, id)
+          this.$message("删除成功");
+          this.spliceComment(peotryId, id);
         } else {
-          this.$message(resp.data.msg)
+          this.$message(resp.data.msg);
         }
-      })
+      });
     },
 
-    onClickImage (e) {
-      const el = e.srcElement
-      if (el.tagName === 'IMG') {
-        const imgType = el.getAttribute('img-type')
-        if (imgType === 'picture') {
-          this.showImageUrl = this.showImageUrl ? '' : el.getAttribute('src')
-        } else if (imgType.indexOf('user-') === 0) {
-          const id = parseInt(imgType.replace('user-', ''))
-          const user = this.userMap[id]
-          this.showUser = true
-          this.showUserInfo = user
+    onClickImage(e) {
+      const el = e.srcElement;
+      if (el.tagName === "IMG") {
+        const imgType = el.getAttribute("img-type");
+        if (imgType === "picture") {
+          this.showImageUrl = el.getAttribute("src");
+        } else if (imgType.indexOf("user-") === 0) {
+          if (imgType === "user-self") {
+            return;
+          }
+          const id = parseInt(imgType.replace("user-", ""));
+          const user = this.userMap[id];
+          if (!user) {
+            this.$message.error("用户账号异常");
+            return;
+          }
+          this.showUser = true;
+          this.showUserInfo = user;
         }
       } else {
-        this.showImageUrl = ''
+        this.showImageUrl = "";
       }
-      this.showImage = !!this.showImageUrl
+      this.showImage = !!this.showImageUrl;
     },
 
     ...mapActions({
-      setUserInfo: 'setUser',
-      showLogin: 'showLogin'
+      setUserInfo: "setUser",
+      showLogin: "showLogin"
     })
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
 .home {
   height: 100%;
-  overflow: hidden;
+  // overflow: hidden;
+
+  .el-header {
+    background-color: rgba(222, 222, 222, 0.2);
+    box-shadow: 0 0 3px 3px rgba(222, 222, 222, 0.8);
+  }
 
   .el-main {
     height: 100%;
+    padding: 0;
 
     .el-scrollbar {
       background-color: transparent;
@@ -377,11 +399,11 @@ export default {
 
     .list {
       max-width: 500px;
-      margin: 0 auto;
+      min-height: 200px;
+      margin: 10px auto;
 
       .peotry {
-        position: relative;
-        margin-bottom: 30px;
+        // margin-bottom: 30px;
       }
 
       .image-show {
@@ -401,10 +423,8 @@ export default {
 @media screen and (max-width: 500px) {
   .home {
     .el-main {
-      padding: 0 0 20px 0;
-
       .peotry {
-        padding-left: 10px;
+        // padding: 0 10px 0 30px;
       }
     }
   }
@@ -417,6 +437,10 @@ export default {
     .el-dialog__body {
       text-align: center !important;
     }
+  }
+
+  .el-footer {
+    padding: 0;
   }
 
   .el-pagination {
