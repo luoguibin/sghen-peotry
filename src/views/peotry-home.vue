@@ -24,7 +24,7 @@
           </el-form>
         </el-dialog>
 
-        <div class="list" ref="listEl" @click="onClickImage($event)">
+        <div class="list" ref="listEl" @click="onClickImage($event)" v-loading="isLoading">
           <peotry
             v-for="(peotry, index) in peotries"
             :key="peotry.id"
@@ -109,6 +109,7 @@ export default {
       totalPage: 1,
       totalCount: 0,
       peotries: [],
+      isLoading: false,
 
       iconDialogVisible: false
     };
@@ -216,6 +217,9 @@ export default {
     },
 
     getPeotries(bottom) {
+      this.isLoading = true;
+      this.peotries = [];
+
       queryPeotries({
         limit: this.limit,
         page: this.curPage,
@@ -240,6 +244,9 @@ export default {
         })
         .catch(err => {
           this.$message.error(err);
+        })
+        .finally(() => {
+          this.isLoading = false;
         });
     },
 
@@ -378,7 +385,8 @@ export default {
   // overflow: hidden;
 
   .el-header {
-    background-color: rgba(15, 55, 116, 0.3);
+    background-color: rgba(222, 222, 222, 0.2);
+    box-shadow: 0 0 3px 3px rgba(222, 222, 222, 0.8);
   }
 
   .el-main {
@@ -391,6 +399,7 @@ export default {
 
     .list {
       max-width: 500px;
+      min-height: 200px;
       margin: 10px auto;
 
       .peotry {

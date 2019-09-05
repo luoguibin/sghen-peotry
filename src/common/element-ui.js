@@ -12,6 +12,7 @@ import {
   FormItem,
   Footer,
   Header,
+  Loading,
   Input,
   Image,
   Message,
@@ -34,6 +35,7 @@ Vue.use(Form)
 Vue.use(FormItem)
 Vue.use(Footer)
 Vue.use(Header)
+Vue.use(Loading)
 Vue.use(Input)
 Vue.use(Image)
 Vue.use(Main)
