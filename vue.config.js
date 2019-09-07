@@ -3,6 +3,8 @@ const path = require('path')
 module.exports = {
   lintOnSave: true,
 
+  publicPath: './',
+
   chainWebpack: config => {
     config
       .output
