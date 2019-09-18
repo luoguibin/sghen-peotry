@@ -3,7 +3,7 @@ const path = require('path')
 module.exports = {
   lintOnSave: true,
 
-  publicPath: process.env.NODE_ENV === 'production' ? '/' : './',
+  publicPath: process.env.NODE_ENV === 'production' ? '/peotry/' : './',
 
   chainWebpack: config => {
     config
