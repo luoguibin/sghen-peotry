@@ -198,20 +198,16 @@ export default {
       if (idsSet.size) {
         const ids = Array.from(idsSet)
         queryUsers(ids).then(resp => {
-          if (resp.data.code === 1000) {
-            const users = resp.data.data
-            const userMap = this.userMap
+          const users = resp.data.data
+          const userMap = this.userMap
 
-            users.forEach(user => {
-              if (!userMap[user.id]) {
-                resetUserIconUrl(user)
-                userMap[user.id] = user
-              }
-            })
-            this.$forceUpdate()
-          } else {
-            this.$message(resp.data.msg)
-          }
+          users.forEach(user => {
+            if (!userMap[user.id]) {
+              resetUserIconUrl(user)
+              userMap[user.id] = user
+            }
+          })
+          this.$forceUpdate()
         })
       }
     },
@@ -226,24 +222,17 @@ export default {
         needComment: true
       })
         .then(resp => {
-          if (resp.data.code === 1000) {
-            const data = resp.data
-            this.curPage = data.curPage
-            this.totalPage = data.totalPage
-            this.totalCount = data.totalCount
-            this.updatePeotriesData(data.data)
-            this.peotries = data.data
+          const data = resp.data
+          this.curPage = data.curPage
+          this.totalPage = data.totalPage
+          this.totalCount = data.totalCount
+          this.updatePeotriesData(data.data)
+          this.peotries = data.data
 
-            this.$nextTick(() => {
-              const main = this.$refs.mainEl.$el
-              main.scrollTop = bottom ? main.scrollHeight : 0
-            })
-          } else {
-            this.$message(resp.data.msg)
-          }
-        })
-        .catch(err => {
-          this.$message.error(err)
+          this.$nextTick(() => {
+            const main = this.$refs.mainEl.$el
+            main.scrollTop = bottom ? main.scrollHeight : 0
+          })
         })
         .finally(() => {
           this.isLoading = false
@@ -254,15 +243,11 @@ export default {
       if (!peotry || !peotry.id) return
 
       deletePeotry(peotry.id).then(resp => {
-        if (resp.data.code === 1000) {
-          this.$message('删除成功')
-          if (this.peotries.length === 1) {
-            this.curPage--
-          } else {
-            this.getPeotries()
-          }
+        this.$message.success('删除成功')
+        if (this.peotries.length === 1) {
+          this.curPage--
         } else {
-          this.$message(resp.data.msg)
+          this.getPeotries()
         }
       })
     },
@@ -291,25 +276,21 @@ export default {
 
     onComment (comment, peotryId) {
       if (!this.userInfo.token) {
-        this.$message('请登录后再操作')
+        this.$message.warning('请登录后再操作')
         this.showLogin()
         return
       }
       createComment(comment).then(resp => {
-        if (resp.data.code === 1000) {
-          comment.id = resp.data.data
-          if (comment.toId > 0) {
-            this.$message('评论成功')
-            this.addComment(peotryId, comment)
-            return
-          }
-          if (comment.content.indexOf('unpraise') !== -1 && peotryId) {
-            this.spliceComment(peotryId, comment.id)
-          } else {
-            this.addComment(peotryId, comment)
-          }
+        comment.id = resp.data.data
+        if (comment.toId > 0) {
+          this.$message.success('评论成功')
+          this.addComment(peotryId, comment)
+          return
+        }
+        if (comment.content.indexOf('unpraise') !== -1 && peotryId) {
+          this.spliceComment(peotryId, comment.id)
         } else {
-          this.$message(resp.data.msg)
+          this.addComment(peotryId, comment)
         }
       })
     },
@@ -317,7 +298,7 @@ export default {
     addComment (peotryId, comment) {
       const peotry = this.peotries.find(o => o.id === peotryId)
       if (peotry) {
-        window.testPeotry = peotry
+        // window.testPeotry = peotry
         const newComment = JSON.parse(JSON.stringify(comment))
         newComment.createTime = new Date().toJSON()
         peotry.comments.push(newComment)
@@ -337,12 +318,8 @@ export default {
 
     onCommentDelete (id, peotryId) {
       deleteComment({ id, fromId: this.userInfo.id }).then(resp => {
-        if (resp.data.code === 1000) {
-          this.$message('删除成功')
-          this.spliceComment(peotryId, id)
-        } else {
-          this.$message(resp.data.msg)
-        }
+        this.$message.success('删除成功')
+        this.spliceComment(peotryId, id)
       })
     },
 

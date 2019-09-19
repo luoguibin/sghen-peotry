@@ -1,10 +1,5 @@
 import request from './axios'
-import CryptoJS from 'crypto-js'
-
-const baseHmacMd5 = (data, key) => {
-  return CryptoJS.enc.Base64.stringify(CryptoJS.HmacMD5(data, key))
-}
-const privateKey = CryptoJS.enc.Utf8.parse('sghenmorge')
+import { MD5, enc } from 'crypto-js'
 
 export const createUser = data =>
   request({
@@ -13,23 +8,23 @@ export const createUser = data =>
     data
   })
 
-export const loginByAccount = ({ uId, pw }) =>
-  request({
+export const loginByAccount = ({ id, pw }) => {
+  const pw0 = enc.Base64.stringify(MD5(pw))
+  // console.log(pw0);
+  return request({
     url: '/v1/user/login',
     method: 'post',
     data: {
-      uId,
-      pw: baseHmacMd5(pw, privateKey)
+      id,
+      pw: pw0
     }
   })
+}
 
 export const updateUser = data =>
   request({
     url: '/v1/user/update',
     method: 'post',
-    params: {
-      token: true
-    },
     data
   })
 
@@ -38,7 +33,6 @@ export const queryUsers = ids =>
     url: '/v1/user/query-list',
     method: 'get',
     params: {
-      token: true,
       idStrs: ids.toString()
     }
   })
@@ -50,13 +44,12 @@ export const queryPeotries = params =>
     params
   })
 
-export const queryPeotrySets = uId =>
+export const queryPeotrySets = userId =>
   request({
     url: '/v1/peotry-set/query',
     method: 'get',
     params: {
-      token: true,
-      uId
+      userId
     }
   })
 
@@ -64,9 +57,6 @@ export const createPeotry = peotry =>
   request({
     url: '/v1/peotry/create',
     method: 'post',
-    params: {
-      token: true
-    },
     data: peotry
   })
 
@@ -74,60 +64,42 @@ export const updatePeotry = peotry =>
   request({
     url: '/v1/peotry/update',
     method: 'post',
-    params: {
-      token: true
-    },
     data: peotry
   })
 
-export const deletePeotry = pId =>
+export const deletePeotry = id =>
   request({
     url: '/v1/peotry/delete',
-    method: 'delete',
-    params: {
-      token: true,
-      pId
-    }
+    method: 'post',
+    data: { id }
   })
 
 export const createComment = data =>
   request({
     url: '/v1/comment/create',
     method: 'post',
-    params: {
-      token: true
-    },
     data
   })
 
 export const deleteComment = data =>
   request({
     url: '/v1/comment/delete',
-    method: 'delete',
-    params: {
-      token: true,
-      ...data
-    }
+    method: 'post',
+    data
   })
 
-export const createPoetrySet = data =>
+export const createPoetrySet = params =>
   request({
     url: '/v1/peotry-set/create',
     method: 'get',
-    params: {
-      token: true,
-      ...data
-    }
+    params
   })
 
-export const uploadFiles = (params, files) =>
+export const uploadFiles = (params, data) =>
   request({
     url: '/v1/upload',
     method: 'post',
-    params: {
-      token: true,
-      ...params
-    },
-    data: files,
+    params,
+    data,
     headers: { 'Content-Type': 'multipart/form-data' }
   })

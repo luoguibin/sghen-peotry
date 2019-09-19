@@ -161,34 +161,26 @@ export default {
           type: 'image/png',
           lastModified: Date.now()
         })
+
         const formData = new FormData()
         formData.append('file', file)
 
         uploadFiles({ pathType: 'normal' }, formData)
           .then(resp => {
-            if (resp.data.code !== 1000) {
-              this.$message(resp.data.msg)
-              return
-            }
-
             const iconUrl = resp.data.data[0]
+
             updateUser({
               iconUrl,
-              uId: this.userInfo.id
+              id: this.userInfo.id
             }).then(resp => {
-              if (resp.data.code === 1000) {
-                this.$message('更新头像成功')
-                const info = { ...this.userInfo, iconUrl: iconUrl }
-                resetUserIconUrl(info)
-                this.setUserInfo(info)
-                this.iconDialogVisible = false
-              } else {
-                this.$message(resp.data.msg)
-              }
+              this.$message.success('更新头像成功')
+
+              const info = { ...this.userInfo, iconUrl: iconUrl }
+              resetUserIconUrl(info)
+              this.setUserInfo(info)
+              this.handleCommand('personal')
+              this.iconDialogVisible = false
             })
-          })
-          .catch(err => {
-            console.log(err)
           })
       })
     },
@@ -199,17 +191,13 @@ export default {
           name: this.showUserInfo.name,
           uId: this.userInfo.id
         }).then(resp => {
-          if (resp.data.code === 1000) {
-            this.$message('更新个人信息成功')
-            const info = { ...this.userInfo, name: this.showUserInfo.name }
-            this.setUserInfo(info)
-            this.showUser = false
-          } else {
-            this.$message(resp.data.msg)
-          }
+          this.$message.success('更新个人信息成功')
+          const info = { ...this.userInfo, name: this.showUserInfo.name }
+          this.setUserInfo(info)
+          this.showUser = false
         })
       } else {
-        this.$message('名字不能为空')
+        this.$message.warning('名字不能为空')
       }
     },
 
@@ -229,6 +217,10 @@ export default {
   .float-right {
     float: right;
     margin-top: 10px;
+  }
+
+  .vue-cropper {
+    min-height: 200px;
   }
 }
 </style>

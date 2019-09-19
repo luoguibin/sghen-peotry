@@ -34,10 +34,10 @@
     </div>
 
     <div class="peotry-more">
-      <el-dropdown @command="onCommandMore">
+      <el-dropdown @command="onCommandMore" trigger="click">
         <i class="peotry-more_icon el-icon-more-outline"></i>
 
-        <el-dropdown-menu slot="dropdown">
+        <el-dropdown-menu slot="dropdown" >
           <el-dropdown-item command="comment">
             <span>
               评论
@@ -212,7 +212,7 @@ export default {
 
     openComment (toId) {
       if (!this.userInfo.token) {
-        this.$message('请登录后再操作')
+        this.$message.warning('请登录后再操作')
         return
       }
       this.inComment = true
@@ -255,7 +255,7 @@ export default {
 
     onCommentUser (e) {
       if (!this.userInfo.token) {
-        this.$message('请登录后再操作')
+        this.$message.warning('请登录后再操作')
         return
       }
       const userId = e.srcElement.getAttribute('user-id')
@@ -282,7 +282,7 @@ export default {
     },
     onCommentPraise () {
       if (!this.userInfo.token) {
-        this.$message('请登录后再操作')
+        this.$message.warning('请登录后再操作')
         return
       }
       this.checkComment(-1)
@@ -551,8 +551,8 @@ $padding-set: 12px;
 
   .comment-input {
     text-align: right;
-    max-width: 330px;
     margin-top: 5px;
+    padding-right: 10px;
 
     .el-button {
       margin-top: 5px;

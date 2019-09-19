@@ -139,12 +139,8 @@ export default {
   methods: {
     getPeotrySets () {
       queryPeotrySets(this.userInfo.id).then(resp => {
-        if (resp.data.code === 1000) {
-          const data = resp.data
-          this.peotrySets = data.data
-        } else {
-          this.$message(resp.data.msg)
-        }
+        const data = resp.data
+        this.peotrySets = data.data
       })
     },
 
@@ -157,7 +153,7 @@ export default {
             this.onUpdate()
           }
         } else {
-          this.$message('请输入表单内容')
+          this.$message.warning('请输入表单内容')
         }
       })
     },
@@ -170,14 +166,10 @@ export default {
         ...newPeotry
       }
       createPeotry(data).then(resp => {
-        if (resp.data.code === 1000) {
-          this.$message('创建成功')
-          this.currentId = resp.data.data
-          this.$refs.ruleForm.resetFields()
-          this.visible = false
-        } else {
-          this.$message(resp.data.msg)
-        }
+        this.$message.success('创建成功')
+        this.currentId = resp.data.data
+        this.$refs.ruleForm.resetFields()
+        this.visible = false
       })
     },
 
@@ -185,6 +177,7 @@ export default {
       const peotry = this.newPeotry
       if (!peotry || !peotry.id) return
       this.inRequest = true
+
       updatePeotry({
         pId: peotry.id,
         uId: this.userInfo.id,
@@ -193,13 +186,9 @@ export default {
         content: peotry.content,
         end: peotry.end
       }).then(resp => {
-        if (resp.data.code === 1000) {
-          this.$message('保存成功')
-          this.currentId = peotry.id
-          this.visible = false
-        } else {
-          this.$message(resp.data.msg)
-        }
+        this.$message.success('保存成功')
+        this.currentId = peotry.id
+        this.visible = false
       })
     },
 
@@ -211,20 +200,16 @@ export default {
         .then(({ value }) => {
           const length = value.trim().length
           if (length <= 0) {
-            this.$message('选集名称不能为空')
+            this.$message.warning('选集名称不能为空')
           } else if (length > 20) {
-            this.$message('选集名称不能超过20个字符')
+            this.$message.warning('选集名称不能超过20个字符')
           } else {
             createPoetrySet({
               uId: this.userInfo.id,
               name: value
             }).then(resp => {
-              if (resp.data.code === 1000) {
-                this.$message('创建选集成功')
-                this.getPeotrySets()
-              } else {
-                this.$message(resp.data.msg)
-              }
+              this.$message.success('创建选集成功')
+              this.getPeotrySets()
             })
           }
         })

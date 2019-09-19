@@ -16,6 +16,7 @@ import {
   Input,
   Image,
   Message,
+  MessageBox,
   Main,
   Option,
   Pagination,
@@ -46,3 +47,5 @@ Vue.use(Select)
 Vue.use(Scrollbar)
 
 Vue.prototype.$message = Message
+Vue.prototype.$confirm = MessageBox.confirm
+Vue.prototype.$prompt = MessageBox.prompt

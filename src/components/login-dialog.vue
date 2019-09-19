@@ -6,18 +6,22 @@
     custom-class="login-dialog"
   >
     <el-form ref="ruleForm" :model="account" :rules="formRules" label-width="80px">
-      <el-form-item label="账 号" prop="uId">
-        <el-input v-model.number="account.uId" type="tel"></el-input>
+      <el-form-item label="账 号" prop="id">
+        <el-input v-model.number="account.id" type="tel"></el-input>
       </el-form-item>
+
       <el-form-item label="昵 称" prop="name" v-if="signUpValue">
         <el-input v-model.trim="account.name"></el-input>
       </el-form-item>
+
       <el-form-item label="密 码" prop="pw">
         <el-input v-model="account.pw" show-password clearable></el-input>
       </el-form-item>
+
       <el-form-item label="重复密码" prop="pw2" v-if="signUpValue">
         <el-input v-model="account.pw2" show-password clearable></el-input>
       </el-form-item>
+
       <el-form-item>
         <el-button
           type="primary"
@@ -49,15 +53,15 @@ export default {
       signUpValue: false,
       inRequest: false,
       account: {
-        uId: null,
+        id: null,
         name: '',
         pw: '',
         pw2: ''
       },
       formRules: {
-        uId: [
+        id: [
           { required: true, message: '请输入手机号码', trigger: 'blur' },
-          { validator: this.validateUId, trigger: 'blur' }
+          { validator: this.validateId, trigger: 'blur' }
         ],
         name: [
           { required: true, min: 1, message: '请输入昵称', trigger: 'blur' }
@@ -89,8 +93,11 @@ export default {
       loginCount: state => state.loginCount
     })
   },
+  created () {
+    window.loginDialog = this
+  },
   methods: {
-    validateUId (rule, value, callback) {
+    validateId (rule, value, callback) {
       if (!/^1[34578]\d{9}$/.test(value)) {
         callback(new Error('请输入11位手机号码'))
       } else {
@@ -107,40 +114,41 @@ export default {
     signUpChange () {
       this.$refs.ruleForm.clearValidate()
       this.inRequest = false
+      if (this.signUpValue) {
+        const account = this.account
+        account.id = null
+        account.name = ''
+        account.pw = ''
+        account.pw2 = ''
+      }
     },
     onLoginCreate () {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
           this.inRequest = true
+          const account = this.account
           if (this.signUpValue) {
-            createUser(this.account).then(resp => {
+            createUser(account).then(resp => {
               this.inRequest = false
-              if (resp.data.code === 1000) {
-                const userInfo = resp.data.data
-                resetUserIconUrl(userInfo)
-                this.setUserInfo(userInfo)
-                this.$message('注册成功')
-                this.signUpValue = false
-                this.visible = false
-              } else {
-                this.$message(resp.data.msg)
-              }
+
+              const userInfo = resp.data.data
+              resetUserIconUrl(userInfo)
+              this.setUserInfo(userInfo)
+              this.$message.success('注册成功')
+              this.signUpValue = false
+              this.visible = false
             })
           } else {
-            loginByAccount(this.account).then(resp => {
+            loginByAccount({ id: account.id, pw: account.pw }).then(resp => {
               this.inRequest = false
-              if (resp.data.code === 1000) {
-                const userInfo = resp.data.data
-                resetUserIconUrl(userInfo)
-                this.setUserInfo(userInfo)
-                this.visible = false
-              } else {
-                this.$message(resp.data.msg)
-              }
+              const userInfo = resp.data.data
+              resetUserIconUrl(userInfo)
+              this.setUserInfo(userInfo)
+              this.visible = false
             })
           }
         } else {
-          this.$message('请输入表单内容')
+          this.$message.warning('请输入表单内容')
         }
       })
     },
