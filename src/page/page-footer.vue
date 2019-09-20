@@ -22,6 +22,10 @@ export default {
   padding: 20px 0 10px 0;
   color: #c8c8c8;
 
+  a {
+    color: #c8c8c8;
+  }
+
   a:visited {
     color: inherit;
   }
