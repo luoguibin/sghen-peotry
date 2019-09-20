@@ -17,6 +17,7 @@
 .el-main {
   padding: 0;
   min-height: 500px;
+  height: 100%;
 }
 
 .el-header {
@@ -48,5 +49,6 @@ body {
 
 .el-scrollbar .el-scrollbar__wrap {
   overflow-x: hidden;
+  margin-bottom: 0 !important;
 }
 </style>
