@@ -1,8 +1,29 @@
 <template>
-  <div id="app">
-      <router-view />
-  </div>
+  <el-container id="app">
+    <el-header>
+      <page-header></page-header>
+    </el-header>
+
+    <el-main>
+      <el-scrollbar>
+        <router-view />
+        <page-footer></page-footer>
+      </el-scrollbar>
+    </el-main>
+  </el-container>
 </template>
+
+<style lang="scss" scoped>
+.el-main {
+  padding: 0;
+  min-height: 500px;
+}
+
+.el-header {
+  background-color: rgba(222, 222, 222, 0.2);
+  box-shadow: 0 0 3px 3px rgba(222, 222, 222, 0.8);
+}
+</style>
 
 <style>
 * {

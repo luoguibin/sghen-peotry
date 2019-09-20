@@ -3,20 +3,18 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
-import PageFooter from './components/page-footer'
+import PageHeader from './page/page-header'
+import PageFooter from './page/page-footer'
 
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 
 import './common/element-ui'
-
-import LoginDialog from '@/components/login-dialog'
+Vue.component(PageHeader.name, PageHeader)
 Vue.component(PageFooter.name, PageFooter)
+Vue.prototype.$NProgress = NProgress
 
 Vue.config.productionTip = false
-
-Vue.prototype.$NProgress = NProgress
-Vue.component(LoginDialog.name, LoginDialog)
 
 new Vue({
   router,

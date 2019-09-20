@@ -1,7 +1,6 @@
 <template>
-  <div class="peotry-header">
+  <div class="page-header">
     <el-button v-if="!userInfo.token" class="float-right" type="text" @click="onShowLogin">登录~</el-button>
-
     <el-dropdown v-else class="float-right" @command="handleCommand" trigger="click">
       <span style="cursor: pointer;">
         <span class="el-dropdown-link" style="vertical-align: middle;">{{userInfo.name}}</span>
@@ -13,6 +12,8 @@
         <el-dropdown-item command="logout">退出登录</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
+
+    <login-dialog></login-dialog>
 
     <el-dialog title="个人信息" :visible.sync="showUser">
       <el-form label-width="60px">
@@ -70,10 +71,13 @@ import { updateUser, uploadFiles } from '@/api'
 import { VueCropper } from 'vue-cropper'
 import { resetUserIconUrl } from '@/common/util-icon'
 
+import LoginDialog from '@/components/login-dialog'
+
 export default {
-  name: 'peotry-header',
+  name: 'page-header',
   components: {
-    'vue-cropper': VueCropper
+    LoginDialog,
+    VueCropper
   },
   data () {
     return {
@@ -165,23 +169,22 @@ export default {
         const formData = new FormData()
         formData.append('file', file)
 
-        uploadFiles({ pathType: 'normal' }, formData)
-          .then(resp => {
-            const iconUrl = resp.data.data[0]
+        uploadFiles({ pathType: 'normal' }, formData).then(resp => {
+          const iconUrl = resp.data.data[0]
 
-            updateUser({
-              iconUrl,
-              id: this.userInfo.id
-            }).then(resp => {
-              this.$message.success('更新头像成功')
+          updateUser({
+            iconUrl,
+            id: this.userInfo.id
+          }).then(resp => {
+            this.$message.success('更新头像成功')
 
-              const info = { ...this.userInfo, iconUrl: iconUrl }
-              resetUserIconUrl(info)
-              this.setUserInfo(info)
-              this.handleCommand('personal')
-              this.iconDialogVisible = false
-            })
+            const info = { ...this.userInfo, iconUrl: iconUrl }
+            resetUserIconUrl(info)
+            this.setUserInfo(info)
+            this.handleCommand('personal')
+            this.iconDialogVisible = false
           })
+        })
       })
     },
 
@@ -211,8 +214,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.peotry-header {
-  height: 100%;
+.page-header {
+  height: 64px;
 
   .float-right {
     float: right;

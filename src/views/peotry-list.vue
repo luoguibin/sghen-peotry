@@ -1,74 +1,58 @@
 <template>
-  <el-container class="home">
-    <el-header>
-      <peotry-header></peotry-header>
-      <login-dialog></login-dialog>
-      <peotry-create :showCreate="showCreate" :peotry="updatePeotry" @on-close="onPeotryClose"></peotry-create>
-    </el-header>
+  <div class="peotry-list">
+    <peotry-create :showCreate="showCreate" :peotry="updatePeotry" @on-close="onPeotryClose"></peotry-create>
 
-    <el-main ref="mainEl">
-      <el-scrollbar>
-        <el-dialog title="个人信息" :visible.sync="showUser">
-          <el-form label-width="60px">
-            <el-form-item label="ID" v-if="true">
-              <el-input disabled v-model="showUserInfo.id"></el-input>
-            </el-form-item>
+    <el-dialog title="个人信息" :visible.sync="showUser">
+      <el-form label-width="60px">
+        <el-form-item label="ID" v-if="true">
+          <el-input disabled v-model="showUserInfo.id"></el-input>
+        </el-form-item>
 
-            <el-form-item label="昵称">
-              <el-input :disabled="true" v-model="showUserInfo.name"></el-input>
-            </el-form-item>
+        <el-form-item label="昵称">
+          <el-input :disabled="true" v-model="showUserInfo.name"></el-input>
+        </el-form-item>
 
-            <el-form-item label="头像">
-              <img :src="showUserInfo.iconUrl" style="max-width: 50px; vertical-align: top;" />
-            </el-form-item>
-          </el-form>
-        </el-dialog>
+        <el-form-item label="头像">
+          <img :src="showUserInfo.iconUrl" style="max-width: 50px; vertical-align: top;" />
+        </el-form-item>
+      </el-form>
+    </el-dialog>
 
-        <div class="list" ref="listEl" @click="onClickImage($event)" v-loading="isLoading">
-          <peotry
-            v-for="(peotry, index) in peotries"
-            :key="peotry.id"
-            :peotry="peotry"
-            class="peotry"
-            @on-delete="onDelete"
-            @on-update="onUpdate"
-            @on-comment="onComment"
-            @on-comment-delete="onCommentDelete"
-          >
-            <template>{{(curPage - 1) * limit + index + 1}}</template>
-          </peotry>
+    <div class="list" ref="listEl" @click="onClickImage($event)" v-loading="isLoading">
+      <peotry
+        v-for="(peotry, index) in peotries"
+        :key="peotry.id"
+        :peotry="peotry"
+        class="peotry"
+        @on-delete="onDelete"
+        @on-update="onUpdate"
+        @on-comment="onComment"
+        @on-comment-delete="onCommentDelete"
+      >
+        <template>{{(curPage - 1) * limit + index + 1}}</template>
+      </peotry>
+    </div>
+
+    <el-dialog title="图片" :visible.sync="showImage" class="show-image" :show-close="false" center>
+      <el-image :src="showImageUrl">
+        <div slot="error" class="image-error-slot">
+          <i class="el-icon-picture-outline"></i>
+          <p>图片加载失败</p>
         </div>
+      </el-image>
+    </el-dialog>
 
-        <el-dialog
-          title="图片"
-          :visible.sync="showImage"
-          class="show-image"
-          :show-close="false"
-          center
-        >
-          <el-image :src="showImageUrl">
-            <div slot="error" class="image-error-slot">
-              <i class="el-icon-picture-outline"></i>
-              <p>图片加载失败</p>
-            </div>
-          </el-image>
-        </el-dialog>
-
-        <el-pagination
-          v-show="peotries.length"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="curPage"
-          :page-sizes="[10, 20, 30, 40]"
-          :page-size="limit"
-          layout="prev, pager, next, total, sizes, jumper"
-          :total="totalCount"
-        ></el-pagination>
-
-        <page-footer></page-footer>
-      </el-scrollbar>
-    </el-main>
-  </el-container>
+    <el-pagination
+      v-show="peotries.length"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="curPage"
+      :page-sizes="[10, 20, 30, 40]"
+      :page-size="limit"
+      layout="prev, pager, next, total, sizes, jumper"
+      :total="totalCount"
+    ></el-pagination>
+  </div>
 </template>
 
 <script>
@@ -87,9 +71,8 @@ import {
 import { resetUserIconUrl } from '@/common/util-icon'
 
 export default {
-  name: 'HomePeotry',
+  name: 'PeotryList',
   components: {
-    'peotry-header': () => import('./peotry-header'),
     Peotry,
     PeotryCreate
   },
@@ -120,7 +103,7 @@ export default {
     }
   },
   created () {
-    window.homePeotry = this
+    window.peotryList = this
     this.getPeotries()
   },
   computed: {
@@ -229,11 +212,6 @@ export default {
           this.totalCount = data.totalCount
           this.updatePeotriesData(data.data)
           this.peotries = data.data
-
-          this.$nextTick(() => {
-            const main = this.$refs.mainEl.$el
-            main.scrollTop = bottom ? main.scrollHeight : 0
-          })
         })
         .finally(() => {
           this.isLoading = false
@@ -359,67 +337,34 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.home {
-  height: 100%;
-  // overflow: hidden;
+.peotry-list {
+  max-width: 500px;
+  margin: 0 auto;
 
-  .el-header {
-    background-color: rgba(222, 222, 222, 0.2);
-    box-shadow: 0 0 3px 3px rgba(222, 222, 222, 0.8);
-  }
+  .list {
+    min-height: 300px;
+    margin: 10px auto;
 
-  .el-main {
-    height: 100%;
-    padding: 0;
-
-    .el-scrollbar {
-      background-color: transparent;
-    }
-
-    .list {
-      max-width: 500px;
-      min-height: 200px;
-      margin: 10px auto;
-
-      .peotry {
-        // margin-bottom: 30px;
-      }
-
-      .image-show {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-      }
-    }
-  }
-}
-
-@media screen and (max-width: 500px) {
-  .home {
-    .el-main {
-      .peotry {
-        // padding: 0 10px 0 30px;
-      }
+    .image-show {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
     }
   }
 }
 </style>
 
 <style lang="scss">
-.home {
+.peotry-list {
   .show-image {
     .el-dialog__body {
       text-align: center !important;
     }
-  }
-
-  .el-footer {
-    padding: 0;
   }
 
   .el-pagination {
@@ -435,7 +380,7 @@ export default {
 }
 
 @media screen and (max-width: 500px) {
-  .home {
+  .peotry-list {
     .el-dialog {
       width: 100%;
     }
