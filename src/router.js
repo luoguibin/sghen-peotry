@@ -19,7 +19,10 @@ const router = new Router({
       path: '*',
       redirect: '/home'
     }
-  ]
+  ],
+  scrollBehavior (to, from, savedPosition) {
+    return savedPosition || { x: 0, y: 0 }
+  }
 })
 
 router.beforeEach((to, from, next) => {

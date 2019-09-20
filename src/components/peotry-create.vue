@@ -7,8 +7,8 @@
     custom-class="peotry-create"
   >
     <el-form :model="newPeotry" :rules="formRules" ref="ruleForm" label-width="60px">
-      <el-form-item label="选集" prop="sId">
-        <el-select v-model="newPeotry.sId" placeholder="请选择">
+      <el-form-item label="选集" prop="setId">
+        <el-select v-model="newPeotry.setId" placeholder="请选择">
           <el-option v-for="set in peotrySets" :key="set.id" :value="set.id" :label="set.name"></el-option>
         </el-select>
         <i class="el-icon-plus peotry-set-add" @click="addPeotrySet"></i>
@@ -69,7 +69,7 @@ export default {
       createValue: true,
       inRequest: false,
       newPeotry: {
-        sId: null,
+        setId: null,
         title: '',
         content: '',
         end: ''
@@ -78,7 +78,7 @@ export default {
       peotrySets: [],
 
       formRules: {
-        sId: [{ required: true, message: '请选择选集', trigger: 'click' }],
+        setId: [{ required: true, message: '请选择选集', trigger: 'click' }],
         title: [
           { required: true, message: '请输入标题', trigger: 'blur' },
           { min: 1, max: 10, message: '长度在 1 到 10 个字符', trigger: 'blur' }
@@ -111,8 +111,8 @@ export default {
         const peotry = this.peotry
         this.newPeotry = {
           id: peotry.id,
-          uId: peotry.user && peotry.user.id,
-          sId: peotry.set && peotry.set.id,
+          userId: peotry.user && peotry.user.id,
+          setId: peotry.set && peotry.set.id,
           title: peotry.title,
           content: peotry.content,
           end: peotry.end
@@ -120,7 +120,7 @@ export default {
       } else {
         this.createValue = true
         this.newPeotry = {
-          sId: null,
+          setId: null,
           title: '',
           content: '',
           end: ''
@@ -162,7 +162,7 @@ export default {
       this.inRequest = true
       const newPeotry = this.newPeotry
       const data = {
-        uId: this.userInfo.id,
+        userId: this.userInfo.id,
         ...newPeotry
       }
       createPeotry(data).then(resp => {
@@ -170,6 +170,8 @@ export default {
         this.currentId = resp.data.data
         this.$refs.ruleForm.resetFields()
         this.visible = false
+      }).finally(() => {
+        this.inRequest = false
       })
     },
 
@@ -179,9 +181,9 @@ export default {
       this.inRequest = true
 
       updatePeotry({
-        pId: peotry.id,
-        uId: this.userInfo.id,
-        sId: peotry.sId,
+        id: peotry.id,
+        userId: this.userInfo.id,
+        setId: peotry.setId,
         title: peotry.title,
         content: peotry.content,
         end: peotry.end
@@ -205,7 +207,7 @@ export default {
             this.$message.warning('选集名称不能超过20个字符')
           } else {
             createPoetrySet({
-              uId: this.userInfo.id,
+              userId: this.userInfo.id,
               name: value
             }).then(resp => {
               this.$message.success('创建选集成功')

@@ -31,12 +31,9 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   res => {
     const status = Number(res.status) || 0
-    if (status !== 200) {
-      const data = res.data || {}
-      if (data.code !== 1000) {
-        const msg = data.msg || '操作失败'
-        Message.error({ message: msg })
-      }
+    const data = res.data || {}
+    if (status !== 200 || data.code !== 1000) {
+      Message.error({ message: data.msg || '操作失败' })
       return Promise.reject(res)
     }
 

@@ -67,11 +67,11 @@ export const updatePeotry = peotry =>
     data: peotry
   })
 
-export const deletePeotry = id =>
+export const deletePeotry = (id, userId) =>
   request({
     url: '/v1/peotry/delete',
     method: 'post',
-    data: { id }
+    data: { id, userId }
   })
 
 export const createComment = data =>
