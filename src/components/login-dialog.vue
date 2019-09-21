@@ -15,11 +15,11 @@
       </el-form-item>
 
       <el-form-item label="密 码" prop="pw">
-        <el-input v-model="account.pw" show-password clearable></el-input>
+        <el-input @keyup.native.enter="onLoginCreate" v-model="account.pw" show-password clearable></el-input>
       </el-form-item>
 
       <el-form-item label="重复密码" prop="pw2" v-if="signUpValue">
-        <el-input v-model="account.pw2" show-password clearable></el-input>
+        <el-input @keyup.native.enter="onLoginCreate" v-model="account.pw2" show-password clearable></el-input>
       </el-form-item>
 
       <el-form-item>
@@ -41,51 +41,51 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
-import { loginByAccount, createUser } from '@/api'
-import { resetUserIconUrl } from '@/common/util-icon'
+import { mapState, mapActions } from "vuex";
+import { loginByAccount, createUser } from "@/api";
+import { resetUserIconUrl } from "@/common/util-icon";
 
 export default {
-  name: 'login-dialog',
-  data () {
+  name: "login-dialog",
+  data() {
     return {
       visible: false,
       signUpValue: false,
       inRequest: false,
       account: {
         id: null,
-        name: '',
-        pw: '',
-        pw2: ''
+        name: "",
+        pw: "",
+        pw2: ""
       },
       formRules: {
         id: [
-          { required: true, message: '请输入手机号码', trigger: 'blur' },
-          { validator: this.validateId, trigger: 'blur' }
+          { required: true, message: "请输入手机号码", trigger: "blur" },
+          { validator: this.validateId, trigger: "blur" }
         ],
         name: [
-          { required: true, min: 1, message: '请输入昵称', trigger: 'blur' }
+          { required: true, min: 1, message: "请输入昵称", trigger: "blur" }
         ],
         pw: [
-          { required: true, message: '请输入密码', trigger: 'blur' },
-          { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
+          { required: true, message: "请输入密码", trigger: "blur" },
+          { min: 6, max: 20, message: "长度在 6 到 20 个字符", trigger: "blur" }
         ],
         pw2: [
-          { required: true, message: '请输入密码', trigger: 'blur' },
+          { required: true, message: "请输入密码", trigger: "blur" },
           {
             min: 6,
             max: 20,
-            message: '长度在 6 到 20 个字符',
-            trigger: 'blur'
+            message: "长度在 6 到 20 个字符",
+            trigger: "blur"
           },
-          { validator: this.validatePass2, trigger: 'blur' }
+          { validator: this.validatePass2, trigger: "blur" }
         ]
       }
-    }
+    };
   },
   watch: {
-    loginCount () {
-      this.visible = true
+    loginCount() {
+      this.visible = true;
     }
   },
   computed: {
@@ -93,75 +93,77 @@ export default {
       loginCount: state => state.loginCount
     })
   },
-  created () {
-    window.loginDialog = this
+  created() {
+    window.loginDialog = this;
   },
   methods: {
-    validateId (rule, value, callback) {
+    validateId(rule, value, callback) {
       if (!/^1[34578]\d{9}$/.test(value)) {
-        callback(new Error('请输入11位手机号码'))
+        callback(new Error("请输入11位手机号码"));
       } else {
-        callback()
+        callback();
       }
     },
-    validatePass2 (rule, value, callback) {
+    validatePass2(rule, value, callback) {
       if (value !== this.account.pw) {
-        callback(new Error('两次密码不一致'))
+        callback(new Error("两次密码不一致"));
       } else {
-        callback()
+        callback();
       }
     },
-    signUpChange () {
-      this.$refs.ruleForm.clearValidate()
-      this.inRequest = false
+    signUpChange() {
+      this.$refs.ruleForm.clearValidate();
+      this.inRequest = false;
       if (this.signUpValue) {
-        const account = this.account
-        account.id = null
-        account.name = ''
-        account.pw = ''
-        account.pw2 = ''
+        const account = this.account;
+        account.id = null;
+        account.name = "";
+        account.pw = "";
+        account.pw2 = "";
       }
     },
-    onLoginCreate () {
+    onLoginCreate() {
       this.$refs.ruleForm.validate(valid => {
         if (!valid) {
-          this.$message.warning('请输入表单内容')
-          return
+          this.$message.warning("请输入表单内容");
+          return;
         }
-        
-        this.inRequest = true
-        const account = this.account
+
+        this.inRequest = true;
+        const account = this.account;
         let method, params, successMsg;
 
         if (this.signUpValue) {
-          method = createUser
-          params = account
-          successMsg = '注册成功'
+          method = createUser;
+          params = account;
+          successMsg = "注册成功";
         } else {
-          method = loginByAccount
-          params = { id: account.id, pw: account.pw }
+          method = loginByAccount;
+          params = { id: account.id, pw: account.pw };
         }
 
-        method(params).then(resp => {
-          const userInfo = resp.data.data
-          resetUserIconUrl(userInfo)
-          this.setUserInfo(userInfo)
+        method(params)
+          .then(resp => {
+            const userInfo = resp.data.data;
+            resetUserIconUrl(userInfo);
+            this.setUserInfo(userInfo);
 
-          if (successMsg) {
-            this.$message.success(successMsg)
-          }
-          this.visible = false
-          this.signUpValue = false
-        }).finally(() => {
-          this.inRequest = false
-        })
-      })
+            if (successMsg) {
+              this.$message.success(successMsg);
+            }
+            this.visible = false;
+            this.signUpValue = false;
+          })
+          .finally(() => {
+            this.inRequest = false;
+          });
+      });
     },
     ...mapActions({
-      setUserInfo: 'setUser'
+      setUserInfo: "setUser"
     })
   }
-}
+};
 </script>
 
 <style lang="scss">

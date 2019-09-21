@@ -106,6 +106,10 @@ export default {
     window.peotryList = this
     this.getPeotries()
     this.showBack(true)
+    this.pushDropMenu({command: 'peotry', name: '创建诗词'})
+  },
+  beforeDestroy() {
+    this.pushDropMenu({command: 'peotry', remove: true})
   },
   computed: {
     ...mapState({
@@ -332,7 +336,8 @@ export default {
     ...mapActions({
       setUserInfo: 'setUser',
       showLogin: 'showLogin',
-      showBack: 'showBack'
+      showBack: 'showBack',
+      pushDropMenu: 'pushDropMenu'
     })
   }
 }
