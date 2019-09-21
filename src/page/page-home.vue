@@ -5,13 +5,23 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
   name: 'page-home',
+
+  created () {
+    this.showBack(false)
+  },
 
   methods: {
     onPagePeotryList () {
       this.$router.push({ name: 'peotry-list' })
-    }
+    },
+
+    ...mapActions({
+      showBack: 'showBack'
+    })
   }
 }
 </script>

@@ -105,6 +105,7 @@ export default {
   created () {
     window.peotryList = this
     this.getPeotries()
+    this.showBack(true)
   },
   computed: {
     ...mapState({
@@ -330,7 +331,8 @@ export default {
 
     ...mapActions({
       setUserInfo: 'setUser',
-      showLogin: 'showLogin'
+      showLogin: 'showLogin',
+      showBack: 'showBack'
     })
   }
 }

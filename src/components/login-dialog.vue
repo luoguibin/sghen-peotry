@@ -124,32 +124,37 @@ export default {
     },
     onLoginCreate () {
       this.$refs.ruleForm.validate(valid => {
-        if (valid) {
-          this.inRequest = true
-          const account = this.account
-          if (this.signUpValue) {
-            createUser(account).then(resp => {
-              this.inRequest = false
-
-              const userInfo = resp.data.data
-              resetUserIconUrl(userInfo)
-              this.setUserInfo(userInfo)
-              this.$message.success('注册成功')
-              this.signUpValue = false
-              this.visible = false
-            })
-          } else {
-            loginByAccount({ id: account.id, pw: account.pw }).then(resp => {
-              this.inRequest = false
-              const userInfo = resp.data.data
-              resetUserIconUrl(userInfo)
-              this.setUserInfo(userInfo)
-              this.visible = false
-            })
-          }
-        } else {
+        if (!valid) {
           this.$message.warning('请输入表单内容')
+          return
         }
+        
+        this.inRequest = true
+        const account = this.account
+        let method, params, successMsg;
+
+        if (this.signUpValue) {
+          method = createUser
+          params = account
+          successMsg = '注册成功'
+        } else {
+          method = loginByAccount
+          params = { id: account.id, pw: account.pw }
+        }
+
+        method(params).then(resp => {
+          const userInfo = resp.data.data
+          resetUserIconUrl(userInfo)
+          this.setUserInfo(userInfo)
+
+          if (successMsg) {
+            this.$message.success(successMsg)
+          }
+          this.visible = false
+          this.signUpValue = false
+        }).finally(() => {
+          this.inRequest = false
+        })
       })
     },
     ...mapActions({

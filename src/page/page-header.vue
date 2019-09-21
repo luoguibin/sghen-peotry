@@ -1,5 +1,7 @@
 <template>
   <div class="page-header">
+    <el-button v-show="showBack" type="text" @click="$router.go(-1)">返回</el-button>
+
     <el-button v-if="!userInfo.token" class="float-right" type="text" @click="onShowLogin">登录~</el-button>
     <el-dropdown v-else class="float-right" @command="handleCommand" trigger="click">
       <span style="cursor: pointer;">
@@ -106,7 +108,8 @@ export default {
 
   computed: {
     ...mapState({
-      userInfo: state => state.user
+      userInfo: state => state.user,
+      showBack: state => state.showBack
     })
   },
 
@@ -215,7 +218,8 @@ export default {
 
 <style lang="scss" scoped>
 .page-header {
-  height: 64px;
+  height: 60px;
+  line-height: 60px;
 
   .float-right {
     float: right;
