@@ -11,8 +11,8 @@ const router = new Router({
       redirect: '/home'
     },
     {
-      path: "/blank",
-      name: "blank"
+      path: '/blank',
+      name: 'blank'
     },
     {
       path: '/home',

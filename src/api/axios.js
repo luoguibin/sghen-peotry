@@ -4,7 +4,7 @@ import store from '@/store'
 import { baseUrl } from './config'
 import { Message } from 'element-ui'
 
-require("promise.prototype.finally").shim();
+require('promise.prototype.finally').shim()
 
 axios.defaults.timeout = 10000
 axios.defaults.baseURL = baseUrl

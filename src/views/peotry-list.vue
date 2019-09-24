@@ -106,10 +106,10 @@ export default {
     window.peotryList = this
     this.getPeotries()
     this.showBack(true)
-    this.pushDropMenu({command: 'peotry', name: '创建诗词'})
+    this.pushDropMenu({ command: 'peotry', name: '创建诗词' })
   },
-  beforeDestroy() {
-    this.pushDropMenu({command: 'peotry', remove: true})
+  beforeDestroy () {
+    this.pushDropMenu({ command: 'peotry', remove: true })
   },
   computed: {
     ...mapState({
@@ -382,14 +382,6 @@ export default {
   .image-error-slot {
     .el-icon-picture-outline {
       font-size: 50px;
-    }
-  }
-}
-
-@media screen and (max-width: 500px) {
-  .peotry-list {
-    .el-dialog {
-      width: 100%;
     }
   }
 }

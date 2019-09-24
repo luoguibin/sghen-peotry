@@ -3,7 +3,6 @@
     :title="signUpValue ? '注册' : '登录'"
     :visible.sync="visible"
     :close-on-click-modal="false"
-    custom-class="login-dialog"
   >
     <el-form ref="ruleForm" :model="account" :rules="formRules" label-width="80px" autocomplete="off">
       <el-form-item label="账 号" prop="id">
@@ -41,147 +40,140 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
-import { loginByAccount, createUser } from "@/api";
-import { resetUserIconUrl } from "@/common/util-icon";
+import { mapState, mapActions } from 'vuex'
+import { loginByAccount, createUser } from '@/api'
+import { resetUserIconUrl } from '@/common/util-icon'
 
 export default {
-  name: "login-dialog",
-  data() {
+  name: 'login-dialog',
+  data () {
     return {
       visible: false,
       signUpValue: false,
       inRequest: false,
       account: {
         id: null,
-        name: "",
-        pw: "",
-        pw2: ""
+        name: '',
+        pw: '',
+        pw2: ''
       },
       formRules: {
         id: [
-          { required: true, message: "请输入手机号码", trigger: "blur" },
-          { validator: this.validateId, trigger: "blur" }
+          { required: true, message: '请输入手机号码', trigger: 'blur' },
+          { validator: this.validateId, trigger: 'blur' }
         ],
         name: [
-          { required: true, min: 1, message: "请输入昵称", trigger: "blur" }
+          { required: true, min: 1, message: '请输入昵称', trigger: 'blur' }
         ],
         pw: [
-          { required: true, message: "请输入密码", trigger: "blur" },
-          { min: 6, max: 20, message: "长度在 6 到 20 个字符", trigger: "blur" }
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
         ],
         pw2: [
-          { required: true, message: "请输入密码", trigger: "blur" },
+          { required: true, message: '请输入密码', trigger: 'blur' },
           {
             min: 6,
             max: 20,
-            message: "长度在 6 到 20 个字符",
-            trigger: "blur"
+            message: '长度在 6 到 20 个字符',
+            trigger: 'blur'
           },
-          { validator: this.validatePass2, trigger: "blur" }
+          { validator: this.validatePass2, trigger: 'blur' }
         ]
       }
-    };
+    }
   },
   watch: {
-    loginCount() {
-      this.visible = true;
+    loginCount () {
+      this.visible = true
     }
   },
   computed: {
     ...mapState({
       loginCount: state => state.loginCount,
-      userInfo: state => state.user,
+      userInfo: state => state.user
     })
   },
-  created() {
-    window.loginDialog = this;
+  created () {
+    window.loginDialog = this
     if (this.userInfo && this.userInfo.token) {
-      this.checkDirect();
+      this.checkDirect()
     }
   },
   methods: {
-    validateId(rule, value, callback) {
+    validateId (rule, value, callback) {
       if (!/^1[34578]\d{9}$/.test(value)) {
-        callback(new Error("请输入11位手机号码"));
+        callback(new Error('请输入11位手机号码'))
       } else {
-        callback();
+        callback()
       }
     },
-    validatePass2(rule, value, callback) {
+    validatePass2 (rule, value, callback) {
       if (value !== this.account.pw) {
-        callback(new Error("两次密码不一致"));
+        callback(new Error('两次密码不一致'))
       } else {
-        callback();
+        callback()
       }
     },
-    signUpChange() {
-      this.$refs.ruleForm.clearValidate();
-      this.inRequest = false;
+    signUpChange () {
+      this.$refs.ruleForm.clearValidate()
+      this.inRequest = false
       if (this.signUpValue) {
-        const account = this.account;
-        account.id = null;
-        account.name = "";
-        account.pw = "";
-        account.pw2 = "";
+        const account = this.account
+        account.id = null
+        account.name = ''
+        account.pw = ''
+        account.pw2 = ''
       }
     },
 
-    checkDirect() {
-      const loginDirect = window.decodeURIComponent(this.$route.query.login_direct || "");
+    checkDirect () {
+      const loginDirect = window.decodeURIComponent(this.$route.query.login_direct || '')
       if (loginDirect) {
-        location.href = loginDirect;
+        location.href = loginDirect
       }
     },
 
-    onLoginCreate() {
+    onLoginCreate () {
       this.$refs.ruleForm.validate(valid => {
         if (!valid) {
-          this.$message.warning("请输入表单内容");
-          return;
+          this.$message.warning('请输入表单内容')
+          return
         }
 
-        this.inRequest = true;
-        const account = this.account;
-        let method, params, successMsg;
+        this.inRequest = true
+        const account = this.account
+        let method, params, successMsg
 
         if (this.signUpValue) {
-          method = createUser;
-          params = account;
-          successMsg = "注册成功";
+          method = createUser
+          params = account
+          successMsg = '注册成功'
         } else {
-          method = loginByAccount;
-          params = { id: account.id, pw: account.pw };
+          method = loginByAccount
+          params = { id: account.id, pw: account.pw }
         }
 
         method(params)
           .then(resp => {
-            const userInfo = resp.data.data;
-            resetUserIconUrl(userInfo);
-            this.setUserInfo(userInfo);
+            const userInfo = resp.data.data
+            resetUserIconUrl(userInfo)
+            this.setUserInfo(userInfo)
 
             if (successMsg) {
-              this.$message.success(successMsg);
+              this.$message.success(successMsg)
             }
-            this.visible = false;
-            this.signUpValue = false;
-            this.checkDirect();
+            this.visible = false
+            this.signUpValue = false
+            this.checkDirect()
           })
           .finally(() => {
-            this.inRequest = false;
-          });
-      });
+            this.inRequest = false
+          })
+      })
     },
     ...mapActions({
-      setUserInfo: "setUser"
+      setUserInfo: 'setUser'
     })
   }
-};
-</script>
-
-<style lang="scss">
-.login-dialog {
-  width: 80%;
-  max-width: 500px;
 }
-</style>
+</script>

@@ -16,43 +16,43 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions } from 'vuex'
 
 export default {
-  name: "app",
+  name: 'app',
 
-  mounted() {
-    window.app = this;
-    this.initResize();
+  mounted () {
+    window.app = this
+    this.initResize()
     if (this.$route.query.login_direct) {
-      this.showLogin();
+      this.showLogin()
     }
   },
 
   methods: {
-    initResize() {
+    initResize () {
       this.resize = () => {
-        const footer = this.$refs.footer.$el,
-          target = (footer || {}).previousElementSibling;
+        const footer = this.$refs.footer.$el
+        const target = (footer || {}).previousElementSibling
         if (!target) {
-          return;
+          return
         }
-        const main = this.$refs.main.$el;
-        const minHeight = main.clientHeight - footer.clientHeight;
-        target.style.minHeight = Math.max(minHeight, 300) + "px";
-      };
+        const main = this.$refs.main.$el
+        const minHeight = main.clientHeight - footer.clientHeight
+        target.style.minHeight = Math.max(minHeight, 300) + 'px'
+      }
 
-      window.addEventListener("resize", this.resize);
-      this.resize();
+      window.addEventListener('resize', this.resize)
+      this.resize()
     },
 
-    ...mapActions(["showLogin"])
+    ...mapActions(['showLogin'])
   },
 
-  beforeDestroy() {
-    window.removeEventListener("resize", this.resize);
+  beforeDestroy () {
+    window.removeEventListener('resize', this.resize)
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

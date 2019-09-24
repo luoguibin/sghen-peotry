@@ -70,29 +70,29 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
-import { updateUser, uploadFiles } from "@/api";
-import { VueCropper } from "vue-cropper";
-import { resetUserIconUrl } from "@/common/util-icon";
+import { mapState, mapActions } from 'vuex'
+import { updateUser, uploadFiles } from '@/api'
+import { VueCropper } from 'vue-cropper'
+import { resetUserIconUrl } from '@/common/util-icon'
 
-import LoginDialog from "@/components/login-dialog";
+import LoginDialog from '@/components/login-dialog'
 
 export default {
-  name: "page-header",
+  name: 'page-header',
   components: {
     LoginDialog,
     VueCropper
   },
-  data() {
+  data () {
     return {
       showUser: false,
       showUserInfo: {},
 
       iconDialogVisible: false,
       option: {
-        img: "",
+        img: '',
         original: true, // 上传图片按照原始比例渲染
-        outputType: "png",
+        outputType: 'png',
         fixedBox: true, // 固定截图框大小 不允许改变
         canMoveBox: false,
         autoCrop: true,
@@ -101,28 +101,28 @@ export default {
         info: false, // 隐藏裁剪框大小信息
         maxImgSize: 300
       }
-    };
+    }
   },
 
-  created() {
-    window.homeHeader = this;
+  created () {
+    window.homeHeader = this
   },
 
   computed: {
-    dropMenus() {
+    dropMenus () {
       return [
         {
-          command: "personal",
-          name: "个人中心",
+          command: 'personal',
+          name: '个人中心',
           local: true
         },
         ...this.extendDropMenus,
         {
-          command: "logout",
-          name: "退出登录",
+          command: 'logout',
+          name: '退出登录',
           local: true
         }
-      ];
+      ]
     },
 
     ...mapState({
@@ -135,104 +135,104 @@ export default {
   watch: {
     userInfo: {
       immediate: true,
-      handler() {}
+      handler () {}
     }
   },
 
   methods: {
-    handleCommand(key) {
+    handleCommand (key) {
       switch (key) {
-        case "peotry":
-          this.showPeotryCreate();
-          break;
-        case "personal":
-          this.showUser = true;
-          this.showUserInfo = JSON.parse(JSON.stringify(this.userInfo));
-          break;
-        case "logout":
-          this.setUserInfo();
-          break;
+        case 'peotry':
+          this.showPeotryCreate()
+          break
+        case 'personal':
+          this.showUser = true
+          this.showUserInfo = JSON.parse(JSON.stringify(this.userInfo))
+          break
+        case 'logout':
+          this.setUserInfo()
+          break
         default:
-          break;
+          break
       }
     },
 
-    onShowLogin() {
-      this.showLogin();
+    onShowLogin () {
+      this.showLogin()
     },
 
-    onClickIconUpdate() {
-      this.$refs.iconInput.click();
+    onClickIconUpdate () {
+      this.$refs.iconInput.click()
     },
     /**
      * 打开图片选择
      */
-    onIconChange(e) {
-      const file = e.target.files && e.target.files[0];
+    onIconChange (e) {
+      const file = e.target.files && e.target.files[0]
       if (!file) {
-        return;
+        return
       }
 
-      const reader = new FileReader(file);
+      const reader = new FileReader(file)
       reader.onload = e => {
-        this.option.img = reader.result;
-        this.iconDialogVisible = true;
-      };
-      reader.readAsDataURL(file);
+        this.option.img = reader.result
+        this.iconDialogVisible = true
+      }
+      reader.readAsDataURL(file)
     },
 
-    onSubmitCropper() {
+    onSubmitCropper () {
       this.$refs.cropper.getCropBlob(data => {
-        const file = new File([data], "example.png", {
-          type: "image/png",
+        const file = new File([data], 'example.png', {
+          type: 'image/png',
           lastModified: Date.now()
-        });
+        })
 
-        const formData = new FormData();
-        formData.append("file", file);
+        const formData = new FormData()
+        formData.append('file', file)
 
-        uploadFiles({ pathType: "normal" }, formData).then(resp => {
-          const iconUrl = resp.data.data[0];
+        uploadFiles({ pathType: 'normal' }, formData).then(resp => {
+          const iconUrl = resp.data.data[0]
 
           updateUser({
             iconUrl,
             id: this.userInfo.id
           }).then(resp => {
-            this.$message.success("更新头像成功");
+            this.$message.success('更新头像成功')
 
-            const info = { ...this.userInfo, iconUrl: iconUrl };
-            resetUserIconUrl(info);
-            this.setUserInfo(info);
-            this.handleCommand("personal");
-            this.iconDialogVisible = false;
-          });
-        });
-      });
+            const info = { ...this.userInfo, iconUrl: iconUrl }
+            resetUserIconUrl(info)
+            this.setUserInfo(info)
+            this.handleCommand('personal')
+            this.iconDialogVisible = false
+          })
+        })
+      })
     },
 
-    onUpdateUserInfo() {
+    onUpdateUserInfo () {
       if (this.showUserInfo.name.length) {
         updateUser({
           name: this.showUserInfo.name,
           uId: this.userInfo.id
         }).then(resp => {
-          this.$message.success("更新个人信息成功");
-          const info = { ...this.userInfo, name: this.showUserInfo.name };
-          this.setUserInfo(info);
-          this.showUser = false;
-        });
+          this.$message.success('更新个人信息成功')
+          const info = { ...this.userInfo, name: this.showUserInfo.name }
+          this.setUserInfo(info)
+          this.showUser = false
+        })
       } else {
-        this.$message.warning("名字不能为空");
+        this.$message.warning('名字不能为空')
       }
     },
 
     ...mapActions({
-      setUserInfo: "setUser",
-      showLogin: "showLogin",
-      showPeotryCreate: "showPeotryCreate",
+      setUserInfo: 'setUser',
+      showLogin: 'showLogin',
+      showPeotryCreate: 'showPeotryCreate'
     })
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

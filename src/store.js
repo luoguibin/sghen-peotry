@@ -5,9 +5,9 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    user: (function() {
-      const temp = sessionStorage.getItem('sghen_user_info') || ""
-      return JSON.parse(window.decodeURIComponent(window.atob(temp)) || "{}")
+    user: (function () {
+      const temp = sessionStorage.getItem('sghen_user_info') || ''
+      return JSON.parse(window.decodeURIComponent(window.atob(temp)) || '{}')
     }()),
     extendDropMenus: [],
     showBack: false,
@@ -17,7 +17,7 @@ export default new Vuex.Store({
   mutations: {
     setUser (state, user) {
       if (user) {
-        const temp = JSON.stringify(user) || ""
+        const temp = JSON.stringify(user) || ''
         sessionStorage.setItem('sghen_user_info', window.btoa(window.encodeURIComponent(temp)))
         state.user = user
       } else {
@@ -35,7 +35,7 @@ export default new Vuex.Store({
       state.peotryCreate++
     },
     pushDropMenu (state, menu) {
-      const menus = state.extendDropMenus;
+      const menus = state.extendDropMenus
       const index = menus.findIndex(o => o.command === menu.command)
       if (index === -1) {
         if (!menu.remove) {
@@ -53,7 +53,7 @@ export default new Vuex.Store({
       context.commit('setUser', user)
     },
     showBack (context, showBack) {
-      context.commit("showBack", showBack)
+      context.commit('showBack', showBack)
     },
     showLogin (context) {
       context.commit('showLogin')

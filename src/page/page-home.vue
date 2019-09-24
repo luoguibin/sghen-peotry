@@ -8,29 +8,29 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions } from 'vuex'
 
 export default {
-  name: "page-home",
+  name: 'page-home',
 
-  created() {
-    this.showBack(false);
+  created () {
+    this.showBack(false)
   },
 
   methods: {
-    onPagePeotryList() {
-      this.$router.push({ name: "peotry-list" });
+    onPagePeotryList () {
+      this.$router.push({ name: 'peotry-list' })
     },
 
-    onPageWiki() {
-      window.open("http://wiki.sghen.cn", '_blank')
+    onPageWiki () {
+      window.open('http://wiki.sghen.cn', '_blank')
     },
 
     ...mapActions({
-      showBack: "showBack"
+      showBack: 'showBack'
     })
   }
-};
+}
 </script>
 
 <style scoped>

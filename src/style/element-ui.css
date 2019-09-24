@@ -1,0 +1,9 @@
+.el-dialog, .el-message-box {
+    width: 95%;
+    max-width: 500px;
+}
+
+.el-dialog.is-fullscreen {
+    width: 100%;
+    max-width: initial;
+}

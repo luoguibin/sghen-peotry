@@ -10,6 +10,8 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 
 import './common/element-ui'
+import './style/element-ui.css'
+
 Vue.component(PageHeader.name, PageHeader)
 Vue.component(PageFooter.name, PageFooter)
 Vue.prototype.$NProgress = NProgress

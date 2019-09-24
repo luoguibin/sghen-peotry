@@ -97,8 +97,8 @@ export const createPoetrySet = data =>
 
 export const deletePeotrySet = data =>
   request({
-    url: "/v1/peotry-set/delete",
-    method: "post",
+    url: '/v1/peotry-set/delete',
+    method: 'post',
     data
   })
 

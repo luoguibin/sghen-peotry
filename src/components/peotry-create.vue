@@ -4,7 +4,6 @@
     :visible.sync="visible"
     @opened="onDialogOpened"
     @closed="onDialogClosed"
-    custom-class="peotry-create"
   >
     <el-form :model="newPeotry" :rules="formRules" ref="ruleForm" label-width="60px">
       <el-form-item label="选集" prop="setId">
@@ -49,14 +48,14 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState } from 'vuex'
 import {
   queryPeotrySets,
   createPeotry,
   updatePeotry,
   createPoetrySet,
   deletePeotrySet
-} from "@/api";
+} from '@/api'
 
 export default {
   props: {
@@ -69,52 +68,52 @@ export default {
       type: Object
     }
   },
-  data() {
+  data () {
     return {
       visible: false,
       createValue: true,
       inRequest: false,
       newPeotry: {
         setId: null,
-        title: "",
-        content: "",
-        end: ""
+        title: '',
+        content: '',
+        end: ''
       },
-      setName: "",
+      setName: '',
       peotrySets: [],
 
       formRules: {
-        setId: [{ required: true, message: "请选择选集", trigger: "click" }],
+        setId: [{ required: true, message: '请选择选集', trigger: 'click' }],
         title: [
-          { required: true, message: "请输入标题", trigger: "blur" },
-          { min: 1, max: 10, message: "长度在 1 到 10 个字符", trigger: "blur" }
+          { required: true, message: '请输入标题', trigger: 'blur' },
+          { min: 1, max: 10, message: '长度在 1 到 10 个字符', trigger: 'blur' }
         ],
         content: [
-          { required: true, message: "请选输入诗词内容", trigger: "change" },
+          { required: true, message: '请选输入诗词内容', trigger: 'change' },
           {
             min: 5,
             max: 1000,
-            message: "长度在 5 到 1000 个字符",
-            trigger: "blur"
+            message: '长度在 5 到 1000 个字符',
+            trigger: 'blur'
           }
         ]
       }
-    };
+    }
   },
   watch: {
-    showCreate() {
-      this.visible = this.showCreate;
+    showCreate () {
+      this.visible = this.showCreate
       if (this.visible) {
-        this.getPeotrySets();
+        this.getPeotrySets()
       }
     },
-    peotry() {
+    peotry () {
       if (this.peotry) {
-        this.visible = true;
-        this.createValue = false;
-        this.getPeotrySets();
+        this.visible = true
+        this.createValue = false
+        this.getPeotrySets()
 
-        const peotry = this.peotry;
+        const peotry = this.peotry
         this.newPeotry = {
           id: peotry.id,
           userId: peotry.user && peotry.user.id,
@@ -122,15 +121,15 @@ export default {
           title: peotry.title,
           content: peotry.content,
           end: peotry.end
-        };
+        }
       } else {
-        this.createValue = true;
+        this.createValue = true
         this.newPeotry = {
           setId: null,
-          title: "",
-          content: "",
-          end: ""
-        };
+          title: '',
+          content: '',
+          end: ''
+        }
       }
     }
   },
@@ -139,54 +138,54 @@ export default {
       userInfo: state => state.user
     })
   },
-  mounted() {
-    window.peotryCreate = this;
+  mounted () {
+    window.peotryCreate = this
   },
   methods: {
-    getPeotrySets() {
+    getPeotrySets () {
       queryPeotrySets(this.userInfo.id).then(resp => {
-        const data = resp.data;
-        this.peotrySets = data.data;
-      });
+        const data = resp.data
+        this.peotrySets = data.data
+      })
     },
 
-    onCreateUpdate() {
+    onCreateUpdate () {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
           if (this.createValue) {
-            this.onCreate();
+            this.onCreate()
           } else {
-            this.onUpdate();
+            this.onUpdate()
           }
         } else {
-          this.$message.warning("请输入表单内容");
+          this.$message.warning('请输入表单内容')
         }
-      });
+      })
     },
 
-    onCreate() {
-      this.inRequest = true;
-      const newPeotry = this.newPeotry;
+    onCreate () {
+      this.inRequest = true
+      const newPeotry = this.newPeotry
       const data = {
         userId: this.userInfo.id,
         ...newPeotry
-      };
+      }
       createPeotry(data)
         .then(resp => {
-          this.$message.success("创建成功");
-          this.currentId = resp.data.data;
-          this.$refs.ruleForm.resetFields();
-          this.visible = false;
+          this.$message.success('创建成功')
+          this.currentId = resp.data.data
+          this.$refs.ruleForm.resetFields()
+          this.visible = false
         })
         .finally(() => {
-          this.inRequest = false;
-        });
+          this.inRequest = false
+        })
     },
 
-    onUpdate() {
-      const peotry = this.newPeotry;
-      if (!peotry || !peotry.id) return;
-      this.inRequest = true;
+    onUpdate () {
+      const peotry = this.newPeotry
+      if (!peotry || !peotry.id) return
+      this.inRequest = true
 
       updatePeotry({
         id: peotry.id,
@@ -196,68 +195,63 @@ export default {
         content: peotry.content,
         end: peotry.end
       }).then(resp => {
-        this.$message.success("保存成功");
-        this.currentId = peotry.id;
-        this.visible = false;
-      });
+        this.$message.success('保存成功')
+        this.currentId = peotry.id
+        this.visible = false
+      })
     },
 
-    addPeotrySet() {
-      this.$prompt("请输入选集名字", "创建选集", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消"
+    addPeotrySet () {
+      this.$prompt('请输入选集名字', '创建选集', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
       })
         .then(({ value }) => {
-          const length = value.trim().length;
+          const length = value.trim().length
           if (length <= 0) {
-            this.$message.warning("选集名称不能为空");
+            this.$message.warning('选集名称不能为空')
           } else if (length > 20) {
-            this.$message.warning("选集名称不能超过20个字符");
+            this.$message.warning('选集名称不能超过20个字符')
           } else {
             createPoetrySet({ name: value }).then(resp => {
-              this.$message.success("创建选集成功");
-              this.getPeotrySets();
-            });
+              this.$message.success('创建选集成功')
+              this.getPeotrySets()
+            })
           }
         })
-        .catch(() => {});
+        .catch(() => {})
     },
 
-    onDeletePeotrySet(set) {
-      this.$confirm(`是否删除“${set.name}”?`, "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+    onDeletePeotrySet (set) {
+      this.$confirm(`是否删除“${set.name}”?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       }).then(() => {
         deletePeotrySet({ id: set.id }).then(resp => {
-          this.$message.success("删除选集成功");
-          this.getPeotrySets();
-        });
-      });
+          this.$message.success('删除选集成功')
+          this.getPeotrySets()
+        })
+      })
     },
 
-    onDialogOpened() {
-      this.inRequest = false;
+    onDialogOpened () {
+      this.inRequest = false
     },
-    onDialogClosed() {
-      this.$emit("on-close", {
+    onDialogClosed () {
+      this.$emit('on-close', {
         createValue: this.createValue,
         currentId: this.currentId
-      });
-      this.currentId = null;
-      this.createValue = true;
-      this.inRequest = false;
+      })
+      this.currentId = null
+      this.createValue = true
+      this.inRequest = false
     }
   }
-};
+}
 </script>
 
 <style lang="scss">
-.peotry-create {
-  width: 80%;
-  max-width: 500px;
-}
-
 .peotry-set-add {
   margin-left: 10px;
   cursor: pointer;
