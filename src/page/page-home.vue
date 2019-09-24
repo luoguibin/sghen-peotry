@@ -1,6 +1,6 @@
 <template>
   <div class="page-home">
-    <div>
+    <div class="animate_box">
       <el-button type="text" @click="onPagePeotryList">Sghen诗词</el-button>
       <el-button type="text" @click="onPageWiki">wiki大法好</el-button>
     </div>
@@ -35,8 +35,21 @@ export default {
 
 <style scoped>
 .page-home {
-  text-align: center;
-  padding-top: 30px;
+  position: relative;
+  min-height: inherit;
   box-sizing: border-box;
+  background-image: repeating-linear-gradient(rgba(44, 42, 165, 0.26), rgba(42, 165, 52, 0.26));
+}
+
+.animate_box {
+  position: absolute;
+  width: 95%;
+  top: 20px;
+  left: 0;
+  right: 0;
+  line-height: 100px;
+  margin: 0 auto;
+  text-align: center;
+  height: 120px;
 }
 </style>
