@@ -36,7 +36,7 @@ export default {
 <style scoped>
 .page-home {
   text-align: center;
-  min-height: 300px;
   padding-top: 30px;
+  box-sizing: border-box;
 }
 </style>

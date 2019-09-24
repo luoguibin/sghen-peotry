@@ -4,14 +4,49 @@
       <page-header></page-header>
     </el-header>
 
-    <el-main>
+    <el-main ref="main">
       <el-scrollbar>
-        <router-view />
-        <page-footer></page-footer>
+        <div>
+          <router-view />
+        </div>
+        <page-footer ref="footer"></page-footer>
       </el-scrollbar>
     </el-main>
   </el-container>
 </template>
+
+<script>
+export default {
+  name: "app",
+
+  mounted() {
+    window.app = this;
+    this.initResize();
+  },
+
+  methods: {
+    initResize() {
+      this.resize = () => {
+        const footer = this.$refs.footer.$el,
+          target = (footer || {}).previousElementSibling;
+        if (!target) {
+          return;
+        }
+        const main = this.$refs.main.$el;
+        const minHeight = main.clientHeight - footer.clientHeight;
+        target.style.minHeight = Math.max(minHeight, 300) + "px";
+      };
+
+      window.addEventListener("resize", this.resize);
+      this.resize();
+    }
+  },
+
+  beforeDestroy() {
+    window.removeEventListener("resize", this.resize);
+  }
+};
+</script>
 
 <style lang="scss" scoped>
 .el-main {
