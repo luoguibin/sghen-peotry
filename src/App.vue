@@ -16,12 +16,17 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 export default {
   name: "app",
 
   mounted() {
     window.app = this;
     this.initResize();
+    if (this.$route.query.login_direct) {
+      this.showLogin();
+    }
   },
 
   methods: {
@@ -39,7 +44,9 @@ export default {
 
       window.addEventListener("resize", this.resize);
       this.resize();
-    }
+    },
+
+    ...mapActions(["showLogin"])
   },
 
   beforeDestroy() {

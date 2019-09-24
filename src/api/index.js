@@ -88,11 +88,18 @@ export const deleteComment = data =>
     data
   })
 
-export const createPoetrySet = params =>
+export const createPoetrySet = data =>
   request({
     url: '/v1/peotry-set/create',
-    method: 'get',
-    params
+    method: 'post',
+    data
+  })
+
+export const deletePeotrySet = data =>
+  request({
+    url: "/v1/peotry-set/delete",
+    method: "post",
+    data
   })
 
 export const uploadFiles = (params, data) =>

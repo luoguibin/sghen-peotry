@@ -11,6 +11,10 @@ const router = new Router({
       redirect: '/home'
     },
     {
+      path: "/blank",
+      name: "blank"
+    },
+    {
       path: '/home',
       name: 'home',
       component: () => import(/* webpackChunkName: "home" */ './page/page-home')

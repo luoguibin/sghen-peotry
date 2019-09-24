@@ -5,7 +5,7 @@
     :close-on-click-modal="false"
     custom-class="login-dialog"
   >
-    <el-form ref="ruleForm" :model="account" :rules="formRules" label-width="80px">
+    <el-form ref="ruleForm" :model="account" :rules="formRules" label-width="80px" autocomplete="off">
       <el-form-item label="账 号" prop="id">
         <el-input v-model.number="account.id" type="tel"></el-input>
       </el-form-item>
@@ -90,11 +90,15 @@ export default {
   },
   computed: {
     ...mapState({
-      loginCount: state => state.loginCount
+      loginCount: state => state.loginCount,
+      userInfo: state => state.user,
     })
   },
   created() {
     window.loginDialog = this;
+    if (this.userInfo && this.userInfo.token) {
+      this.checkDirect();
+    }
   },
   methods: {
     validateId(rule, value, callback) {
@@ -122,6 +126,14 @@ export default {
         account.pw2 = "";
       }
     },
+
+    checkDirect() {
+      const loginDirect = window.decodeURIComponent(this.$route.query.login_direct || "");
+      if (loginDirect) {
+        location.href = loginDirect;
+      }
+    },
+
     onLoginCreate() {
       this.$refs.ruleForm.validate(valid => {
         if (!valid) {
@@ -153,6 +165,7 @@ export default {
             }
             this.visible = false;
             this.signUpValue = false;
+            this.checkDirect();
           })
           .finally(() => {
             this.inRequest = false;
