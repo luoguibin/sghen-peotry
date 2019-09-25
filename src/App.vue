@@ -42,12 +42,12 @@ export default {
         target.style.minHeight = Math.max(minHeight, 300) + 'px'
 
         let type
-        if (main.clientWidth > 1000) {
-          type = "screen-large"
+        if (main.clientWidth > 800) {
+          type = 'screen-large'
         } else if (main.clientWidth > 500) {
-          type = "screen-middle"
+          type = 'screen-middle'
         } else {
-          type = "screen-small"
+          type = 'screen-small'
         }
         this.setScreenType(type)
       }

@@ -1,54 +1,63 @@
 <template>
   <div class="page-home">
-    <el-carousel :interval="4000" :type="carouselType" height="200px">
+    <el-carousel :interval="4000" :type="carouselType">
       <el-carousel-item v-for="(item, index) in carouselItems" :key="index">
         <h3 class="medium" @click="onClickCarousel(item)">{{ item.label }}</h3>
-        <component v-if="item.comp" :is="item.comp"></component>
+
+        <template v-if="item.comp">
+          <div v-if="item.comp === 'peotry'" class="carousel-peotry">
+            <div v-if="peotry" class="content" v-html="peotry.content"></div>
+          </div>
+        </template>
       </el-carousel-item>
     </el-carousel>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions } from 'vuex'
+import { queryPeotries } from '@/api'
 
 export default {
-  name: "page-home",
+  name: 'page-home',
 
-  components: {
-    "carousel-peotry": () => import("./carousel-peotry")
-  },
-
-  data() {
+  data () {
     return {
       carouselItems: [
         {
-          label: "Sghen诗词",
-          comp: "carousel-peotry",
+          label: 'Sghen诗词',
+          comp: 'peotry',
           local: true,
-          target: { name: "peotry-list" }
+          target: { name: 'peotry-list' }
         },
-        { label: "wiki大法好", local: false, target: "http://wiki.sghen.cn" },
+        { label: 'wiki大法好', local: false, target: 'http://wiki.sghen.cn' },
         {
-          label: "Sghen-World",
+          label: 'Sghen-World',
           local: false,
-          target: "http://www.sghen.cn/game/index.html"
+          target: 'http://www.sghen.cn/game/index.html'
         }
       ],
-      carouselType: "card"
-    };
+      carouselType: 'card',
+
+      peotry: null
+    }
   },
 
-  created() {
-    this.showBack(false);
+  created () {
+    this.showBack(false)
+    this.queryPeotries()
+    window.home = this
   },
 
   watch: {
-    screenType() {
-      if (this.screenType === "screen-large") {
-        this.carouselType = "card";
-      } else {
-        this.carouselType = "";
+    screenType: {
+      immediate: true,
+      handler () {
+        if (this.screenType === 'screen-large') {
+          this.carouselType = 'card'
+        } else {
+          this.carouselType = ''
+        }
       }
     }
   },
@@ -60,22 +69,29 @@ export default {
   },
 
   methods: {
-    onClickCarousel(item) {
+    queryPeotries () {
+      queryPeotries({ setId: 10001 }).then(({ data }) => {
+        const index = Math.floor(Math.random() * data.data.length)
+        this.peotry = data.data[index]
+      })
+    },
+
+    onClickCarousel (item) {
       if (item.local) {
-        this.$router.push(item.target);
+        this.$router.push(item.target)
       } else {
-        window.open(item.target, "_blank");
+        window.open(item.target, '_blank')
       }
     },
 
     ...mapActions({
-      showBack: "showBack"
+      showBack: 'showBack'
     })
   }
-};
+}
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .page-home {
   position: relative;
   min-height: inherit;
@@ -84,6 +100,15 @@ export default {
     rgba(44, 42, 165, 0.26),
     rgba(42, 165, 52, 0.26)
   );
+
+  .carousel-peotry {
+    text-align: center;
+
+    .content {
+      white-space: pre-wrap;
+      display: inline-block;
+    }
+  }
 }
 
 .el-carousel {
