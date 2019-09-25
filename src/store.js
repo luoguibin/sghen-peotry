@@ -9,6 +9,7 @@ export default new Vuex.Store({
       const temp = sessionStorage.getItem('sghen_user_info') || ''
       return JSON.parse(window.decodeURIComponent(window.atob(temp)) || '{}')
     }()),
+    screenType: 'pc', // pc or mobile
     extendDropMenus: [],
     showBack: false,
     loginCount: 0,
@@ -24,6 +25,9 @@ export default new Vuex.Store({
         sessionStorage.removeItem('sghen_user_info')
         state.user = {}
       }
+    },
+    setScreenType (state, type) {
+      state.screenType = type
     },
     showBack (state, showBack) {
       state.showBack = showBack
@@ -51,6 +55,9 @@ export default new Vuex.Store({
   actions: {
     setUser (context, user) {
       context.commit('setUser', user)
+    },
+    setScreenType (context, type) {
+      context.commit('setScreenType', type)
     },
     showBack (context, showBack) {
       context.commit('showBack', showBack)

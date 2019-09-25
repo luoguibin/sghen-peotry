@@ -40,13 +40,15 @@ export default {
         const main = this.$refs.main.$el
         const minHeight = main.clientHeight - footer.clientHeight
         target.style.minHeight = Math.max(minHeight, 300) + 'px'
+
+        this.setScreenType(main.clientWidth > 500 ? 'px' : 'mobile')
       }
 
       window.addEventListener('resize', this.resize)
       this.resize()
     },
 
-    ...mapActions(['showLogin'])
+    ...mapActions(['showLogin', 'setScreenType'])
   },
 
   beforeDestroy () {

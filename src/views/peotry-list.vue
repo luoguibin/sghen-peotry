@@ -44,14 +44,17 @@
 
     <el-pagination
       v-show="peotries.length"
+      background
+      hide-on-single-page
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="curPage"
-      :page-sizes="[10, 20, 30, 40]"
       :page-size="limit"
-      layout="prev, pager, next, total, sizes, jumper"
+      layout="prev, next, total, slot, jumper"
       :total="totalCount"
-    ></el-pagination>
+    >
+    <span class="el-pagination__total">{{totalPage}}页</span>
+    </el-pagination>
   </div>
 </template>
 
