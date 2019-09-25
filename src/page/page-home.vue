@@ -1,36 +1,78 @@
 <template>
   <div class="page-home">
-    <div class="animate_box">
-      <el-button type="text" @click="onPagePeotryList">Sghen诗词</el-button>
-      <el-button type="text" @click="onPageWiki">wiki大法好</el-button>
-    </div>
+    <el-carousel :interval="4000" :type="carouselType" height="200px">
+      <el-carousel-item v-for="(item, index) in carouselItems" :key="index">
+        <h3 class="medium" @click="onClickCarousel(item)">{{ item.label }}</h3>
+        <component v-if="item.comp" :is="item.comp"></component>
+      </el-carousel-item>
+    </el-carousel>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from "vuex";
 
 export default {
-  name: 'page-home',
+  name: "page-home",
 
-  created () {
-    this.showBack(false)
+  components: {
+    "carousel-peotry": () => import("./carousel-peotry")
+  },
+
+  data() {
+    return {
+      carouselItems: [
+        {
+          label: "Sghen诗词",
+          comp: "carousel-peotry",
+          local: true,
+          target: { name: "peotry-list" }
+        },
+        { label: "wiki大法好", local: false, target: "http://wiki.sghen.cn" },
+        {
+          label: "Sghen-World",
+          local: false,
+          target: "http://www.sghen.cn/game/index.html"
+        }
+      ],
+      carouselType: ""
+    };
+  },
+
+  created() {
+    this.showBack(false);
+  },
+
+  watch: {
+    screenType() {
+      if (this.screenType === "screen-large") {
+        this.carouselType = "card";
+      } else {
+        this.carouselType = "";
+      }
+    }
+  },
+
+  computed: {
+    ...mapState({
+      screenType: state => state.screenType
+    })
   },
 
   methods: {
-    onPagePeotryList () {
-      this.$router.push({ name: 'peotry-list' })
-    },
-
-    onPageWiki () {
-      window.open('http://wiki.sghen.cn', '_blank')
+    onClickCarousel(item) {
+      if (item.local) {
+        this.$router.push(item.target);
+      } else {
+        window.open(item.target, "_blank");
+      }
     },
 
     ...mapActions({
-      showBack: 'showBack'
+      showBack: "showBack"
     })
   }
-}
+};
 </script>
 
 <style scoped>
@@ -38,18 +80,32 @@ export default {
   position: relative;
   min-height: inherit;
   box-sizing: border-box;
-  background-image: repeating-linear-gradient(rgba(44, 42, 165, 0.26), rgba(42, 165, 52, 0.26));
+  background-image: repeating-linear-gradient(
+    rgba(44, 42, 165, 0.26),
+    rgba(42, 165, 52, 0.26)
+  );
 }
 
-.animate_box {
-  position: absolute;
-  width: 95%;
-  top: 20px;
-  left: 0;
-  right: 0;
-  line-height: 100px;
-  margin: 0 auto;
+.el-carousel {
+  padding: 10px;
+}
+
+.el-carousel__item {
+  border-radius: 5px;
+}
+
+.el-carousel__item h3 {
+  padding: 30px;
+  cursor: pointer;
+  color: #475669;
   text-align: center;
-  height: 120px;
+}
+
+.el-carousel__item:nth-child(2n) {
+  background-color: #99a9bf;
+}
+
+.el-carousel__item:nth-child(2n + 1) {
+  background-color: #d3dce6;
 }
 </style>

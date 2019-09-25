@@ -41,7 +41,15 @@ export default {
         const minHeight = main.clientHeight - footer.clientHeight
         target.style.minHeight = Math.max(minHeight, 300) + 'px'
 
-        this.setScreenType(main.clientWidth > 500 ? 'px' : 'mobile')
+        let type
+        if (main.clientWidth > 1000) {
+          type = "screen-large"
+        } else if (main.clientWidth > 500) {
+          type = "screen-middle"
+        } else {
+          type = "screen-small"
+        }
+        this.setScreenType(type)
       }
 
       window.addEventListener('resize', this.resize)

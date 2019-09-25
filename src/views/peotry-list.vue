@@ -61,7 +61,6 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 
-import Peotry from '@/components/peotry'
 import PeotryCreate from '@/components/peotry-create'
 import {
   queryUsers,
@@ -76,7 +75,7 @@ import { resetUserIconUrl } from '@/common/util-icon'
 export default {
   name: 'PeotryList',
   components: {
-    Peotry,
+    peotry: () => import('@/components/peotry'),
     PeotryCreate
   },
   data () {
