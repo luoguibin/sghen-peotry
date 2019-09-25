@@ -35,7 +35,7 @@ export default {
           target: "http://www.sghen.cn/game/index.html"
         }
       ],
-      carouselType: ""
+      carouselType: "card"
     };
   },
 

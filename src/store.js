@@ -9,7 +9,7 @@ export default new Vuex.Store({
       const temp = sessionStorage.getItem('sghen_user_info') || ''
       return JSON.parse(window.decodeURIComponent(window.atob(temp)) || '{}')
     }()),
-    screenType: 'pc', // pc or mobile
+    screenType: 'screen-large', // screen-small,screen-middle,screen-large
     extendDropMenus: [],
     showBack: false,
     loginCount: 0,
