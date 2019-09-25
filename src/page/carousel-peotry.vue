@@ -22,8 +22,8 @@ export default {
 
   methods: {
     queryPeotries() {
-      queryPeotries({ id: 1569377153847462 }).then(({ data }) => {
-        this.peotry = data.data;
+      queryPeotries({ setId: 10001 }).then(({ data }) => {
+        this.peotry = data.data[0];
       });
     }
   }
