@@ -5,7 +5,7 @@
     </el-header>
 
     <el-main ref="main">
-      <el-scrollbar>
+      <el-scrollbar ref="scrollbar">
         <div>
           <router-view />
         </div>
@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 
 export default {
   name: 'app',
@@ -27,6 +27,22 @@ export default {
     if (this.$route.query.login_direct) {
       this.showLogin()
     }
+  },
+
+  watch: {
+    scrollTopCount() {
+      const scrollbar = this.$refs.scrollbar
+      if (!scrollbar) {
+        return
+      }
+      scrollbar.$refs.wrap.scrollTop = 0
+    }
+  },
+
+  computed: {
+    ...mapState({
+      scrollTopCount: state => state.scrollTopCount
+    })
   },
 
   methods: {

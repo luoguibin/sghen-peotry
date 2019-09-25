@@ -219,6 +219,7 @@ export default {
           this.totalCount = data.totalCount
           this.updatePeotriesData(data.data)
           this.peotries = data.data
+          this.resetScrollTop()
         })
         .finally(() => {
           this.isLoading = false
@@ -339,7 +340,8 @@ export default {
       setUserInfo: 'setUser',
       showLogin: 'showLogin',
       showBack: 'showBack',
-      pushDropMenu: 'pushDropMenu'
+      pushDropMenu: 'pushDropMenu',
+      resetScrollTop: 'resetScrollTop'
     })
   }
 }

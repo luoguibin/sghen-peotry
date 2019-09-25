@@ -1,4 +1,4 @@
-.el-dialog, .el-message-box {
+.el-dialog, .el-message-box, .el-message {
     width: 95%;
     max-width: 500px;
 }

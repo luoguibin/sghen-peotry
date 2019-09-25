@@ -13,7 +13,8 @@ export default new Vuex.Store({
     extendDropMenus: [],
     showBack: false,
     loginCount: 0,
-    peotryCreate: 0
+    scrollTopCount: 0,
+    peotryCreate: 0,
   },
   mutations: {
     setUser (state, user) {
@@ -50,6 +51,9 @@ export default new Vuex.Store({
           menus.splice(index, 1)
         }
       }
+    },
+    resetScrollTop (state) {
+      state.scrollTopCount++
     }
   },
   actions: {
@@ -70,6 +74,9 @@ export default new Vuex.Store({
     },
     pushDropMenu (context, menu) {
       context.commit('pushDropMenu', menu)
+    },
+    resetScrollTop (context) {
+      context.commit('resetScrollTop')
     }
   }
 })

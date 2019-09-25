@@ -275,7 +275,6 @@ export default {
               this.$emit('on-comment-delete', commentId, this.peotry.id)
             })
             .catch(e => {
-              console.log(e)
             })
         }
       }

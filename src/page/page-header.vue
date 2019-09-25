@@ -106,6 +106,9 @@ export default {
 
   created () {
     window.homeHeader = this
+    if (this.$route.name === 'blank') {
+      this.onShowLogin();
+    }
   },
 
   computed: {
@@ -136,7 +139,13 @@ export default {
     userInfo: {
       immediate: true,
       handler () {}
-    }
+    },
+
+    '$route' () {
+      if (this.$route.name === 'blank') {
+        this.onShowLogin();
+      }
+    },
   },
 
   methods: {

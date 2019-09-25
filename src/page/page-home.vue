@@ -33,8 +33,13 @@ export default {
         { label: 'wiki大法好', local: false, target: 'http://wiki.sghen.cn' },
         {
           label: 'Sghen-World',
-          local: false,
-          target: 'http://www.sghen.cn/game/index.html'
+          local: true,
+          target: {
+            name: "blank",
+            query: {
+              login_direct: window.encodeURIComponent("http://www.sghen.cn/game/index.html")
+            }
+          }
         }
       ],
       carouselType: 'card',

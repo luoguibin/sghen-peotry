@@ -85,6 +85,13 @@ export default {
   watch: {
     loginCount () {
       this.visible = true
+    },
+    visible(v) {
+      if (v) {
+        if (this.userInfo && this.userInfo.token) {
+          this.checkDirect()
+        }
+      }
     }
   },
   computed: {
@@ -95,9 +102,6 @@ export default {
   },
   created () {
     window.loginDialog = this
-    if (this.userInfo && this.userInfo.token) {
-      this.checkDirect()
-    }
   },
   methods: {
     validateId (rule, value, callback) {
@@ -127,9 +131,16 @@ export default {
     },
 
     checkDirect () {
-      const loginDirect = window.decodeURIComponent(this.$route.query.login_direct || '')
-      if (loginDirect) {
-        location.href = loginDirect
+      const query = this.$route.query
+      const loginDirect = window.decodeURIComponent(query.login_direct || '')
+      if (!loginDirect) {
+        return
+      }
+      let fullPath = loginDirect + "?token=" + this.userInfo.token
+      if (query.new) {
+        window.open(fullPath, "_blank")
+      } else {
+        location.href = fullPath
       }
     },
 
@@ -164,7 +175,10 @@ export default {
             }
             this.visible = false
             this.signUpValue = false
-            this.checkDirect()
+            
+            this.$nextTick(() => {
+              this.checkDirect()
+            })
           })
           .finally(() => {
             this.inRequest = false
