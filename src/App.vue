@@ -79,6 +79,13 @@ body {
   height: 100%;
 }
 
+div,
+p,
+a,
+span {
+  font-family: Arial,PingFang SC,Hiragino Sans GB,Microsoft YaHei,sans-serif;
+}
+
 #app {
   height: 100%;
   -webkit-font-smoothing: antialiased;
