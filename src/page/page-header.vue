@@ -221,7 +221,7 @@ export default {
       if (this.showUserInfo.name.length) {
         updateUser({
           name: this.showUserInfo.name,
-          uId: this.userInfo.id
+          id: this.userInfo.id
         }).then(resp => {
           this.$message.success('更新个人信息成功')
           const info = { ...this.userInfo, name: this.showUserInfo.name }
