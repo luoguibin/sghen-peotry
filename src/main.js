@@ -6,15 +6,18 @@ import store from './store'
 import PageHeader from './page/page-header'
 import PageFooter from './page/page-footer'
 
+import { userIconFilter } from './filter/index'
+
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 
 import './common/element-ui'
 import './style/element-ui.css'
 
+Vue.filter('user-icon', userIconFilter)
+Vue.prototype.$NProgress = NProgress
 Vue.component(PageHeader.name, PageHeader)
 Vue.component(PageFooter.name, PageFooter)
-Vue.prototype.$NProgress = NProgress
 
 Vue.config.productionTip = false
 

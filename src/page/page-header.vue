@@ -6,7 +6,7 @@
     <el-dropdown v-else class="float-right" @command="handleCommand" trigger="click">
       <span style="cursor: pointer;">
         <span class="el-dropdown-link" style="vertical-align: middle;">{{userInfo.name}}</span>
-        <img :src="userInfo.iconUrl" style="width: 33px; vertical-align: middle;" />
+        <img :src="userInfo.iconUrl | user-icon" style="width: 33px; vertical-align: middle;" />
       </span>
       <el-dropdown-menu>
         <el-dropdown-item
@@ -30,7 +30,7 @@
         </el-form-item>
 
         <el-form-item label="头像">
-          <img :src="showUserInfo.iconUrl" style="max-width: 50px; vertical-align: top;" />
+          <img :src="showUserInfo.iconUrl | user-icon" style="max-width: 50px; vertical-align: top;" />
           <span>
             <el-button @click="onClickIconUpdate">更换</el-button>
             <input
@@ -73,7 +73,6 @@
 import { mapState, mapActions } from 'vuex'
 import { updateUser, uploadFiles } from '@/api'
 import { VueCropper } from 'vue-cropper'
-import { resetUserIconUrl } from '@/common/util-icon'
 
 import LoginDialog from '@/components/login-dialog'
 
@@ -107,7 +106,7 @@ export default {
   created () {
     window.homeHeader = this
     if (this.$route.name === 'blank') {
-      this.onShowLogin();
+      this.onShowLogin()
     }
   },
 
@@ -143,9 +142,9 @@ export default {
 
     '$route' () {
       if (this.$route.name === 'blank') {
-        this.onShowLogin();
+        this.onShowLogin()
       }
-    },
+    }
   },
 
   methods: {
@@ -210,7 +209,6 @@ export default {
             this.$message.success('更新头像成功')
 
             const info = { ...this.userInfo, iconUrl: iconUrl }
-            resetUserIconUrl(info)
             this.setUserInfo(info)
             this.handleCommand('personal')
             this.iconDialogVisible = false

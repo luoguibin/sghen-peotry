@@ -35,9 +35,9 @@ export default {
           label: 'Sghen-World',
           local: true,
           target: {
-            name: "blank",
+            name: 'blank',
             query: {
-              login_direct: window.encodeURIComponent("http://www.sghen.cn/game/index.html")
+              login_direct: window.encodeURIComponent('http://www.sghen.cn/game/index.html')
             }
           }
         }

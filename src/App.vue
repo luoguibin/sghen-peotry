@@ -30,7 +30,7 @@ export default {
   },
 
   watch: {
-    scrollTopCount() {
+    scrollTopCount () {
       const scrollbar = this.$refs.scrollbar
       if (!scrollbar) {
         return

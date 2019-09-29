@@ -42,7 +42,6 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import { loginByAccount, createUser } from '@/api'
-import { resetUserIconUrl } from '@/common/util-icon'
 
 export default {
   name: 'login-dialog',
@@ -86,7 +85,7 @@ export default {
     loginCount () {
       this.visible = true
     },
-    visible(v) {
+    visible (v) {
       if (v) {
         if (this.userInfo && this.userInfo.token) {
           this.checkDirect()
@@ -136,9 +135,9 @@ export default {
       if (!loginDirect) {
         return
       }
-      let fullPath = loginDirect + "?token=" + this.userInfo.token
+      let fullPath = loginDirect + '?token=' + this.userInfo.token
       if (query.new) {
-        window.open(fullPath, "_blank")
+        window.open(fullPath, '_blank')
       } else {
         location.href = fullPath
       }
@@ -167,7 +166,6 @@ export default {
         method(params)
           .then(resp => {
             const userInfo = resp.data.data
-            resetUserIconUrl(userInfo)
             this.setUserInfo(userInfo)
 
             if (successMsg) {
@@ -175,7 +173,7 @@ export default {
             }
             this.visible = false
             this.signUpValue = false
-            
+
             this.$nextTick(() => {
               this.checkDirect()
             })

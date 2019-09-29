@@ -14,7 +14,7 @@ export default new Vuex.Store({
     showBack: false,
     loginCount: 0,
     scrollTopCount: 0,
-    peotryCreate: 0,
+    peotryCreate: 0
   },
   mutations: {
     setUser (state, user) {

@@ -13,7 +13,7 @@
         </el-form-item>
 
         <el-form-item label="头像">
-          <img :src="showUserInfo.iconUrl" style="max-width: 50px; vertical-align: top;" />
+          <img :src="showUserInfo.iconUrl | user-icon" style="max-width: 50px; vertical-align: top;" />
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -69,8 +69,6 @@ import {
   createComment,
   deleteComment
 } from '@/api'
-
-import { resetUserIconUrl } from '@/common/util-icon'
 
 export default {
   name: 'PeotryList',
@@ -193,7 +191,6 @@ export default {
 
           users.forEach(user => {
             if (!userMap[user.id]) {
-              resetUserIconUrl(user)
               userMap[user.id] = user
             }
           })

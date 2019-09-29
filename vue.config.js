@@ -1,4 +1,5 @@
 const path = require('path')
+const argv = require('yargs').argv
 
 module.exports = {
   lintOnSave: true,
@@ -25,6 +26,11 @@ module.exports = {
     const plugins = config.plugins
     plugins.delete(`prefetch`)
     plugins.delete(`preload`)
+
+    if (argv.analyzer) {
+      config.plugin('webpack-bundle-analyzer')
+        .use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
+    }
   },
   configureWebpack: config => {
     if (process.env.NODE_ENV === 'production') {

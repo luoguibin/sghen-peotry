@@ -3,7 +3,7 @@
     <img
       class="peotry-user"
       img-type="user-self"
-      :src="userMap[peotry.user.id] ? userMap[peotry.user.id].iconUrl : './favicon.ico'"
+      :src="userMap[peotry.user.id] | user-icon"
     />
     <div class="title">
       <span v-if="peotry.set" class="tooltip" :tooltip="'选集：' + peotry.set.name">{{peotry.set.name}}</span>
@@ -77,7 +77,7 @@
           v-for="comment in praiseComments"
           :key="comment.id"
           :img-type="'user-' + comment.fromId"
-          :src="userMap[comment.fromId] ? userMap[comment.fromId].iconUrl : './favicon.ico'"
+          :src="userMap[comment.fromId] | user-icon"
         />
       </div>
 
@@ -152,8 +152,8 @@ export default {
   inject: ['userMap'],
   mounted () {
     const contentEl = this.$refs.contentEl
-    if (contentEl.clientHeight > 110) {
-      this.contentHeight = '100px'
+    if (contentEl.clientHeight >= 120) {
+      this.contentHeight = '105px'
     }
   },
   filters: {
@@ -423,6 +423,8 @@ $padding-set: 12px;
 
     .content {
       font-size: $size-content;
+      line-height: 26px;
+      box-sizing: border-box;
       white-space: pre-wrap;
       padding-bottom: $padding-set;
     }
@@ -472,7 +474,7 @@ $padding-set: 12px;
 
   .comments {
     position: relative;
-    margin: 15px 0 0 -15px;
+    margin: 0;
     padding: 5px 10px;
     margin-right: 10px;
     background-color: rgba(222, 222, 222, 0.2);
