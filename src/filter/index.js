@@ -8,6 +8,6 @@ export const userIconFilter = function (v) {
   if (iconUrl) {
     return baseUrl + iconUrl.substr(1)
   } else {
-    return '/peotry/favicon.ico'
+    return process.env.NODE_ENV === 'production' ? '/peotry/favicon.ico' : './favicon.ico'
   }
 }

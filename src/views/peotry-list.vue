@@ -1,5 +1,5 @@
 <template>
-  <div class="peotry-list">
+  <div class="peotry-list" v-loading="isLoading">
     <peotry-create :showCreate="showCreate" :peotry="updatePeotry" @on-close="onPeotryClose"></peotry-create>
 
     <el-dialog title="个人信息" :visible.sync="showUser">
@@ -18,7 +18,7 @@
       </el-form>
     </el-dialog>
 
-    <div class="list" ref="listEl" @click="onClickImage($event)" v-loading="isLoading">
+    <div class="list" ref="listEl" @click="onClickImage($event)">
       <peotry
         v-for="(peotry, index) in peotries"
         :key="peotry.id"
@@ -346,6 +346,7 @@ export default {
 
 <style lang="scss" scoped>
 .peotry-list {
+  min-height: inherit;
   max-width: 500px;
   margin: 0 auto;
 
