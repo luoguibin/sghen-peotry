@@ -44,6 +44,13 @@ export const queryPeotries = params =>
     params
   })
 
+export const queryPopularPeotries = params =>
+  request({
+    url: '/v1/peotry/query-popular',
+    method: 'get',
+    params
+  })
+
 export const queryPeotrySets = userId =>
   request({
     url: '/v1/peotry-set/query',

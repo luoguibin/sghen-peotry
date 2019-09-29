@@ -6,17 +6,34 @@
 
         <template v-if="item.comp">
           <div v-if="item.comp === 'peotry'" class="carousel-peotry">
-            <div v-if="peotry" class="content" v-html="peotry.content"></div>
+            <div v-if="peotry" class="peotry-content" v-html="peotry.content"></div>
           </div>
         </template>
       </el-carousel-item>
     </el-carousel>
+
+    <div class="peotry-popular">
+      <h3>热门诗词</h3>
+      <div v-for="peotry in peotries" :key="peotry.id">
+        <div class="title">
+          <span
+            v-if="peotry.set"
+            class="tooltip"
+            :tooltip="'选集：' + peotry.set.name"
+          >{{peotry.set.name}}</span>
+          <span v-if="peotry.set && peotry.title">*</span>
+          <span>{{peotry.title}}</span>
+        </div>
+        <div class="peotry-content" v-html="peotry.content"></div>
+        <el-divider></el-divider>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import { queryPeotries } from '@/api'
+import { queryPeotries, queryPopularPeotries } from '@/api'
 
 export default {
   name: 'page-home',
@@ -37,20 +54,24 @@ export default {
           target: {
             name: 'blank',
             query: {
-              login_direct: window.encodeURIComponent('http://www.sghen.cn/game/index.html')
+              login_direct: window.encodeURIComponent(
+                'http://www.sghen.cn/game/index.html'
+              )
             }
           }
         }
       ],
       carouselType: 'card',
 
-      peotry: null
+      peotry: null,
+      peotries: []
     }
   },
 
   created () {
     this.showBack(false)
     this.queryPeotries()
+    this.queryPopularPeotries()
     window.home = this
   },
 
@@ -81,6 +102,12 @@ export default {
       })
     },
 
+    queryPopularPeotries () {
+      queryPopularPeotries().then(({ data }) => {
+        this.peotries = data.data
+      })
+    },
+
     onClickCarousel (item) {
       if (item.local) {
         this.$router.push(item.target)
@@ -108,11 +135,42 @@ export default {
 
   .carousel-peotry {
     text-align: center;
+  }
 
-    .content {
-      white-space: pre-wrap;
-      display: inline-block;
+  .peotry-popular {
+    max-width: 500px;
+    overflow: hidden;
+    text-align: center;
+    margin: 0 auto;
+
+    h3 {
+      padding: 10px;
+      text-align: left;
     }
+
+    .title {
+      padding-bottom: 8px;
+      font-weight: bold;
+
+      span {
+        &:nth-child(1) {
+          font-size: 16px;
+        }
+        &:nth-child(2) {
+          font-size: 14px;
+          padding: 0 5px;
+        }
+        &:nth-child(3) {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+
+  .peotry-content {
+    text-align: left;
+    white-space: pre-wrap;
+    display: inline-block;
   }
 }
 
