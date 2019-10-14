@@ -4,13 +4,30 @@
     :visible.sync="visible"
     :close-on-click-modal="false"
   >
-    <el-form ref="ruleForm" :model="account" :rules="formRules" label-width="80px" autocomplete="off">
+    <el-form
+      ref="ruleForm"
+      :model="account"
+      :rules="formRules"
+      label-width="80px"
+      autocomplete="off"
+    >
       <el-form-item label="账 号" prop="id">
         <el-input v-model.number="account.id" type="tel"></el-input>
       </el-form-item>
 
       <el-form-item label="昵 称" prop="name" v-if="signUpValue">
         <el-input v-model.trim="account.name"></el-input>
+      </el-form-item>
+
+      <el-form-item label="验证码" prop="code" v-if="signUpValue">
+        <el-input v-model="account.code">
+          <el-button
+            slot="append"
+            style="min-width: 120px;"
+            :disabled="!!codeTime"
+            @click="onGetCode"
+          >{{codeTime ? codeTime + 's' : '获取验证码'}}</el-button>
+        </el-input>
       </el-form-item>
 
       <el-form-item label="密 码" prop="pw">
@@ -40,55 +57,62 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
-import { loginByAccount, createUser } from '@/api'
+import { SHA256 } from "crypto-js";
+import { mapState, mapActions } from "vuex";
+import { loginByAccount, createUser, sendSmsCode } from "@/api";
 
 export default {
-  name: 'login-dialog',
-  data () {
+  name: "login-dialog",
+  data() {
     return {
       visible: false,
       signUpValue: false,
       inRequest: false,
       account: {
         id: null,
-        name: '',
-        pw: '',
-        pw2: ''
+        name: "",
+        code: "",
+        pw: "",
+        pw2: ""
       },
+      codeTime: 0,
+      
       formRules: {
         id: [
-          { required: true, message: '请输入手机号码', trigger: 'blur' },
-          { validator: this.validateId, trigger: 'blur' }
+          { required: true, message: "请输入手机号码", trigger: "blur" },
+          { validator: this.validateId, trigger: "blur" }
         ],
         name: [
-          { required: true, min: 1, message: '请输入昵称', trigger: 'blur' }
+          { required: true, min: 1, message: "请输入昵称", trigger: "blur" }
+        ],
+        code: [
+          { required: true, min: 4, max: 4, message: "请输入4位验证码", trigger: "blur" }
         ],
         pw: [
-          { required: true, message: '请输入密码', trigger: 'blur' },
-          { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
+          { required: true, message: "请输入密码", trigger: "blur" },
+          { min: 6, max: 20, message: "长度在 6 到 20 个字符", trigger: "blur" }
         ],
         pw2: [
-          { required: true, message: '请输入密码', trigger: 'blur' },
+          { required: true, message: "请输入密码", trigger: "blur" },
           {
             min: 6,
             max: 20,
-            message: '长度在 6 到 20 个字符',
-            trigger: 'blur'
+            message: "长度在 6 到 20 个字符",
+            trigger: "blur"
           },
-          { validator: this.validatePass2, trigger: 'blur' }
+          { validator: this.validatePass2, trigger: "blur" }
         ]
       }
-    }
+    };
   },
   watch: {
-    loginCount () {
-      this.visible = true
+    loginCount() {
+      this.visible = true;
     },
-    visible (v) {
+    visible(v) {
       if (v) {
         if (this.userInfo && this.userInfo.token) {
-          this.checkDirect()
+          this.checkDirect();
         }
       }
     }
@@ -99,101 +123,153 @@ export default {
       userInfo: state => state.user
     })
   },
-  created () {
-    window.loginDialog = this
+  created() {
+    window.loginDialog = this;
+    const codeTimeStr = sessionStorage.getItem("codeTime");
+    if (codeTimeStr) {
+      const codeTime = +codeTimeStr || 0;
+      if (codeTime > 0) {
+        this.startCodeCount(codeTime);
+      }
+    }
   },
   methods: {
-    validateId (rule, value, callback) {
+    validateId(rule, value, callback) {
       if (!/^1[34578]\d{9}$/.test(value)) {
-        callback(new Error('请输入11位手机号码'))
+        callback(new Error("请输入11位手机号码"));
       } else {
-        callback()
+        callback();
       }
     },
-    validatePass2 (rule, value, callback) {
+    validatePass2(rule, value, callback) {
       if (value !== this.account.pw) {
-        callback(new Error('两次密码不一致'))
+        callback(new Error("两次密码不一致"));
       } else {
-        callback()
+        callback();
       }
     },
-    signUpChange () {
-      this.$refs.ruleForm.clearValidate()
-      this.inRequest = false
+    signUpChange() {
+      this.$refs.ruleForm.clearValidate();
+      this.inRequest = false;
       if (this.signUpValue) {
-        const account = this.account
-        account.id = null
-        account.name = ''
-        account.pw = ''
-        account.pw2 = ''
+        const account = this.account;
+        account.id = null;
+        account.name = "";
+        account.code = "";
+        account.pw = "";
+        account.pw2 = "";
       }
     },
 
-    checkDirect () {
-      const query = this.$route.query
-      const loginDirect = window.decodeURIComponent(query.login_direct || '')
+    onGetCode() {
+      if (this.codeTime) {
+        return;
+      }
+      this.$refs.ruleForm.validateField("id", error => {
+        if (error) {
+          return;
+        }
+        this.codeTime = 60; // 预先阻止多次点击
+        sendSmsCode({phone: this.account.id}).then(res => {
+          this.startCodeCount(60);
+        }).catch(err => {
+          this.codeTime = 0;
+        })
+      });
+    },
+
+    startCodeCount(time) {
+      this.stopCodeCount();
+      this.codeTime = time;
+
+      this.timeHandle = setInterval(() => {
+        this.codeTime--;
+        if (this.codeTime <= 0) {
+          this.stopCodeCount();
+          sessionStorage.removeItem("codeTime");
+        } else {
+          sessionStorage.setItem("codeTime", "" + this.codeTime);
+        }
+      }, 1000);
+    },
+
+    stopCodeCount() {
+      if (!this.timeHandle) {
+        return;
+      }
+      clearInterval(this.timeHandle);
+      this.timeHandle = null;
+      this.codeTime = 0;
+    },
+
+    checkDirect() {
+      const query = this.$route.query;
+      const loginDirect = window.decodeURIComponent(query.login_direct || "");
       if (!loginDirect) {
-        return
+        return;
       }
       let temp = "";
       const object = this.userInfo;
       for (const key in object) {
         if (object.hasOwnProperty(key)) {
-          temp += "&" + key + "=" + object[key]
+          temp += "&" + key + "=" + object[key];
         }
       }
       temp = temp.substr(1);
-      const fullPath = loginDirect + "?" + temp
+      const fullPath = loginDirect + "?" + temp;
       if (query.new) {
-        window.open(fullPath, '_blank')
+        window.open(fullPath, "_blank");
       } else {
-        location.href = fullPath
+        location.href = fullPath;
       }
     },
 
-    onLoginCreate () {
+    onLoginCreate() {
       this.$refs.ruleForm.validate(valid => {
         if (!valid) {
-          this.$message.warning('请输入表单内容')
-          return
+          this.$message.warning("请输入表单内容");
+          return;
         }
 
-        this.inRequest = true
-        const account = this.account
-        let method, params, successMsg
+        this.inRequest = true;
+        const account = this.account;
+        let method, params, successMsg;
 
         if (this.signUpValue) {
-          method = createUser
-          params = account
-          successMsg = '注册成功'
+          method = createUser;
+          params = account;
+          successMsg = "注册成功";
         } else {
-          method = loginByAccount
-          params = { id: account.id, pw: account.pw }
+          method = loginByAccount;
+          params = { id: account.id, pw: account.pw };
         }
 
         method(params)
           .then(resp => {
-            const userInfo = resp.data.data
-            this.setUserInfo(userInfo)
+            const userInfo = resp.data.data;
+            this.setUserInfo(userInfo);
 
             if (successMsg) {
-              this.$message.success(successMsg)
+              this.$message.success(successMsg);
+              this.stopCodeCount();
+              sessionStorage.removeItem("codeTime");
             }
-            this.visible = false
-            this.signUpValue = false
+
+            this.visible = false;
+            this.signUpValue = false;
 
             this.$nextTick(() => {
-              this.checkDirect()
-            })
+              this.checkDirect();
+            });
           })
           .finally(() => {
-            this.inRequest = false
-          })
-      })
+            this.inRequest = false;
+          });
+      });
     },
     ...mapActions({
-      setUserInfo: 'setUser'
+      setUserInfo: "setUser"
     })
   }
-}
+};
 </script>

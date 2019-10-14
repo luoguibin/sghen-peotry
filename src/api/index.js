@@ -8,6 +8,13 @@ export const createUser = data =>
     data
   })
 
+export const sendSmsCode = data =>
+  request({
+    url: '/v1/common/sms/send',
+    method: 'post',
+    data
+  })
+
 export const loginByAccount = ({ id, pw }) => {
   const pw0 = enc.Base64.stringify(MD5(pw))
   // console.log(pw0);
