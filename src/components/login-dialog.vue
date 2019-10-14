@@ -208,15 +208,15 @@ export default {
       if (!loginDirect) {
         return;
       }
-      let temp = "";
-      const object = this.userInfo;
+      let temp = ''
+      const object = this.userInfo
       for (const key in object) {
         if (object.hasOwnProperty(key)) {
-          temp += "&" + key + "=" + object[key];
+          temp += '&' + key + '=' + object[key]
         }
       }
-      temp = temp.substr(1);
-      const fullPath = loginDirect + "?" + temp;
+      temp = temp.substr(1)
+      const fullPath = loginDirect + '?' + temp
       if (query.new) {
         window.open(fullPath, "_blank");
       } else {

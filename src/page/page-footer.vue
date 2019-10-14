@@ -1,6 +1,16 @@
 <template>
   <div class="page-footer">
-    {{authYear}} / Sghen三行 / <a href="http://beian.miit.gov.cn" target="_blank">粤ICP备19116971号-1</a>
+    <span>{{authYear}}</span> /
+    <span>Sghen三行</span> /
+    <a href="http://beian.miit.gov.cn" target="_blank">粤ICP备19116971号-1</a>
+    /
+    <a
+      href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44010602007093"
+      target="_blank"
+    >
+      粤公网安备 44010602007093号
+      <img :src="beianSrc" />
+    </a>
   </div>
 </template>
 
@@ -8,9 +18,10 @@
 export default {
   name: 'page-footer',
 
-  computed: {
-    authYear () {
-      return '©2019-' + new Date().getFullYear()
+  data () {
+    return {
+      authYear: '©2019-' + new Date().getFullYear(),
+      beianSrc: require('@/assets/img/beian.png')
     }
   }
 }
@@ -22,8 +33,16 @@ export default {
   padding: 20px 0 10px 0;
   color: #c8c8c8;
 
+  > * {
+    display: inline-block;
+  }
+
   a {
     color: #c8c8c8;
+
+    img {
+      vertical-align: sub;
+    }
   }
 
   a:visited {
