@@ -11,10 +11,9 @@ axios.defaults.baseURL = baseUrl
 
 axios.interceptors.request.use(
   config => {
-    console.log(config)
     if (config.params && config.params.origin) {
-      delete config.params.origin;
-      return config;
+      delete config.params.origin
+      return config
     }
     if (config.data) {
       if (!config.headers['Content-Type']) {

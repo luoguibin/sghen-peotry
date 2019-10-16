@@ -40,6 +40,11 @@
           <p>图片加载失败</p>
         </div>
       </el-image>
+
+      <div v-if="curImgEl" class="show-image_btns">
+        <el-button type="text" v-show="curImgEl.previousElementSibling" @click="onClickNearImage(false)">上一张</el-button>
+        <el-button type="text" v-show="curImgEl.nextElementSibling" @click="onClickNearImage(true)">下一张</el-button>
+      </div>
     </el-dialog>
 
     <el-pagination
@@ -85,6 +90,7 @@ export default {
       showUserInfo: {},
       showImage: false,
       showImageUrl: '',
+      curImgEl: null,
       updatePeotry: null,
 
       limit: 10,
@@ -314,6 +320,7 @@ export default {
         const imgType = el.getAttribute('img-type')
         if (imgType === 'picture') {
           this.showImageUrl = el.getAttribute('src')
+          this.curImgEl = el
         } else if (imgType.indexOf('user-') === 0) {
           if (imgType === 'user-self') {
             return
@@ -331,6 +338,18 @@ export default {
         this.showImageUrl = ''
       }
       this.showImage = !!this.showImageUrl
+    },
+
+    onClickNearImage (isNext) {
+      if (!this.curImgEl) {
+        return
+      }
+      const el = isNext ? this.curImgEl.nextElementSibling : this.curImgEl.previousElementSibling
+      if (!el) {
+        return
+      }
+      this.curImgEl = el
+      this.showImageUrl = el.getAttribute('src')
     },
 
     ...mapActions({
@@ -373,6 +392,19 @@ export default {
   .show-image {
     .el-dialog__body {
       text-align: center !important;
+    }
+  }
+
+  .show-image_btns {
+    overflow: hidden;
+    clear: both;
+
+    .el-button:first-child {
+      float: left;
+    }
+
+    .el-button:last-child {
+      float: right;
     }
   }
 
