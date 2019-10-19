@@ -1,6 +1,6 @@
 <template>
   <div class="page-home">
-    <el-carousel :interval="4000" :type="carouselType">
+    <el-carousel v-if="carouselItems && carouselItems.length" :interval="4000" :type="carouselType">
       <el-carousel-item v-for="(item, index) in carouselItems" :key="index">
         <h3 class="medium" @click="onClickCarousel(item)">{{ item.label }}</h3>
 
@@ -40,27 +40,7 @@ export default {
 
   data () {
     return {
-      carouselItems: [
-        {
-          label: 'Sghen诗词',
-          comp: 'peotry',
-          local: true,
-          target: { name: 'peotry-list' }
-        },
-        { label: 'wiki大法好', local: false, target: 'http://wiki.sghen.cn' },
-        {
-          label: 'Sghen-World',
-          local: true,
-          target: {
-            name: 'blank',
-            query: {
-              login_direct: window.encodeURIComponent(
-                'http://www.sghen.cn/game/index.html'
-              )
-            }
-          }
-        }
-      ],
+      carouselItems: [],
       carouselType: 'card',
 
       peotry: null,
@@ -70,6 +50,7 @@ export default {
 
   created () {
     this.showBack(false)
+    this.getCarousels()
     this.queryPeotries()
     this.queryPopularPeotries()
     window.home = this
@@ -95,6 +76,12 @@ export default {
   },
 
   methods: {
+    getCarousels () {
+      import('@/assets/config/carousels.json').then(o => {
+        this.carouselItems = o.default
+      })
+    },
+
     queryPeotries () {
       queryPeotries({ setId: 10001 }).then(({ data }) => {
         const index = Math.floor(Math.random() * data.data.length)
