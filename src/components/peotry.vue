@@ -121,7 +121,7 @@
       >提交</el-button>
     </div>
 
-    <el-divider></el-divider>
+    <el-divider v-if="isDetail"></el-divider>
   </div>
 </template>
 

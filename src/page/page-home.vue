@@ -121,10 +121,19 @@ export default {
   }
 
   .peotry-popular {
-    max-width: 500px;
-    overflow: hidden;
-    text-align: center;
+    padding: 10px;
     margin: 0 auto;
+
+    > div {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-content: space-between;
+    }
+
+    /deep/.peotry {
+      margin: 0 20px 50px 20px;
+    }
 
     h3 {
       padding: 10px;
