@@ -18,6 +18,8 @@
       </el-form>
     </el-dialog>
 
+    <div v-show="!isLoading && peotries.length === 0" class="show-empty">暂无数据</div>
+
     <div class="list" ref="listEl" @click="onClickImage($event)">
       <peotry
         v-for="(peotry, index) in peotries"
@@ -93,6 +95,8 @@ export default {
       curImgEl: null,
       updatePeotry: null,
 
+      queryUserId: 0,
+
       limit: 10,
       curPage: 1,
       totalPage: 1,
@@ -110,6 +114,7 @@ export default {
   },
   created () {
     window.peotryList = this
+    this.queryUserId = this.$route.query.userId || 0
     this.getPeotries()
     this.showBack(true)
     this.pushDropMenu({ command: 'peotry', name: '创建诗词' })
@@ -154,6 +159,10 @@ export default {
     },
     peotryCreate () {
       this.showCreate = true
+    },
+    $route () {
+      this.queryUserId = this.$route.query.userId || 0
+      this.getPeotries()
     }
   },
   methods: {
@@ -213,6 +222,7 @@ export default {
       queryPeotries({
         limit: this.limit,
         page: this.curPage,
+        userId: this.queryUserId || 0,
         needComment: true
       })
         .then(resp => {
@@ -255,12 +265,7 @@ export default {
         return
       }
       if (createValue) {
-        if (this.totalCount % this.limit === 0) {
-          this.totalPage++
-        }
-        if (this.curPage !== this.totalPage) {
-          this.curPage = this.totalPage
-        }
+        this.curPage = 1
       }
       this.getPeotries(createValue)
     },
@@ -367,6 +372,7 @@ export default {
 .peotry-list {
   min-height: inherit;
   max-width: 500px;
+  padding-top: 20px;
   margin: 0 auto;
 
   .list {
@@ -383,6 +389,12 @@ export default {
       height: 100%;
       background-color: rgba(0, 0, 0, 0.5);
     }
+  }
+
+  .show-empty {
+    padding: 20px;
+    text-align: center;
+    font-size: 16px;
   }
 }
 </style>
