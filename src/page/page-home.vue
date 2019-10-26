@@ -132,6 +132,7 @@ export default {
     }
 
     /deep/.peotry {
+      max-width: 500px;
       margin: 0 20px 50px 20px;
     }
 
