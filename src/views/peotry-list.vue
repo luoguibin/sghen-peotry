@@ -85,8 +85,6 @@ export default {
   },
   data () {
     return {
-      userMap: {},
-
       showCreate: false,
       showUser: false,
       showUserInfo: {},
@@ -107,11 +105,9 @@ export default {
       iconDialogVisible: false
     }
   },
-  provide () {
-    return {
-      userMap: this.userMap
-    }
-  },
+
+  inject: ['userMap'],
+
   created () {
     window.peotryList = this
     this.queryUserId = this.$route.query.userId || 0

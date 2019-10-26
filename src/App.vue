@@ -21,6 +21,18 @@ import { mapState, mapActions } from 'vuex'
 export default {
   name: 'app',
 
+  data () {
+    return {
+      userMap: {}
+    }
+  },
+
+  provide () {
+    return {
+      userMap: this.userMap
+    }
+  },
+
   mounted () {
     window.app = this
     this.initResize()
@@ -109,7 +121,7 @@ div,
 p,
 a,
 span {
-  font-family: Arial,PingFang SC,Hiragino Sans GB,Microsoft YaHei,sans-serif;
+  font-family: Arial, PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif;
 }
 
 #app {

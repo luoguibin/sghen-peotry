@@ -1,10 +1,6 @@
 <template>
   <div class="peotry">
-    <img
-      class="peotry-user"
-      img-type="user-self"
-      :src="userMap[peotry.user.id] | user-icon"
-    />
+    <img class="peotry-user" img-type="user-self" :src="userMap[peotry.user.id] | user-icon" />
     <div class="title">
       <span v-if="peotry.set" class="tooltip" :tooltip="'选集：' + peotry.set.name">{{peotry.set.name}}</span>
       <span v-if="peotry.set && peotry.title">*</span>
@@ -33,11 +29,11 @@
       />
     </div>
 
-    <div class="peotry-more">
+    <div class="peotry-more" v-if="isDetail">
       <el-dropdown @command="onCommandMore" trigger="click">
         <i class="peotry-more_icon el-icon-more-outline"></i>
 
-        <el-dropdown-menu slot="dropdown" >
+        <el-dropdown-menu slot="dropdown">
           <el-dropdown-item command="comment">
             <span>
               评论
@@ -71,7 +67,7 @@
       </el-dropdown>
     </div>
 
-    <div class="comments" v-if="praiseComments.length || realComments.length">
+    <div class="comments" v-if="isDetail && (praiseComments.length || realComments.length)">
       <div class="praise-users">
         <img
           v-for="comment in praiseComments"
@@ -104,7 +100,7 @@
         <p>{{comment.content}}</p>
       </div>
     </div>
-    <div v-if="inComment" class="comment-input">
+    <div v-if="isDetail && inComment" class="comment-input">
       <h5
         v-if="peotry.comment.toId !== userInfo.id"
         style="text-align: left;"
@@ -138,6 +134,10 @@ export default {
     peotry: {
       type: Object,
       required: true
+    },
+    isDetail: {
+      type: Boolean,
+      default: true
     }
   },
   data () {
@@ -152,7 +152,7 @@ export default {
   inject: ['userMap'],
   mounted () {
     const contentEl = this.$refs.contentEl
-    if (contentEl.clientHeight >= 120) {
+    if (this.isDetail && contentEl.clientHeight >= 120) {
       this.contentHeight = '105px'
     }
   },
@@ -274,8 +274,7 @@ export default {
               this.inComment = false
               this.$emit('on-comment-delete', commentId, this.peotry.id)
             })
-            .catch(e => {
-            })
+            .catch(e => {})
         }
       }
     },

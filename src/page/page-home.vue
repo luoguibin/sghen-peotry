@@ -14,18 +14,8 @@
 
     <div class="peotry-popular">
       <h3>热门诗词</h3>
-      <div v-for="peotry in peotries" :key="peotry.id">
-        <div class="title">
-          <span
-            v-if="peotry.set"
-            class="tooltip"
-            :tooltip="'选集：' + peotry.set.name"
-          >{{peotry.set.name}}</span>
-          <span v-if="peotry.set && peotry.title">*</span>
-          <span>{{peotry.title}}</span>
-        </div>
-        <div class="peotry-content" v-html="peotry.content"></div>
-        <el-divider></el-divider>
+      <div>
+        <peotry v-for="peotry in peotries" :key="peotry.id" :peotry="peotry" :is-detail="false"></peotry>
       </div>
     </div>
   </div>
@@ -37,6 +27,10 @@ import { queryPeotries, queryPopularPeotries } from '@/api'
 
 export default {
   name: 'page-home',
+
+  components: {
+    peotry: () => import('@/components/peotry')
+  },
 
   data () {
     return {
@@ -55,6 +49,8 @@ export default {
     this.queryPopularPeotries()
     window.home = this
   },
+
+  inject: ['userMap'],
 
   watch: {
     screenType: {
