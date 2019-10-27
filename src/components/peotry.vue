@@ -2,9 +2,17 @@
   <div class="peotry">
     <img class="peotry-user" img-type="user-self" :src="userMap[peotry.user.id] | user-icon" />
     <div class="title">
-      <span v-if="peotry.set" class="tooltip" :tooltip="'选集：' + peotry.set.name">{{peotry.set.name}}</span>
-      <span v-if="peotry.set && peotry.title">*</span>
-      <span>{{peotry.title}}</span>
+      <span
+        v-if="peotry.set"
+        class="tooltip peotry-set"
+        :tooltip="'选集：' + peotry.set.name"
+      >{{peotry.set.name}}</span>
+      <span v-if="peotry.set && peotry.title" class="peotry-set_dot">*</span>
+      <span class="peotry-title" v-show="peotry.title">{{peotry.title}}</span>
+      <span class="peotry-count" v-show="!isDetail && praiseComments.length">
+        <i class="el-icon-star-on"></i>
+        {{praiseComments.length}}
+      </span>
     </div>
     <div class="peot">{{peotry.user ? peotry.user.name : ""}}--{{peotry.time | time-format}}</div>
 
@@ -13,20 +21,16 @@
       <div class="content" v-html="peotry.content"></div>
       <div class="end" v-if="peotry.end">{{peotry.end}}</div>
     </div>
-    <div v-if="contentHeight !== 'auto'" class="content-expand">
-      <p>...</p>
-      <span @click="contentHeight='auto'">展开全文</span>
+    <div v-if="canExpand" :class="{'content-expand': true, 'content-expand_shadow': isDetail}">
+      <p v-show="contentHeight !== 'initial'">...</p>
+      <span @click="onClickExpand">{{contentHeight === 'initial' ? '收起全文' : '展开全文'}}</span>
     </div>
 
     <div class="images" v-if="peotryImages.length">
-      <!-- <span style="color: gray;">peotry images has been removed.</span> -->
-      <img
-        v-for="value in peotryImages"
-        alt="image error"
-        img-type="picture"
-        :key="value"
-        :src="value"
-      />
+      <template v-for="(value, index) in peotryImages">
+        <img alt="image error" img-type="picture" :key="value" :src="value" />
+        <br :key="value + index" v-if="!isDetail && (index + 1) % 3 === 0" />
+      </template>
     </div>
 
     <div class="peotry-more" v-if="isDetail">
@@ -126,8 +130,8 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import { baseUrl } from '@/api/config'
+import { mapState } from "vuex";
+import { baseUrl } from "@/api/config";
 
 export default {
   props: {
@@ -140,48 +144,46 @@ export default {
       default: true
     }
   },
-  data () {
+  data() {
     return {
       showDelete: false,
       inComment: false,
       clickTime: 0,
-      contentHeight: 'auto',
+      canExpand: false,
+      contentHeight: "initial",
       baseUrl
-    }
+    };
   },
-  inject: ['userMap'],
-  mounted () {
-    const contentEl = this.$refs.contentEl
-    if (this.isDetail && contentEl.clientHeight >= 120) {
-      this.contentHeight = '105px'
-    }
+  inject: ["userMap"],
+  mounted() {
+    this.checkCanExpand(true);
   },
   filters: {
-    timeFormat (v) {
+    timeFormat(v) {
       // 2018-04-15T10:10:10+08:00
-      return v.replace('T', ' ').replace('+08:00', '')
+      return v.replace("T", " ").replace("+08:00", "");
     }
   },
   methods: {
     /**
      * 分发诗词操作
      */
-    onCommandMore (key) {
+    onCommandMore(key) {
       switch (key) {
-        case 'comment':
-          this.openComment(this.userInfo.id)
-          break
-        case 'praise':
-          this.onCommentPraise()
-          break
-        case 'update':
-          this.$emit('on-update', this.peotry)
-          break
-        case 'delete':
-          this.$emit('on-delete', this.peotry)
-          break
+        case "comment":
+          this.openComment(this.userInfo.id);
+          break;
+        case "praise":
+          this.onCommentPraise();
+          break;
+        case "update":
+          this.$emit("on-update", this.peotry);
+          break;
+        case "delete":
+          this.$emit("on-delete", this.peotry);
+          break;
         default:
-          break
+          break;
       }
     },
 
@@ -192,188 +194,200 @@ export default {
      * 否则为回复某用户的评论
      * @param {Integer} toId
      */
-    checkComment (toId) {
-      let comment = this.peotry.comment
+    checkComment(toId) {
+      let comment = this.peotry.comment;
       if (!comment) {
         comment = {
           id: 0,
-          content: '',
+          content: "",
           type: 1,
           typeId: this.peotry.id,
           fromId: this.userInfo.id,
           toId: toId
+        };
+        this.$set(this.peotry, "comment", comment);
+      }
+      comment.fromId = this.userInfo.id;
+      comment.toId = toId;
+      comment.content = "";
+    },
+    checkCanExpand(widthExpand) {
+      const contentEl = this.$refs.contentEl;
+      if (contentEl.clientHeight >= 120) {
+        this.canExpand = true;
+        if (widthExpand) {
+          this.onClickExpand();
         }
-        this.$set(this.peotry, 'comment', comment)
       }
-      comment.fromId = this.userInfo.id
-      comment.toId = toId
-      comment.content = ''
+    },
+    onClickExpand() {
+      this.contentHeight = this.contentHeight === "initial" ? "105px" : "initial";
     },
 
-    openComment (toId) {
+    openComment(toId) {
       if (!this.userInfo.token) {
-        this.$message.warning('请登录后再操作')
-        return
+        this.$message.warning("请登录后再操作");
+        return;
       }
-      this.inComment = true
-      this.checkComment(toId)
+      this.inComment = true;
+      this.checkComment(toId);
       this.$nextTick(() => {
-        this.$refs.commentEl.focus()
-      })
+        this.$refs.commentEl.focus();
+      });
 
-      this.setOutClick(true)
+      this.setOutClick(true);
     },
 
-    setOutClick (flag) {
+    setOutClick(flag) {
       if (flag) {
         if (!this.onOutClick) {
           this.onOutClick = e => {
-            let el = e.srcElement
-            let count = 0
-            const parentElement = this.$refs.commentEl.$el.parentElement
+            let el = e.srcElement;
+            let count = 0;
+            const parentElement = this.$refs.commentEl.$el.parentElement;
             // 3代节点内检测是否还处于评论编辑框附近
             while (el && count < 3) {
               if (el === parentElement) {
-                break
+                break;
               } else {
-                count++
-                el = el.parentElement
+                count++;
+                el = el.parentElement;
               }
             }
             if (el === parentElement) {
-              return
+              return;
             }
-            this.setOutClick(false)
-            this.inComment = false
-          }
+            this.setOutClick(false);
+            this.inComment = false;
+          };
         }
-        window.addEventListener('click', this.onOutClick)
+        window.addEventListener("click", this.onOutClick);
       } else {
-        window.removeEventListener('click', this.onOutClick)
+        window.removeEventListener("click", this.onOutClick);
       }
     },
 
-    onCommentUser (e) {
+    onCommentUser(e) {
       if (!this.userInfo.token) {
-        this.$message.warning('请登录后再操作')
-        return
+        this.$message.warning("请登录后再操作");
+        return;
       }
-      const userId = e.srcElement.getAttribute('user-id')
+      const userId = e.srcElement.getAttribute("user-id");
       if (userId) {
-        const toId = parseInt(userId)
-        const commentId = parseInt(e.srcElement.getAttribute('comment-id'))
+        const toId = parseInt(userId);
+        const commentId = parseInt(e.srcElement.getAttribute("comment-id"));
         if (toId !== this.userInfo.id) {
-          this.openComment(toId)
+          this.openComment(toId);
         } else if (commentId) {
-          this.$confirm('是否删除该评论？', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
+          this.$confirm("是否删除该评论？", "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
           })
             .then(() => {
-              this.inComment = false
-              this.$emit('on-comment-delete', commentId, this.peotry.id)
+              this.inComment = false;
+              this.$emit("on-comment-delete", commentId, this.peotry.id);
             })
-            .catch(e => {})
+            .catch(e => {});
         }
       }
     },
-    onCommentPraise () {
+    onCommentPraise() {
       if (!this.userInfo.token) {
-        this.$message.warning('请登录后再操作')
-        return
+        this.$message.warning("请登录后再操作");
+        return;
       }
-      this.checkComment(-1)
-      const comment = this.peotry.comment
-      comment.id = this.currentPraise ? this.myPraiseComment.id : comment.id
-      comment.content = this.currentPraise ? 'unpraise' : 'praise'
+      this.checkComment(-1);
+      const comment = this.peotry.comment;
+      comment.id = this.currentPraise ? this.myPraiseComment.id : comment.id;
+      comment.content = this.currentPraise ? "unpraise" : "praise";
 
-      this.onCommentSubmit()
+      this.onCommentSubmit();
     },
-    onCommentSubmit () {
-      this.$emit('on-comment', this.peotry.comment, this.peotry.id)
-      this.setOutClick(false)
-      this.inComment = false
+    onCommentSubmit() {
+      this.$emit("on-comment", this.peotry.comment, this.peotry.id);
+      this.setOutClick(false);
+      this.inComment = false;
     }
   },
   computed: {
     /**
      * @returns {Boolean} 返回是否为当前用户创建的诗词
      */
-    isSelfPeotry () {
-      return this.peotry.user && this.userInfo.id === this.peotry.user.id
+    isSelfPeotry() {
+      return this.peotry.user && this.userInfo.id === this.peotry.user.id;
     },
 
     /**
      * @returns {Array} 返回诗词的直接可用图片列表
      */
-    peotryImages () {
-      const imageObj = this.peotry.image
+    peotryImages() {
+      const imageObj = this.peotry.image;
       if (imageObj && imageObj.count) {
         return JSON.parse(imageObj.images).map(v => {
-          if (v.indexOf('.') === 0) {
-            return '/peotry/images/' + v.substr(1)
+          if (v.indexOf(".") === 0) {
+            return "/peotry/images/" + v.substr(1);
           } else {
-            return '/peotry/images/' + v
+            return "/peotry/images/" + v;
           }
-        })
+        });
       } else {
-        return []
+        return [];
       }
     },
 
     /**
      * @returns {Array} 返回用户评论列表
      */
-    realComments () {
-      if (!this.peotry.comments) return []
+    realComments() {
+      if (!this.peotry.comments) return [];
       return this.peotry.comments
         .filter(comment => comment.toId > 0)
-        .sort(function (o0, o1) {
+        .sort(function(o0, o1) {
           // 按时间排序评论列表
-          const time0 = new Date(o0.createTime).getTime()
-          const time1 = new Date(o1.createTime).getTime()
-          return time0 < time1 ? -1 : 1
-        })
+          const time0 = new Date(o0.createTime).getTime();
+          const time1 = new Date(o1.createTime).getTime();
+          return time0 < time1 ? -1 : 1;
+        });
     },
 
     /**
      * @returns {Array} 返回用户点赞列表
      */
-    praiseComments () {
-      if (!this.peotry.comments) return []
+    praiseComments() {
+      if (!this.peotry.comments) return [];
       return this.peotry.comments
-        .filter(comment => comment.toId === -1 && comment.content === 'praise')
-        .sort(function (o0, o1) {
+        .filter(comment => comment.toId === -1 && comment.content === "praise")
+        .sort(function(o0, o1) {
           // 按时间排序评论列表
-          const time0 = new Date(o0.createTime).getTime()
-          const time1 = new Date(o1.createTime).getTime()
-          return time0 < time1 ? -1 : 1
-        })
+          const time0 = new Date(o0.createTime).getTime();
+          const time1 = new Date(o1.createTime).getTime();
+          return time0 < time1 ? -1 : 1;
+        });
     },
 
     /**
      * @returns {Comment} 返回我的点赞对象
      */
-    myPraiseComment () {
-      if (!this.userInfo) return
+    myPraiseComment() {
+      if (!this.userInfo) return;
       return this.praiseComments.find(
         comment => comment.toId === -1 && comment.fromId === this.userInfo.id
-      )
+      );
     },
 
     /**
      * @returns {Boolean} 返回当前登录用户是否点赞当前诗词
      */
-    currentPraise () {
-      return this.myPraiseComment && this.myPraiseComment.content === 'praise'
+    currentPraise() {
+      return this.myPraiseComment && this.myPraiseComment.content === "praise";
     },
 
     ...mapState({
       userInfo: state => state.user
     })
   }
-}
+};
 </script>
 
 <style scoped lang="scss">
@@ -396,16 +410,23 @@ $padding-set: 12px;
   .title {
     padding-bottom: $padding-set;
 
-    span {
-      &:nth-child(1) {
-        font-size: 18px;
-      }
-      &:nth-child(2) {
-        font-size: 16px;
-        padding: 0 5px;
-      }
-      &:nth-child(3) {
-        font-size: 16px;
+    .peotry-set {
+      font-size: 18px;
+    }
+    .peotry-set_dot {
+      font-size: 16px;
+      padding: 0 5px;
+    }
+    .peotry-title {
+      font-size: 16px;
+    }
+    .peotry-count {
+      margin-left: 15px;
+      font-size: 14px;
+      i {
+        font-size: 20px;
+        color: #d01e1e;
+        vertical-align: middle;
       }
     }
   }
@@ -437,7 +458,6 @@ $padding-set: 12px;
 
   .content-expand {
     font-size: $size-content;
-    box-shadow: 0 -5px 3px 5px rgba(255, 255, 255, 0.15);
 
     span {
       cursor: pointer;
@@ -446,12 +466,16 @@ $padding-set: 12px;
     }
   }
 
+  .content-expand_shadow {
+    box-shadow: 0 -5px 3px 5px rgba(255, 255, 255, 0.15);
+  }
+
   .images {
     padding-bottom: $padding-set;
 
     img {
+      width: 100px;
       margin: 5px;
-      width: 30%;
       object-fit: contain;
     }
   }

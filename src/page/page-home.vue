@@ -1,65 +1,92 @@
 <template>
   <div class="page-home">
-    <el-carousel v-if="carouselItems && carouselItems.length" :interval="4000" :type="carouselType">
-      <el-carousel-item v-for="(item, index) in carouselItems" :key="index">
-        <h3 class="medium" @click="onClickCarousel(item)">{{ item.label }}</h3>
+    <div class="sg-container">
+      <el-carousel
+        v-if="carouselItems && carouselItems.length"
+        :interval="4000"
+        :type="carouselType"
+      >
+        <el-carousel-item v-for="(item, index) in carouselItems" :key="index">
+          <h3 class="medium" @click="onClickCarousel(item)">{{ item.label }}</h3>
 
-        <template v-if="item.comp">
-          <div v-if="item.comp === 'peotry'" class="carousel-peotry">
-            <div v-if="peotry" class="peotry-content" v-html="peotry.content"></div>
-          </div>
-        </template>
-      </el-carousel-item>
-    </el-carousel>
+          <template v-if="item.comp">
+            <div v-if="item.comp === 'peotry'" class="carousel-peotry">
+              <div v-if="peotry" class="peotry-content" v-html="peotry.content"></div>
+            </div>
+          </template>
+        </el-carousel-item>
+      </el-carousel>
 
-    <div class="peotry-popular">
-      <h3>热门诗词</h3>
-      <div>
-        <peotry v-for="peotry in peotries" :key="peotry.id" :peotry="peotry" :is-detail="false"></peotry>
+      <div class="peotry-list">
+        <h3>热门诗词</h3>
+        <div>
+          <peotry
+            v-for="peotry in popularPeotries"
+            :key="peotry.id"
+            :peotry="peotry"
+            :is-detail="false"
+          ></peotry>
+        </div>
+      </div>
+
+      <div class="peotry-list">
+        <h3>
+          最新诗词
+          <el-button type="text" @click="onPeotryMore" class="peotry-more">更多</el-button>
+        </h3>
+        <div>
+          <peotry
+            v-for="peotry in latestPeotries"
+            :key="peotry.id"
+            :peotry="peotry"
+            :is-detail="false"
+          ></peotry>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
-import { queryPeotries, queryPopularPeotries } from '@/api'
+import { mapState, mapActions } from "vuex";
+import { queryPeotries, queryPopularPeotries } from "@/api";
 
 export default {
-  name: 'page-home',
+  name: "page-home",
 
   components: {
-    peotry: () => import('@/components/peotry')
+    peotry: () => import("@/components/peotry")
   },
 
-  data () {
+  data() {
     return {
       carouselItems: [],
-      carouselType: 'card',
+      carouselType: "card",
 
       peotry: null,
-      peotries: []
-    }
+      popularPeotries: [],
+      latestPeotries: []
+    };
   },
 
-  created () {
-    this.showBack(false)
-    this.getCarousels()
-    this.queryPeotries()
-    this.queryPopularPeotries()
-    window.home = this
+  created() {
+    this.showBack(false);
+    this.getCarousels();
+    this.queryPeotries();
+    this.queryPopularPeotries();
+    window.home = this;
   },
 
-  inject: ['userMap'],
+  inject: ["userMap"],
 
   watch: {
     screenType: {
       immediate: true,
-      handler () {
-        if (this.screenType === 'screen-large') {
-          this.carouselType = 'card'
+      handler() {
+        if (this.screenType === "screen-large") {
+          this.carouselType = "card";
         } else {
-          this.carouselType = ''
+          this.carouselType = "";
         }
       }
     }
@@ -72,38 +99,46 @@ export default {
   },
 
   methods: {
-    getCarousels () {
-      import('@/assets/config/carousels.json').then(o => {
-        this.carouselItems = o.default
-      })
+    getCarousels() {
+      import("@/assets/config/carousels.json").then(o => {
+        this.carouselItems = o.default;
+      });
     },
 
-    queryPeotries () {
+    queryPeotries() {
       queryPeotries({ setId: 10001 }).then(({ data }) => {
-        const index = Math.floor(Math.random() * data.data.length)
-        this.peotry = data.data[index]
-      })
+        const index = Math.floor(Math.random() * data.data.length);
+        this.peotry = data.data[index];
+      });
+
+      queryPeotries({ limit: 5 }).then(({ data }) => {
+        this.latestPeotries = data.data;
+      });
     },
 
-    queryPopularPeotries () {
-      queryPopularPeotries().then(({ data }) => {
-        this.peotries = data.data
-      })
+    queryPopularPeotries() {
+      queryPopularPeotries({ limit: 5 }).then(({ data }) => {
+        this.popularPeotries = data.data;
+      });
     },
 
-    onClickCarousel (item) {
+    onClickCarousel(item) {
       if (item.local) {
-        this.$router.push(item.target)
+        this.$router.push(item.target);
       } else {
-        window.open(item.target, '_blank')
+        window.open(item.target, "_blank");
       }
     },
 
+    onPeotryMore() {
+      this.$router.push({ name: "peotry-list" });
+    },
+
     ...mapActions({
-      showBack: 'showBack'
+      showBack: "showBack"
     })
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -118,11 +153,21 @@ export default {
 
   .carousel-peotry {
     text-align: center;
+
+    .peotry-content {
+      white-space: pre-wrap;
+      line-height: 26px;
+    }
   }
 
-  .peotry-popular {
+  .peotry-list {
     padding: 10px;
     margin: 0 auto;
+
+    h3 {
+      border-bottom: 1px solid white;
+      margin-bottom: 20px;
+    }
 
     > div {
       display: flex;
@@ -160,10 +205,9 @@ export default {
     }
   }
 
-  .peotry-content {
-    text-align: left;
-    white-space: pre-wrap;
-    display: inline-block;
+  .peotry-more {
+    float: right;
+    margin-top: -5px;
   }
 }
 

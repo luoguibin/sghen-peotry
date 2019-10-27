@@ -1,7 +1,7 @@
 <template>
   <div class="page-footer">
-    <span>{{authYear}}</span> /
-    <span>Sghen三行</span> /
+    <span :title="new Date()">{{authYear}}</span> /
+    <span @click="onPageHome">Sghen三行</span> /
     <a href="http://beian.miit.gov.cn" target="_blank">粤ICP备19116971号-1</a>
     /
     <a
@@ -16,15 +16,21 @@
 
 <script>
 export default {
-  name: 'page-footer',
+  name: "page-footer",
 
-  data () {
+  data() {
     return {
-      authYear: '©2019-' + new Date().getFullYear(),
-      beianSrc: require('@/assets/img/beian.png')
+      authYear: "©2019-" + new Date().getFullYear(),
+      beianSrc: require("@/assets/img/beian.png")
+    };
+  },
+
+  methods: {
+    onPageHome() {
+      this.$router.push({ name: "home" });
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -37,8 +43,9 @@ export default {
     display: inline-block;
   }
 
-  a {
+  span, a {
     color: #c8c8c8;
+    cursor: pointer;
 
     img {
       vertical-align: sub;
@@ -49,8 +56,11 @@ export default {
     color: inherit;
   }
 
-  a:hover {
-    color: #8d8d8d;
+  span,
+  a {
+    &:hover {
+      color: #8d8d8d;
+    }
   }
 }
 </style>

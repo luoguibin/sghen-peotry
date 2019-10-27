@@ -94,6 +94,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+#app {
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+
 .el-main {
   padding: 0;
   min-height: 500px;
@@ -104,38 +110,5 @@ export default {
   background-color: rgba(222, 222, 222, 0.2);
   box-shadow: 0 0 3px 3px rgba(222, 222, 222, 0.8);
 }
-</style>
-
-<style>
-* {
-  padding: 0;
-  margin: 0;
-}
-
-html,
-body {
-  height: 100%;
-}
-
-div,
-p,
-a,
-span {
-  font-family: Arial, PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif;
-}
-
-#app {
-  height: 100%;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-.el-scrollbar {
-  height: 100%;
-}
-
-.el-scrollbar .el-scrollbar__wrap {
-  overflow-x: hidden;
-  margin-bottom: 0 !important;
 }
 </style>

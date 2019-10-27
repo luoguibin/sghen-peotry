@@ -13,6 +13,7 @@ import 'nprogress/nprogress.css'
 
 import './common/element-ui'
 import './style/element-ui.css'
+import './style/index.scss'
 
 Vue.filter('user-icon', userIconFilter)
 Vue.prototype.$NProgress = NProgress
