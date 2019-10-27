@@ -48,45 +48,45 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
-import { queryPeotries, queryPopularPeotries } from "@/api";
+import { mapState, mapActions } from 'vuex'
+import { queryPeotries, queryPopularPeotries } from '@/api'
 
 export default {
-  name: "page-home",
+  name: 'page-home',
 
   components: {
-    peotry: () => import("@/components/peotry")
+    peotry: () => import('@/components/peotry')
   },
 
-  data() {
+  data () {
     return {
       carouselItems: [],
-      carouselType: "card",
+      carouselType: 'card',
 
       peotry: null,
       popularPeotries: [],
       latestPeotries: []
-    };
+    }
   },
 
-  created() {
-    this.showBack(false);
-    this.getCarousels();
-    this.queryPeotries();
-    this.queryPopularPeotries();
-    window.home = this;
+  created () {
+    this.showBack(false)
+    this.getCarousels()
+    this.queryPeotries()
+    this.queryPopularPeotries()
+    window.home = this
   },
 
-  inject: ["userMap"],
+  inject: ['userMap'],
 
   watch: {
     screenType: {
       immediate: true,
-      handler() {
-        if (this.screenType === "screen-large") {
-          this.carouselType = "card";
+      handler () {
+        if (this.screenType === 'screen-large') {
+          this.carouselType = 'card'
         } else {
-          this.carouselType = "";
+          this.carouselType = ''
         }
       }
     }
@@ -99,46 +99,46 @@ export default {
   },
 
   methods: {
-    getCarousels() {
-      import("@/assets/config/carousels.json").then(o => {
-        this.carouselItems = o.default;
-      });
+    getCarousels () {
+      import('@/assets/config/carousels.json').then(o => {
+        this.carouselItems = o.default
+      })
     },
 
-    queryPeotries() {
+    queryPeotries () {
       queryPeotries({ setId: 10001 }).then(({ data }) => {
-        const index = Math.floor(Math.random() * data.data.length);
-        this.peotry = data.data[index];
-      });
+        const index = Math.floor(Math.random() * data.data.length)
+        this.peotry = data.data[index]
+      })
 
       queryPeotries({ limit: 5 }).then(({ data }) => {
-        this.latestPeotries = data.data;
-      });
+        this.latestPeotries = data.data
+      })
     },
 
-    queryPopularPeotries() {
+    queryPopularPeotries () {
       queryPopularPeotries({ limit: 5 }).then(({ data }) => {
-        this.popularPeotries = data.data;
-      });
+        this.popularPeotries = data.data
+      })
     },
 
-    onClickCarousel(item) {
+    onClickCarousel (item) {
       if (item.local) {
-        this.$router.push(item.target);
+        this.$router.push(item.target)
       } else {
-        window.open(item.target, "_blank");
+        window.open(item.target, '_blank')
       }
     },
 
-    onPeotryMore() {
-      this.$router.push({ name: "peotry-list" });
+    onPeotryMore () {
+      this.$router.push({ name: 'peotry-list' })
     },
 
     ...mapActions({
-      showBack: "showBack"
+      showBack: 'showBack'
     })
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

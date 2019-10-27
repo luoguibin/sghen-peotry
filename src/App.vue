@@ -99,7 +99,6 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-
 .el-main {
   padding: 0;
   min-height: 500px;

@@ -16,21 +16,21 @@
 
 <script>
 export default {
-  name: "page-footer",
+  name: 'page-footer',
 
-  data() {
+  data () {
     return {
-      authYear: "©2019-" + new Date().getFullYear(),
-      beianSrc: require("@/assets/img/beian.png")
-    };
+      authYear: '©2019-' + new Date().getFullYear(),
+      beianSrc: require('@/assets/img/beian.png')
+    }
   },
 
   methods: {
-    onPageHome() {
-      this.$router.push({ name: "home" });
+    onPageHome () {
+      this.$router.push({ name: 'home' })
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
