@@ -17,6 +17,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import throttle from 'lodash/throttle'
 
 export default {
   name: 'app',
@@ -79,6 +80,7 @@ export default {
         }
         this.setScreenType(type)
       }
+      this.resize = throttle(this.resize, 100)
 
       window.addEventListener('resize', this.resize)
       this.resize()

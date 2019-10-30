@@ -17,30 +17,13 @@
         </el-carousel-item>
       </el-carousel>
 
-      <div class="peotry-list">
-        <h3>热门诗词</h3>
-        <div>
-          <peotry
-            v-for="peotry in popularPeotries"
-            :key="peotry.id"
-            :peotry="peotry"
-            :is-detail="false"
-          ></peotry>
-        </div>
-      </div>
-
-      <div class="peotry-list">
+      <div v-for="board in boards" :key="board.key" class="peotry-list">
         <h3>
-          最新诗词
-          <el-button type="text" @click="onPeotryMore" class="peotry-more">更多</el-button>
+          {{board.name}}
+          <el-button v-if="board.hasMore" type="text" @click="onPeotryMore" class="peotry-more">更多</el-button>
         </h3>
-        <div>
-          <peotry
-            v-for="peotry in latestPeotries"
-            :key="peotry.id"
-            :peotry="peotry"
-            :is-detail="false"
-          ></peotry>
+        <div v-loading="board.isLoading">
+          <peotry v-for="peotry in board.list" :key="peotry.id" :peotry="peotry" :is-detail="false"></peotry>
         </div>
       </div>
     </div>
@@ -63,9 +46,23 @@ export default {
       carouselItems: [],
       carouselType: 'card',
 
-      peotry: null,
-      popularPeotries: [],
-      latestPeotries: []
+      boards: [
+        {
+          key: 'hot',
+          name: '热门诗词',
+          isLoading: false,
+          list: []
+        },
+        {
+          key: 'latest',
+          name: '最新诗词',
+          isLoading: false,
+          hasMore: true,
+          list: []
+        }
+      ],
+
+      peotry: null
     }
   },
 
@@ -111,15 +108,25 @@ export default {
         this.peotry = data.data[index]
       })
 
-      queryPeotries({ limit: 5 }).then(({ data }) => {
-        this.latestPeotries = data.data
-      })
+      this.boards[0].isLoading = true
+      queryPeotries({ limit: 5 })
+        .then(({ data }) => {
+          this.boards[0].list = data.data
+        })
+        .finally(() => {
+          this.boards[0].isLoading = false
+        })
     },
 
     queryPopularPeotries () {
-      queryPopularPeotries({ limit: 5 }).then(({ data }) => {
-        this.popularPeotries = data.data
-      })
+      this.boards[1].isLoading = true
+      queryPopularPeotries({ limit: 5 })
+        .then(({ data }) => {
+          this.boards[1].list = data.data
+        })
+        .finally(() => {
+          this.boards[1].isLoading = false
+        })
     },
 
     onClickCarousel (item) {
@@ -170,6 +177,7 @@ export default {
     }
 
     > div {
+      min-height: 200px;
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
