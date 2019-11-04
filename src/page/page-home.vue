@@ -108,24 +108,24 @@ export default {
         this.peotry = data.data[index]
       })
 
-      this.boards[0].isLoading = true
-      queryPeotries({ limit: 5 })
-        .then(({ data }) => {
-          this.boards[0].list = data.data
-        })
-        .finally(() => {
-          this.boards[0].isLoading = false
-        })
-    },
-
-    queryPopularPeotries () {
       this.boards[1].isLoading = true
-      queryPopularPeotries({ limit: 5 })
+      queryPeotries({ limit: 5, needComment: true })
         .then(({ data }) => {
           this.boards[1].list = data.data
         })
         .finally(() => {
           this.boards[1].isLoading = false
+        })
+    },
+
+    queryPopularPeotries () {
+      this.boards[0].isLoading = true
+      queryPopularPeotries({ limit: 5 })
+        .then(({ data }) => {
+          this.boards[0].list = data.data
+        })
+        .finally(() => {
+          this.boards[0].isLoading = false
         })
     },
 
