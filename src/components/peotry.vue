@@ -29,7 +29,7 @@
     <div class="images" v-if="peotryImages.length">
       <template v-for="(value, index) in peotryImages">
         <img alt="image error" img-type="picture" :key="value" :src="value" />
-        <br :key="value + index" v-if="!isDetail && (index + 1) % 3 === 0" />
+        <br :key="value + index" v-if="!isDetail && (index + 1) % 2 === 0" />
       </template>
     </div>
 
@@ -425,8 +425,8 @@ $padding-set: 12px;
       font-size: 14px;
       i {
         font-size: 20px;
-        color: #d01e1e;
-        vertical-align: middle;
+        color: #e6a23c;
+        vertical-align: bottom;
       }
     }
   }

@@ -235,10 +235,18 @@ export default {
 }
 
 .el-carousel__item:nth-child(2n) {
-  background-color: #99a9bf;
+  background-color: #ffffff;
 }
 
 .el-carousel__item:nth-child(2n + 1) {
-  background-color: #d3dce6;
+  background-color: #e8f3ff;
+}
+
+@media screen and (max-width: 500px) {
+  .page-home {
+    .peotry-list /deep/.peotry {
+      margin: 0 10px 50px 0;
+    }
+  }
 }
 </style>
