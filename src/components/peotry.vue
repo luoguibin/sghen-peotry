@@ -477,7 +477,7 @@ $padding-set: 12px;
       width: 100px;
       height: 85px;
       margin: 0 5px 5px 0;
-      object-fit: contain;
+      object-fit: cover;
     }
   }
 
