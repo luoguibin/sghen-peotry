@@ -7,13 +7,17 @@
         :type="carouselType"
       >
         <el-carousel-item v-for="(item, index) in carouselItems" :key="index">
-          <h3 class="medium" @click="onClickCarousel(item)">{{ item.label }}</h3>
+          <h3 class="medium">{{ item.label }}</h3>
 
           <template v-if="item.comp">
             <div v-if="item.comp === 'peotry'" class="carousel-peotry">
               <div v-if="peotry" class="peotry-content" v-html="peotry.content"></div>
             </div>
           </template>
+          <div v-else class="carousel-description" v-html="item.content || ''"></div>
+          <div style="text-align: right; padding-right: 50px;">
+            <el-button type="text" icon="el-icon-link" @click="onClickCarousel(item)">传送门</el-button>
+          </div>
         </el-carousel-item>
       </el-carousel>
 
@@ -280,6 +284,16 @@ export default {
       white-space: pre-wrap;
       line-height: 26px;
     }
+  }
+
+  .carousel-description {
+    max-width: 300px;
+    padding: 20px;
+    margin: 0 auto;
+    text-indent: 2em;
+    color: #787878;
+    font-size: 18px;
+    line-height: 1.5em;
   }
 
   .board-list {

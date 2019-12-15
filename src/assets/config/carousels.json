@@ -10,16 +10,19 @@
     {
         "label": "wiki大法好",
         "local": false,
+        "content": "搬砖码农✂的零星砖头，包括Nginx、MySQL、Docker，合作伙伴来自五湖四海的资深搬砖工",
         "target": "http://wiki.sghen.cn"
     },
     {
         "label": "MM Juror",
         "local": false,
+        "content": "一个快死掉的外包项目：陪审的案件管理系统，分为用户管理，陪审员管理，案件管理，案件自动分配",
         "target": "http://www.sghen.cn/mm-juror/index.html"
     },
     {
         "label": "Sghen-World",
         "local": true,
+        "content": "用半车threejs开发的测试项目游戏：登录角色、移动角色、在线聊天",
         "target": {
             "name": "blank",
             "query": {
