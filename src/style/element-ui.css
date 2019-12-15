@@ -11,7 +11,7 @@
 .el-scrollbar {
     height: 100%;
 }
-  
+
 .el-scrollbar .el-scrollbar__wrap {
     overflow-x: hidden;
     margin-bottom: 0 !important;
@@ -19,4 +19,8 @@
 
 .el-scrollbar__bar.is-vertical {
     width: 10px;
+}
+
+.el-carousel__container {
+    overflow: hidden;
 }

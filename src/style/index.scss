@@ -2,12 +2,12 @@
     padding: 0;
     margin: 0;
 }
-  
+
 html,
 body {
     height: 100%;
 }
-  
+
 div,
 p,
 a,
@@ -19,4 +19,28 @@ span {
 .sg-container {
     max-width: 1440px;
     margin: 0 auto;
+}
+
+.show-image {
+    .el-dialog__body {
+      text-align: center !important;
+    }
+    .show-image_btns {
+        overflow: hidden;
+        clear: both;
+
+        .el-button:first-child {
+            float: left;
+        }
+
+        .el-button:last-child {
+            float: right;
+        }
+    }
+
+    .image-error-slot {
+        .el-icon-picture-outline {
+            font-size: 50px;
+        }
+    }
 }

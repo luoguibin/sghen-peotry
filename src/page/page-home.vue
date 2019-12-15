@@ -17,7 +17,10 @@
         </el-carousel-item>
       </el-carousel>
 
-      <div v-for="board in boards" :key="board.key" class="peotry-list">
+      <div v-for="board in boards" :key="board.key"
+        :class="{'board-list': true, 'board-top-3': board.key === 'hot' }"
+        @click="onClickImage($event)"
+      >
         <h3>
           {{board.name}}
           <el-button v-if="board.hasMore" type="text" @click="onPeotryMore" class="peotry-more">更多</el-button>
@@ -26,13 +29,28 @@
           <peotry v-for="peotry in board.list" :key="peotry.id" :peotry="peotry" :is-detail="false"></peotry>
         </div>
       </div>
+
+      <!-- todo:重复代码优化 -->
+      <el-dialog title="图片" :visible.sync="showImage" class="show-image" :show-close="false" center>
+        <el-image :src="showImageUrl">
+          <div slot="error" class="image-error-slot">
+            <i class="el-icon-picture-outline"></i>
+            <p>图片加载失败</p>
+          </div>
+        </el-image>
+
+        <div v-if="curImgEl" class="show-image_btns">
+          <el-button type="text" v-show="curImgEl.previousElementSibling" @click="onClickNearImage(false)">上一张</el-button>
+          <el-button type="text" v-show="curImgEl.nextElementSibling" @click="onClickNearImage(true)">下一张</el-button>
+        </div>
+      </el-dialog>
     </div>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import { queryPeotries, queryPopularPeotries } from '@/api'
+import { queryUsers, queryPeotries, queryPopularPeotries } from '@/api'
 
 export default {
   name: 'page-home',
@@ -62,7 +80,11 @@ export default {
         }
       ],
 
-      peotry: null
+      peotry: null,
+
+      showImage: false,
+      showImageUrl: '',
+      curImgEl: null
     }
   },
 
@@ -112,6 +134,7 @@ export default {
       queryPeotries({ limit: 5, needComment: true })
         .then(({ data }) => {
           this.boards[1].list = data.data
+          this.updatePeotriesData()
         })
         .finally(() => {
           this.boards[1].isLoading = false
@@ -123,10 +146,105 @@ export default {
       queryPopularPeotries({ limit: 5 })
         .then(({ data }) => {
           this.boards[0].list = data.data
+          this.updatePeotriesData()
         })
         .finally(() => {
           this.boards[0].isLoading = false
         })
+    },
+
+    updatePeotriesData () {
+      const boards = this.boards
+      if (boards.some(o => o.list.length === 0)) {
+        return
+      }
+      let datas = []
+      this.boards.forEach(o => {
+        datas = [...datas, ...o.list]
+      })
+
+      const idsSet = new Set()
+      datas.forEach(peotry => {
+        if (peotry.user && peotry.user.id) {
+          idsSet.add(peotry.user.id)
+        }
+
+        const comments = peotry.comments
+        if (comments && comments.length) {
+          comments.forEach(comment => {
+            if (comment.fromId > 1) {
+              idsSet.add(comment.fromId)
+            }
+            if (comment.toId > 1) {
+              idsSet.add(comment.toId)
+            }
+          })
+        } else {
+          peotry.comments = []
+        }
+      })
+
+      if (idsSet.size) {
+        const ids = Array.from(idsSet)
+        queryUsers(ids).then(resp => {
+          const users = resp.data.data
+          const userMap = this.userMap
+
+          users.forEach(user => {
+            if (!userMap[user.id]) {
+              userMap[user.id] = user
+            }
+          })
+          this.boards.forEach(board => {
+            board.list.forEach(peotry => {
+              if (peotry.comments && peotry.comments.length) {
+                peotry.comments = peotry.comments.map(comment => {
+                  comment.fromUser = userMap[comment.fromId]
+                  return comment
+                })
+              }
+            })
+          })
+        })
+      }
+    },
+
+    onClickImage (e) {
+      const el = e.srcElement
+      if (el.tagName === 'IMG') {
+        const imgType = el.getAttribute('img-type')
+        if (imgType === 'picture') {
+          this.showImageUrl = el.getAttribute('src')
+          this.curImgEl = el
+        } else if (imgType.indexOf('user-') === 0) {
+          if (imgType === 'user-self') {
+            return
+          }
+          const id = parseInt(imgType.replace('user-', ''))
+          const user = this.userMap[id]
+          if (!user) {
+            this.$message.error('用户账号异常')
+            return
+          }
+          this.showUser = true
+          this.showUserInfo = user
+        }
+      } else {
+        this.showImageUrl = ''
+      }
+      this.showImage = !!this.showImageUrl
+    },
+
+    onClickNearImage (isNext) {
+      if (!this.curImgEl) {
+        return
+      }
+      const el = isNext ? this.curImgEl.nextElementSibling : this.curImgEl.previousElementSibling
+      if (!el) {
+        return
+      }
+      this.curImgEl = el
+      this.showImageUrl = el.getAttribute('src')
     },
 
     onClickCarousel (item) {
@@ -153,10 +271,7 @@ export default {
   position: relative;
   min-height: inherit;
   box-sizing: border-box;
-  background-image: repeating-linear-gradient(
-    rgba(44, 42, 165, 0.26),
-    rgba(42, 165, 52, 0.26)
-  );
+  background-color: white;
 
   .carousel-peotry {
     text-align: center;
@@ -167,26 +282,30 @@ export default {
     }
   }
 
-  .peotry-list {
+  .board-list {
     padding: 10px;
     margin: 0 auto;
 
     h3 {
-      border-bottom: 1px solid white;
-      margin-bottom: 20px;
+      padding: 10px;
+      border-bottom: 1px solid #66b1ff;
+      margin-bottom: 10px;
     }
 
     > div {
+      padding: 24px 16px;
       min-height: 200px;
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
       align-content: space-between;
+      border-radius: 8px;
+      background-color: #f5faff;
     }
 
-    /deep/.peotry {
+    /deep/ .peotry {
       max-width: 500px;
-      margin: 0 20px 50px 20px;
+      margin: 0 30px 50px 0;
     }
 
     h3 {
@@ -213,6 +332,27 @@ export default {
     }
   }
 
+  .board-top-3 /deep/ .peotry {
+    &:nth-child(2) {
+      .title .peotry-count {
+        color: rgb(187, 47, 47);
+        font-weight: bold;
+      }
+    }
+    &:nth-child(3) {
+      .title .peotry-count {
+        color: rgb(19, 109, 19);
+        font-weight: bold;
+      }
+    }
+    &:nth-child(4) {
+      .title .peotry-count {
+        color: rgb(63, 63, 219);
+        font-weight: bold;
+      }
+    }
+  }
+
   .peotry-more {
     float: right;
     margin-top: -5px;
@@ -235,16 +375,16 @@ export default {
 }
 
 .el-carousel__item:nth-child(2n) {
-  background-color: #ffffff;
+  background-color: #e3f1ff;
 }
 
 .el-carousel__item:nth-child(2n + 1) {
-  background-color: #e8f3ff;
+  background-color: #f5faff;
 }
 
 @media screen and (max-width: 500px) {
   .page-home {
-    .peotry-list /deep/.peotry {
+    .board-list /deep/.peotry {
       margin: 0 10px 50px 0;
     }
   }

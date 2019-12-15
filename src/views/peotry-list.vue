@@ -205,7 +205,14 @@ export default {
               userMap[user.id] = user
             }
           })
-          this.$forceUpdate()
+          datas.forEach(peotry => {
+            if (peotry.comments && peotry.comments.length) {
+              peotry.comments = peotry.comments.map(comment => {
+                comment.fromUser = userMap[comment.fromId]
+                return comment
+              })
+            }
+          })
         })
       }
     },
@@ -397,34 +404,9 @@ export default {
 
 <style lang="scss">
 .peotry-list {
-  .show-image {
-    .el-dialog__body {
-      text-align: center !important;
-    }
-  }
-
-  .show-image_btns {
-    overflow: hidden;
-    clear: both;
-
-    .el-button:first-child {
-      float: left;
-    }
-
-    .el-button:last-child {
-      float: right;
-    }
-  }
-
   .el-pagination {
     white-space: pre-wrap;
     text-align: center;
-  }
-
-  .image-error-slot {
-    .el-icon-picture-outline {
-      font-size: 50px;
-    }
   }
 }
 </style>

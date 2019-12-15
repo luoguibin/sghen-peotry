@@ -101,15 +101,15 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-.el-main {
-  padding: 0;
-  min-height: 500px;
-  height: 100%;
-}
+  .el-main {
+    padding: 0;
+    min-height: 500px;
+    height: 100%;
+  }
 
-.el-header {
-  background-color: rgba(222, 222, 222, 0.2);
-  box-shadow: 0 0 3px 3px rgba(222, 222, 222, 0.8);
-}
+  .el-header {
+    background-color: rgba(222, 222, 222, 0.2);
+    box-shadow: 0 0 3px 3px rgba(222, 222, 222, 0.8);
+  }
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="peotry">
-    <img class="peotry-user" img-type="user-self" :src="userMap[peotry.user.id] | user-icon" />
+    <img class="peotry-user" img-type="user-self" :src="peotry.user | user-icon" />
     <div class="title">
       <span
         v-if="peotry.set"
@@ -27,9 +27,8 @@
     </div>
 
     <div class="images" v-if="peotryImages.length">
-      <template v-for="(value, index) in peotryImages">
+      <template v-for="value in peotryImages">
         <img alt="image error" img-type="picture" :key="value" :src="value" />
-        <br :key="value + index" v-if="!isDetail && (index + 1) % 2 === 0" />
       </template>
     </div>
 
@@ -77,7 +76,7 @@
           v-for="comment in praiseComments"
           :key="comment.id"
           :img-type="'user-' + comment.fromId"
-          :src="userMap[comment.fromId] | user-icon"
+          :src="(comment.fromUser ? comment.fromUser : '') | user-icon"
         />
       </div>
 
@@ -472,6 +471,8 @@ $padding-set: 12px;
 
   .images {
     padding-bottom: $padding-set;
+    margin-top: 16px;
+    max-width: 320px;
 
     img {
       width: 100px;
