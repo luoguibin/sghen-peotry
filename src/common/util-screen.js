@@ -1,9 +1,9 @@
+import { SCREEN_TYPE }  from './constant'
+
 export const ScreenType = {
-  MOBILE: 1,
-  PC: 2,
   init (root) {
     const listener = e => {
-      root.$store.state.screenType = window.innerWidth < 500 ? this.MOBILE : this.PC
+      root.$store.state.screenType = window.innerWidth < 500 ? SCREEN_TYPE.MOBILE : SCREEN_TYPE.PC
     }
     window.addEventListener('resize', listener)
     root.$once('hook:beforeDestroy', () => {

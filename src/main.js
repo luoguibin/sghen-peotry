@@ -11,8 +11,8 @@ import { userIconFilter } from './filter/index'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 
-import './common/element-ui'
-import './style/element-ui.css'
+import './ui/element-ui'
+import './ui/element-ui.css'
 import './style/index.scss'
 
 Vue.filter('user-icon', userIconFilter)
