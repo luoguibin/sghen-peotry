@@ -22,63 +22,26 @@ export default {
 
   mounted () {
     window.pwc = this
-    this.chart = echarts.init(this.$refs.container)
-    // this.getHotWords()
+    this.initChart()
     const image = new Image()
     image.src = this.imgSrc
     image.onload = e => {
-      this.setChartData()
+      this.getHotWords()
     }
     this.maskImage = image
+    // this.getHotWords()
   },
 
   methods: {
-    getHotWords () {
-      getHotWords().then(data => {
-        console.log('getHotWords', data)
-        this.words = data
-          .filter(o => o[1] > 1)
-          .map(o => {
-            return {
-              name: o[0],
-              value: o[1]
-            }
-          })
-        this.setChartData()
-      })
-    },
-
-    setChartData () {
-      this.words = [
-        ['晚风', 4],
-        ['燕子', 3],
-        ['秋风', 2],
-        ['苏州', 2],
-        ['半山', 2],
-        ['道', 2],
-        ['十五', 2],
-        ['雨', 2],
-        ['十年', 2],
-        ['一夜', 2],
-        ['春雨', 2],
-        ['西湖', 2],
-        ['生活', 2],
-        ['未来', 2],
-        ['夜近', 2],
-        ['等待', 2],
-        ['一行', 2],
-        ['头上', 2]
-      ].map(o => {
-        return {
-          name: o[0],
-          value: o[1],
-          textStyle: {
-            normal: {},
-            emphasis: {}
-          }
-        }
-      })
+    initChart () {
+      this.chart = echarts.init(this.$refs.container)
       this.chart.setOption({
+        tooltip: {
+          show: true,
+          formatter: o => {
+            return o.data.name + '&nbsp;&nbsp;&nbsp;共<span style="padding: 0 3px;">' + o.data.value + '</span>篇'
+          }
+        },
         series: [
           {
             type: 'wordCloud',
@@ -88,7 +51,7 @@ export default {
             // cardioid (apple or heart shape curve, the most known polar equation), diamond (
             // alias of square), triangle-forward, triangle, (alias of triangle-upright, pentagon, and star.
 
-            shape: 'circle',
+            shape: 'star',
 
             // A silhouette image which the white area will be excluded from drawing texts.
             // The shape option will continue to apply as the shape of the cloud to grow.
@@ -100,19 +63,19 @@ export default {
 
             left: 'center',
             top: 'center',
-            width: '70%',
-            height: '80%',
+            width: '95%',
+            height: '95%',
             right: null,
             bottom: null,
 
             // Text size range which the value in data will be mapped to.
             // Default to have minimum 12px and maximum 60px size.
 
-            sizeRange: [12, 60],
+            sizeRange: [18, 60],
 
             // Text rotation range and step in degree. Text will be rotated randomly in range [-90, 90] by rotationStep 45
 
-            rotationRange: [-90, 90],
+            rotationRange: [-45, 45],
             rotationStep: 45,
 
             // size of the grid in pixels for marking the availability of the canvas
@@ -150,9 +113,31 @@ export default {
             },
 
             // Data is an array. Each array item must have name and value property.
-            data: this.words
+            data: []
           }
         ]
+      })
+      this.chart.on('click', params => {
+        console.log(params.data)
+      })
+    },
+    getHotWords () {
+      getHotWords().then(res => {
+        this.words = res.data
+          .filter(o => o[1] > 1)
+          .map(o => {
+            return {
+              name: o[0],
+              value: o[1]
+            }
+          })
+        this.setChartData()
+      })
+    },
+
+    setChartData () {
+      this.chart.setOption({
+        series: [{ data: this.words }]
       })
     }
   }
