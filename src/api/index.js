@@ -124,3 +124,10 @@ export const uploadFiles = (params, data) =>
     data,
     headers: { 'Content-Type': 'multipart/form-data' }
   })
+
+export const getHotWords = () =>
+  request({
+    baseURL: 'http://japi.sghen.cn',
+    url: '/api/analyze/wordfrequency/sghen_db/peotry/content',
+    method: 'get'
+  })

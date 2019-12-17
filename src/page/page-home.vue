@@ -21,6 +21,8 @@
         </el-carousel-item>
       </el-carousel>
 
+      <peotry-word-cloud></peotry-word-cloud>
+
       <div v-for="board in boards" :key="board.key"
         :class="{'board-list': true, 'board-top-3': board.key === 'hot' }"
         @click="onClickImage($event)"
@@ -60,7 +62,8 @@ export default {
   name: 'page-home',
 
   components: {
-    peotry: () => import('@/components/peotry')
+    peotry: () => import('@/components/peotry'),
+    'peotry-word-cloud': () => import('@/components/peotry-word-cloud')
   },
 
   data () {

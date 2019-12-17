@@ -36,6 +36,7 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(
   res => {
+    console.log('response', res)
     const status = Number(res.status) || 0
     const data = res.data || {}
     if (status !== 200 || data.code !== 1000) {
