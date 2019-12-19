@@ -24,7 +24,9 @@ import {
   Pagination,
   Switch,
   Select,
-  Scrollbar
+  Scrollbar,
+  Table,
+  TableColumn
 } from 'element-ui'
 
 Vue.use(Button)
@@ -40,15 +42,17 @@ Vue.use(Form)
 Vue.use(FormItem)
 Vue.use(Footer)
 Vue.use(Header)
-Vue.use(Loading)
 Vue.use(Input)
 Vue.use(Image)
+Vue.use(Loading)
 Vue.use(Main)
 Vue.use(Option)
 Vue.use(Pagination)
 Vue.use(Switch)
 Vue.use(Select)
 Vue.use(Scrollbar)
+Vue.use(Table)
+Vue.use(TableColumn)
 
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm

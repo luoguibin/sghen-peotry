@@ -25,6 +25,11 @@ const router = new Router({
       component: () => import(/* webpackChunkName: "peotry-list" */ './views/peotry-list')
     },
     {
+      path: '/api-manage',
+      name: 'api-manage',
+      component: () => import(/* webpackChunkName: "api-manage" */ './views/api-manage')
+    },
+    {
       path: '*',
       redirect: '/home'
     }
