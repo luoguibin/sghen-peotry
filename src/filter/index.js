@@ -11,3 +11,8 @@ export const userIconFilter = function (v) {
     return process.env.NODE_ENV === 'production' ? '/peotry/favicon.ico' : './favicon.ico'
   }
 }
+
+export const timeFormat = function (v) {
+  // 2018-04-15T10:10:10+08:00
+  return v.replace('T', ' ').replace('+08:00', '')
+}

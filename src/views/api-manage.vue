@@ -5,7 +5,7 @@
     </div>
 
     <!-- 列表 -->
-    <el-table height="100%" :data="tableData" :loading="tableLoading" border>
+    <el-table style="width: 100%" :data="tableData" v-loading="tableLoading" border>
       <el-table-column prop="id" label="ID"></el-table-column>
       <el-table-column prop="name" label="名称"></el-table-column>
       <el-table-column prop="comment" label="说明"></el-table-column>
@@ -15,11 +15,21 @@
           {{ scope.row.timeUpdate | time-format }}
         </template>
       </el-table-column>
-      <el-table-column label="操作" slot-scope="scope">
-        <el-button type="text" @click="onOpenUpdate(scope.row)">更新</el-button>
-        <el-button type="text" @click="deleteDynamicApi(scope.row.id)">删除</el-button>
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-button type="text" @click="onOpenUpdate(scope.row)">更新</el-button>
+          <el-button type="text" @click="deleteDynamicApi(scope.row.id)">删除</el-button>
+        </template>
       </el-table-column>
     </el-table>
+    <el-pagination
+      layout="prev, pager, next"
+      :total="pagination.total"
+      :current-page.sync="pagination.current"
+      :page-size="pagination.pageSize"
+      hide-on-single-page
+      @current-change="handleCurrentChange">
+    </el-pagination>
 
     <!-- 新增或更新 -->
     <el-dialog :visible.sync="dialogShow">
@@ -57,6 +67,11 @@ export default {
     return {
       tableData: [],
       tableLoading: false,
+      pagination: {
+        total: 0,
+        current: 1,
+        pageSize: 10
+      },
 
       dialogShow: false,
       dialogObj: {}
@@ -69,24 +84,37 @@ export default {
   },
 
   methods: {
+    handleCurrentChange () {
+      this.queryDynamicApi()
+    },
     onOpenUpdate (obj) {
-      this.dialogObj = obj || {}
-      this.isCreate = !obj
+      if (obj) {
+        this.dialogObj = {
+          id: obj.id,
+          name: obj.name,
+          comment: obj.comment,
+          content: obj.content
+        }
+      } else {
+        this.dialogObj = {}
+      }
       this.dialogShow = true
     },
     queryDynamicApi () {
       this.tableLoading = true
-      queryDynamicApi().then(({ data }) => {
+      const { pageSize: limit, current: page } = this.pagination
+      queryDynamicApi({ limit, page }).then(({ data }) => {
         this.tableData = data.data
+        this.pagination.total = data.totalCount
       }).finally(() => {
-        this.tableLoading = true
+        this.tableLoading = false
       })
     },
     onSave () {
-      if (this.isCreate) {
-        this.createDynamicApi()
-      } else {
+      if (this.dialogObj.id) {
         this.updateDynamicApi()
+      } else {
+        this.createDynamicApi()
       }
     },
     createDynamicApi () {
@@ -97,12 +125,13 @@ export default {
     },
     updateDynamicApi () {
       updateDynamicApi(this.dialogObj).then(({ data }) => {
-        console.log(data)
+        this.dialogShow = false
+        this.queryDynamicApi()
       })
     },
     deleteDynamicApi (id) {
       deleteDynamicApi({ id }).then(({ data }) => {
-        console.log(data)
+        this.queryDynamicApi()
       })
     }
   }
@@ -111,9 +140,22 @@ export default {
 
 <style lang="scss" scoped>
 .api-manage {
+  min-height: inherit;
   .am-header {
     text-align: right;
     padding: 10px 24px;
+  }
+}
+</style>
+
+<style lang="scss">
+.api-manage {
+  .el-table {
+    height: 100%;
+    min-height: inherit;
+  }
+  .el-pagination {
+    text-align: right;
   }
 }
 </style>

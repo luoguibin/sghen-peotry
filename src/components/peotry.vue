@@ -157,12 +157,6 @@ export default {
   mounted () {
     this.checkCanExpand(true)
   },
-  filters: {
-    timeFormat (v) {
-      // 2018-04-15T10:10:10+08:00
-      return v.replace('T', ' ').replace('+08:00', '')
-    }
-  },
   methods: {
     /**
      * 分发诗词操作

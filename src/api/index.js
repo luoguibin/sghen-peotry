@@ -132,10 +132,11 @@ export const getHotWords = () =>
     method: 'get'
   })
 
-export const queryDynamicApi = () =>
+export const queryDynamicApi = params =>
   request({
     url: '/v1/api/query',
-    method: 'get'
+    method: 'get',
+    params
   })
 
 export const createDynamicApi = data =>
@@ -147,7 +148,7 @@ export const createDynamicApi = data =>
 
 export const updateDynamicApi = data =>
   request({
-    url: '/v1/api/create',
+    url: '/v1/api/update',
     method: 'post',
     data
   })
