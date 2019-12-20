@@ -184,6 +184,7 @@ export default {
 
   .pwc-set-container {
     max-width: 400px;
+    height: auto;
     .pwc-set-item {
       display: inline-block;
       padding: 5px 8px;
