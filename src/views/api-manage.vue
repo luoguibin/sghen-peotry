@@ -1,23 +1,29 @@
 <template>
   <div class="api-manage">
     <div class="am-header">
+      <el-button @click="queryDynamicApi()">刷新</el-button>
       <el-button type="primary" @click="onOpenUpdate()">新建</el-button>
     </div>
 
     <!-- 列表 -->
     <el-table style="width: 100%" :data="tableData" v-loading="tableLoading" border>
-      <el-table-column prop="id" label="ID"></el-table-column>
-      <el-table-column prop="name" label="名称"></el-table-column>
-      <el-table-column prop="comment" label="说明"></el-table-column>
-      <el-table-column prop="content" label="SQL语句"></el-table-column>
-      <el-table-column prop="timeUpdate" label="更新时间">
+      <el-table-column prop="id" label="ID" width="160px"></el-table-column>
+      <el-table-column show-overflow-tooltip prop="name" label="名称" width="150px"></el-table-column>
+      <el-table-column show-overflow-tooltip prop="comment" label="说明" width="200px"></el-table-column>
+      <el-table-column show-overflow-tooltip prop="content" label="SQL语句"></el-table-column>
+      <el-table-column prop="timeUpdate" label="更新时间" width="160px">
         <template slot-scope="scope">
           {{ scope.row.timeUpdate | time-format }}
         </template>
       </el-table-column>
-      <el-table-column label="操作">
+      <el-table-column label="操作" width="230px">
         <template slot-scope="scope">
-          <el-button type="text" @click="onOpenUpdate(scope.row)">更新</el-button>
+          <el-switch :value="scope.row.status" active-color="#13ce66" inactive-color="#dcdfe6"
+            :active-value="1" :inactive-value="-1" active-text="启用" style="margin-right: 10px;"
+            @change="onChangeStatus($event, scope.row)">
+          </el-switch>
+          <el-button type="text" :disabled="scope.row.status !== 1" @click="onOpenTest(scope.row)">测试</el-button>
+          <el-button type="text" @click="onOpenUpdate(scope.row)">编辑</el-button>
           <el-button type="text" @click="deleteDynamicApi(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
@@ -32,22 +38,40 @@
     </el-pagination>
 
     <!-- 新增或更新 -->
-    <el-dialog :visible.sync="dialogShow">
-      <el-form label-width="100px">
-        <el-form-item label="名称" required>
+    <el-dialog :visible.sync="dialogShow" :title="dialogObj.id ? '编辑接口' : '创建接口'">
+      <el-form ref="form" :model="dialogObj" :rules="rules" label-width="100px">
+        <el-form-item label="名称" prop="name">
           <el-input v-model="dialogObj.name"></el-input>
         </el-form-item>
-        <el-form-item label="说明">
+        <el-form-item label="说明" prop="comment">
           <el-input v-model="dialogObj.comment"></el-input>
         </el-form-item>
-        <el-form-item label="SQL语句" required>
-          <el-input type="textarea" v-model="dialogObj.content"></el-input>
+        <el-form-item label="SQL语句" prop="content">
+          <el-input type="textarea" v-model="dialogObj.content" :rows="5"></el-input>
+        </el-form-item>
+        <el-form-item label="是否启用" prop="status">
+          <el-switch v-model="dialogObj.status" active-color="#13ce66" inactive-color="#dcdfe6"
+            :active-value="1" :inactive-value="-1">
+          </el-switch>
         </el-form-item>
         <el-form-item label="">
           <el-button @click="dialogShow = false">取消</el-button>
           <el-button type="primary" @click="onSave">保存</el-button>
         </el-form-item>
       </el-form>
+    </el-dialog>
+
+    <!-- 测试接口 -->
+    <el-dialog :visible.sync="testShow" :title="'接口测试: ' + dialogObj.name" custom-class="am-test-dialog">
+      <div class="am-test-item">{{ dialogObj.content }}</div>
+      <div class="am-test-item am-test-result">
+        <el-scrollbar v-loading="testLoading">
+          <div class="am-test-content">{{ testResult }}</div>
+        </el-scrollbar>
+      </div>
+      <div style="text-align: right;">
+        <el-button type="primary" @click="onTest">测试</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -57,7 +81,8 @@ import {
   queryDynamicApi,
   createDynamicApi,
   updateDynamicApi,
-  deleteDynamicApi
+  deleteDynamicApi,
+  getDynamicData
 } from '@/api'
 
 export default {
@@ -74,7 +99,21 @@ export default {
       },
 
       dialogShow: false,
-      dialogObj: {}
+      testShow: false,
+      testLoading: false,
+      dialogObj: {},
+      testResult: {},
+
+      rules: {
+        name: [
+          { required: true, message: '请输入接口名称', trigger: 'blur' },
+          { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
+        ],
+        content: [
+          { required: true, message: '请输入SQL语句', trigger: 'blur' },
+          { min: 10, max: 500, message: '长度在 10 到 500 个字符', trigger: 'blur' }
+        ]
+      }
     }
   },
 
@@ -87,18 +126,36 @@ export default {
     handleCurrentChange () {
       this.queryDynamicApi()
     },
+    onChangeStatus (v, record) {
+      const obj = {
+        id: record.id,
+        name: record.name,
+        comment: record.comment,
+        content: record.content,
+        status: v
+      }
+      updateDynamicApi(obj).then(({ data }) => {
+        record.status = v
+        record.timeUpdate = data.data.timeUpdate
+      })
+    },
     onOpenUpdate (obj) {
       if (obj) {
         this.dialogObj = {
           id: obj.id,
           name: obj.name,
           comment: obj.comment,
-          content: obj.content
+          content: obj.content,
+          status: obj.status
         }
       } else {
         this.dialogObj = {}
       }
       this.dialogShow = true
+
+      if (this.$refs.form) {
+        this.$refs.form.resetFields()
+      }
     },
     queryDynamicApi () {
       this.tableLoading = true
@@ -111,11 +168,39 @@ export default {
       })
     },
     onSave () {
-      if (this.dialogObj.id) {
-        this.updateDynamicApi()
-      } else {
-        this.createDynamicApi()
+      this.$refs.form.validate(valid => {
+        if (!valid) {
+          return
+        }
+        if (this.dialogObj.id) {
+          this.updateDynamicApi()
+        } else {
+          this.createDynamicApi()
+        }
+      })
+    },
+    onOpenTest (obj) {
+      this.dialogObj = {
+        id: obj.id,
+        name: obj.name,
+        comment: obj.comment,
+        content: obj.content,
+        status: obj.status
       }
+      this.testShow = true
+      this.testLoading = false
+      this.testResult = {}
+      this.onTest()
+    },
+    onTest () {
+      this.testLoading = true
+      const obj = this.dialogObj
+      getDynamicData({ id: obj.id }).then(res => {
+        this.testResult = res.data
+        this.$message.success('接口测试成功')
+      }).finally(() => {
+        this.testLoading = false
+      })
     },
     createDynamicApi () {
       createDynamicApi(this.dialogObj).then(({ data }) => {
@@ -156,6 +241,39 @@ export default {
   }
   .el-pagination {
     text-align: right;
+  }
+  .el-switch .el-switch__label--right {
+    margin-left: 3px;
+  }
+}
+.am-test-dialog {
+  max-width: 1000px;
+  .am-test-item {
+    position: relative;
+    border: 1px solid rgb(165, 165, 165);
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 20px;
+    &::before {
+      content: 'SQL语句';
+      position: absolute;
+      top: -10px;
+      background-color: white;
+      color: rgb(165, 165, 165);
+    }
+  }
+  .am-test-result {
+    min-height: 100px;
+    max-height: 300px;
+    &::before {
+      content: '测试结果';
+    }
+  }
+  .el-scrollbar, .el-scrollbar__wrap {
+    max-height: inherit;
+  }
+  .am-test-content {
+    white-space: pre;
   }
 }
 </style>
