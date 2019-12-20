@@ -128,7 +128,7 @@ export const uploadFiles = (params, data) =>
 export const getHotWords = () =>
   request({
     baseURL: 'http://japi.sghen.cn',
-    url: '/v1/api/analyze/wordfrequency/sghen_db/peotry/content',
+    url: '/api/analyze/wordfrequency/sghen_db/peotry/content',
     method: 'get'
   })
 
