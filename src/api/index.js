@@ -161,9 +161,8 @@ export const deleteDynamicApi = data =>
   })
 
 export const getDynamicData = params => request({
-  url: '/v1/api/get',
-  method: 'get',
-  params
+  url: '/v1/api/get/' + params.suffixPath,
+  method: 'get'
 })
 
 export const postDynamicData = data => request({

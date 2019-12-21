@@ -8,6 +8,7 @@
     <!-- 列表 -->
     <el-table style="width: 100%" :data="tableData" v-loading="tableLoading" border>
       <el-table-column prop="id" label="ID" width="160px"></el-table-column>
+      <el-table-column show-overflow-tooltip prop="suffixPath" label="名称" width="150px"></el-table-column>
       <el-table-column show-overflow-tooltip prop="name" label="名称" width="150px"></el-table-column>
       <el-table-column show-overflow-tooltip prop="comment" label="说明" width="200px"></el-table-column>
       <el-table-column show-overflow-tooltip prop="content" label="SQL语句"></el-table-column>
@@ -40,6 +41,9 @@
     <!-- 新增或更新 -->
     <el-dialog :visible.sync="dialogShow" :title="dialogObj.id ? '编辑接口' : '创建接口'">
       <el-form ref="form" :model="dialogObj" :rules="rules" label-width="100px">
+        <el-form-item label="路由" prop="suffixPath">
+          <el-input v-model="dialogObj.suffixPath" placeholder="例如：peotry/list"></el-input>
+        </el-form-item>
         <el-form-item label="名称" prop="name">
           <el-input v-model="dialogObj.name"></el-input>
         </el-form-item>
@@ -105,6 +109,10 @@ export default {
       testResult: {},
 
       rules: {
+        suffixPath: [
+          { required: true, message: '请输入路由地址', trigger: 'blur' },
+          { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
+        ],
         name: [
           { required: true, message: '请输入接口名称', trigger: 'blur' },
           { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
@@ -126,23 +134,25 @@ export default {
     handleCurrentChange () {
       this.queryDynamicApi()
     },
-    onChangeStatus (v, record) {
-      const obj = {
-        id: record.id,
-        name: record.name,
-        comment: record.comment,
-        content: record.content,
+    onChangeStatus (v, obj) {
+      const data = {
+        id: obj.id,
+        suffixPath: obj.suffixPath,
+        name: obj.name,
+        comment: obj.comment,
+        content: obj.content,
         status: v
       }
-      updateDynamicApi(obj).then(({ data }) => {
-        record.status = v
-        record.timeUpdate = data.data.timeUpdate
+      updateDynamicApi(data).then(({ data }) => {
+        obj.status = v
+        obj.timeUpdate = data.data.timeUpdate
       })
     },
     onOpenUpdate (obj) {
       if (obj) {
         this.dialogObj = {
           id: obj.id,
+          suffixPath: obj.suffixPath,
           name: obj.name,
           comment: obj.comment,
           content: obj.content,
@@ -182,6 +192,7 @@ export default {
     onOpenTest (obj) {
       this.dialogObj = {
         id: obj.id,
+        suffixPath: obj.suffixPath,
         name: obj.name,
         comment: obj.comment,
         content: obj.content,
@@ -195,7 +206,7 @@ export default {
     onTest () {
       this.testLoading = true
       const obj = this.dialogObj
-      getDynamicData({ id: obj.id }).then(res => {
+      getDynamicData({ suffixPath: obj.suffixPath }).then(res => {
         this.testResult = res.data
         this.$message.success('接口测试成功')
       }).finally(() => {
