@@ -159,7 +159,7 @@ export default {
     },
 
     getPopularPoetrySets () {
-      getDynamicData({ id: 1576851003262405 }).then(({ data }) => {
+      getDynamicData({ suffixPath: 'peotry-set/popular' }).then(({ data }) => {
         this.peotrySets = data.data
       })
     }
