@@ -8,7 +8,7 @@
     <!-- 列表 -->
     <el-table style="width: 100%" :data="tableData" v-loading="tableLoading" border>
       <el-table-column prop="id" label="ID" width="160px"></el-table-column>
-      <el-table-column show-overflow-tooltip prop="suffixPath" label="名称" width="150px"></el-table-column>
+      <el-table-column show-overflow-tooltip prop="suffixPath" label="路由" width="150px"></el-table-column>
       <el-table-column show-overflow-tooltip prop="name" label="名称" width="150px"></el-table-column>
       <el-table-column show-overflow-tooltip prop="comment" label="说明" width="200px"></el-table-column>
       <el-table-column show-overflow-tooltip prop="content" label="SQL语句"></el-table-column>
