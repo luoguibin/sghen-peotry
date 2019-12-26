@@ -11,6 +11,10 @@ axios.defaults.baseURL = baseUrl
 
 axios.interceptors.request.use(
   config => {
+    const token = store.state.user.token
+    if (token) {
+      config.headers['Authorization'] = token
+    }
     if (config.params && config.params.origin) {
       delete config.params.origin
       return config
@@ -24,7 +28,6 @@ axios.interceptors.request.use(
       if (!config.params) {
         config.params = {}
       }
-      config.params.token = store.state.user.token
     }
 
     return config
