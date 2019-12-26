@@ -321,8 +321,10 @@ export default {
     }
 
     /deep/ .peotry {
-      max-width: 500px;
+      width: 100%;
+      max-width: 360px;
       margin: 0 30px 50px 0;
+      box-sizing: border-box;
     }
 
     h3 {

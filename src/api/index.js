@@ -128,7 +128,7 @@ export const uploadFiles = (params, data) =>
 export const getHotWords = () =>
   request({
     baseURL: 'http://japi.sghen.cn',
-    url: '/v1/api/analyze/wordfrequency/sghen_db/peotry/content',
+    url: '/api/analyze/wordfrequency/sghen_db/peotry/content',
     method: 'get'
   })
 
@@ -160,11 +160,13 @@ export const deleteDynamicApi = data =>
     data
   })
 
-export const getDynamicData = params => request({
-  url: '/v1/api/get',
-  method: 'get',
-  params
-})
+export const getDynamicData = params => {
+  console.log('getDynamicData', params)
+  return request({
+    url: '/v1/api/get/' + params.suffixPath,
+    method: 'get'
+  })
+}
 
 export const postDynamicData = data => request({
   url: '/v1/api/post',

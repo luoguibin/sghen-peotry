@@ -1,11 +1,21 @@
 <template>
   <div class="peotry-word-cloud">
-    <div ref="container" class="pwc-container"></div>
+    <div class="pwc-container pwc-set-container">
+      <h3 style="padding: 10px 0;">选集排行</h3>
+      <span v-for="item in peotrySets" :key="item.id" class="pwc-set-item">
+        {{ item.name }}
+        <span>({{ item.count }}首)</span>
+      </span>
+    </div>
+    <div class="pwc-container" v-if="!isWordsErr">
+      <h3 style="padding: 10px 0;">诗词云库</h3>
+      <div ref="container" style="height: 234px;"></div>
+    </div>
   </div>
 </template>
 
 <script>
-import { getHotWords } from '@/api'
+import { getHotWords, getDynamicData } from '@/api'
 import echarts from 'echarts'
 import 'echarts-wordcloud'
 
@@ -15,8 +25,11 @@ export default {
   data () {
     return {
       words: [],
+      isWordsErr: false,
       imgSrc: require('@/assets/img/icon.png'),
-      maskImage: null
+      maskImage: null,
+
+      peotrySets: []
     }
   },
 
@@ -30,6 +43,7 @@ export default {
     }
     this.maskImage = image
     // this.getHotWords()
+    this.getPopularPoetrySets()
   },
 
   methods: {
@@ -122,6 +136,7 @@ export default {
       })
     },
     getHotWords () {
+      this.isWordsErr = false
       getHotWords().then(res => {
         this.words = res.data
           .filter(o => o[1] > 1)
@@ -132,12 +147,20 @@ export default {
             }
           })
         this.setChartData()
+      }).catch(() => {
+        this.isWordsErr = true
       })
     },
 
     setChartData () {
       this.chart.setOption({
         series: [{ data: this.words }]
+      })
+    },
+
+    getPopularPoetrySets () {
+      getDynamicData({ suffixPath: 'peotry-set/popular' }).then(({ data }) => {
+        this.peotrySets = data.data
       })
     }
   }
@@ -146,10 +169,41 @@ export default {
 
 <style lang="scss" scoped>
 .peotry-word-cloud {
+  text-align: center;
+
   .pwc-container {
-    width: 300px;
+    display: inline-block;
+    width: 100%;
+    max-width: 360px;
     height: 280px;
-    margin: 0 auto;
+    padding: 0 25px;
+    box-sizing: border-box;
+    vertical-align: top;
+    text-align: initial;
+  }
+
+  .pwc-set-container {
+    max-width: 400px;
+    height: auto;
+    .pwc-set-item {
+      display: inline-block;
+      padding: 5px 8px;
+      margin: 0 15px 15px 0;
+      font-size: 20px;
+      color: white;
+      border-radius: 8px;
+      background-color: rgb(58, 135, 155);
+      cursor: pointer;
+      &:hover {
+        background-color: rgba(58, 135, 155, 0.9);
+      }
+      &:active {
+        background-color: rgba(58, 135, 155, 0.75);
+      }
+      span {
+        font-size: 16px;
+      }
+    }
   }
 }
 </style>
