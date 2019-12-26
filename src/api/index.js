@@ -10,7 +10,7 @@ export const createUser = data =>
 
 export const sendSmsCode = data =>
   request({
-    url: '/v1/common/sms/send',
+    url: '/v1/sms/send',
     method: 'post',
     data
   })
