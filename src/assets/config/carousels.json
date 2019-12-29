@@ -29,5 +29,11 @@
                 "login_direct": "http://www.sghen.cn/game/index.html"
             }
         }
+    },
+    {
+        "label": "各种砖头测试",
+        "local": false,
+        "content": "非搬砖的不推荐进入，但工地还是欢迎你的到来。。。",
+        "target": "http://www.sghen.cn/vue-test/index.html"
     }
 ]
