@@ -1,16 +1,39 @@
 <template>
   <div class="peotry-word-cloud">
+    <div class="pwc-container pwc-set-container" v-if="yearPeotryCount">
+      <div>
+        <h3 style="padding: 10px 0;">2019年年度诗词概况</h3>
+        <p style="text-indent: 2em;">
+          本年度共创建{{ yearPeotryCount }}首诗词，其中以选集
+          <span style="color: #148acf; white-space: pre;">【{{ yearPeotrySets[0].name }}】</span>
+          {{ yearPeotrySets[0].count }}首稳居榜首
+          <template v-if="yearPoets.length">
+            ；诗词创建数量最多的是
+            <span style="color: #148acf; white-space: pre; cursor: pointer;" @click="onPeotPage(yearPoets[0])">[{{ yearPoets[0].name }}]</span>
+            ，共创建{{ yearPoets[0].count }}首。
+          </template>
+        </p>
+      </div>
+      <h4 style="padding: 20px 0 10px;">选集TOP5</h4>
+      <span v-for="item in yearPeotrySets" :key="item.id" class="pwc-set-item">
+        {{ item.name }}
+        <span>({{ item.count }}首)</span>
+      </span>
+    </div>
+
+    <div class="pwc-container" v-if="!isWordsErr">
+      <h3 style="padding: 10px 0;">诗词云库</h3>
+      <div ref="container" style="height: 234px;"></div>
+    </div>
+
     <div class="pwc-container pwc-set-container">
-      <h3 style="padding: 10px 0;">选集排行</h3>
+      <h3 style="padding: 10px 0;">选集总排行榜</h3>
       <span v-for="item in peotrySets" :key="item.id" class="pwc-set-item">
         {{ item.name }}
         <span>({{ item.count }}首)</span>
       </span>
     </div>
-    <div class="pwc-container" v-if="!isWordsErr">
-      <h3 style="padding: 10px 0;">诗词云库</h3>
-      <div ref="container" style="height: 234px;"></div>
-    </div>
+
   </div>
 </template>
 
@@ -29,7 +52,10 @@ export default {
       imgSrc: require('@/assets/img/icon.png'),
       maskImage: null,
 
-      peotrySets: []
+      peotrySets: [],
+      yearPeotrySets: [],
+      yearPeotryCount: 0,
+      yearPoets: []
     }
   },
 
@@ -44,6 +70,8 @@ export default {
     this.maskImage = image
     // this.getHotWords()
     this.getPopularPoetrySets()
+    this.getYearPoetrySets()
+    this.getYearPoets()
   },
 
   methods: {
@@ -162,6 +190,26 @@ export default {
       getDynamicData({ suffixPath: 'peotry-set/popular' }).then(({ data }) => {
         this.peotrySets = data.data
       })
+    },
+    getYearPoetrySets () {
+      getDynamicData({ suffixPath: 'peotry-set/list-2019' }).then(({ data }) => {
+        const list = data.data || []
+        let count = 0
+        list.forEach(o => {
+          count += +o.count
+        })
+        this.yearPeotryCount = count
+        this.yearPeotrySets = list.splice(0, 5)
+      })
+    },
+    getYearPoets () {
+      getDynamicData({ suffixPath: 'peotry-user/list-2019' }).then(({ data }) => {
+        this.yearPoets = data.data || []
+      })
+    },
+
+    onPeotPage ({ id }) {
+      this.$router.push({ name: 'peotry-list', query: { userId: id } })
     }
   }
 }
