@@ -322,8 +322,8 @@ export default {
 
     /deep/ .peotry {
       width: 100%;
-      max-width: 360px;
-      margin: 0 30px 50px 0;
+      max-width: 310px;
+      margin: 0 15px 50px;
       box-sizing: border-box;
     }
 

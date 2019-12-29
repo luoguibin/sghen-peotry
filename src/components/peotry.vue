@@ -469,8 +469,8 @@ $padding-set: 12px;
     max-width: 320px;
 
     img {
-      width: 100px;
-      height: 85px;
+      width: 83px;
+      height: 75px;
       margin: 0 5px 5px 0;
       object-fit: cover;
     }
