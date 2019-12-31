@@ -8,9 +8,10 @@
     <el-form :model="newPeotry" :rules="formRules" ref="ruleForm" label-width="60px">
       <el-form-item label="选集" prop="setId">
         <el-select v-model="newPeotry.setId" placeholder="请选择">
-          <el-option v-for="set in peotrySets" :key="set.id" :value="set.id" :label="set.name">
+          <el-option v-for="set in peotrySets" :key="set.id" :value="set.id"
+            :label="set.name">
             <div class="set_name">{{set.name}}</div>
-            <span class="set_delete" @click.stop="onDeletePeotrySet(set)">
+            <span v-if="set.userId" class="set_delete" @click.stop="onDeletePeotrySet(set)">
               <i class="el-icon-delete"></i>
             </span>
           </el-option>
