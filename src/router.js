@@ -30,6 +30,11 @@ const router = new Router({
       component: () => import(/* webpackChunkName: "api-manage" */ './views/api-manage')
     },
     {
+      path: '/new-year',
+      name: 'new-year',
+      component: () => import(/* webpackChunkName: "new-year" */ './views/new-year')
+    },
+    {
       path: '*',
       redirect: '/home'
     }
