@@ -67,8 +67,11 @@
 
     <!-- 测试接口 -->
     <el-dialog :visible.sync="testShow" :title="'接口测试: ' + dialogObj.name" custom-class="am-test-dialog">
-      <div class="am-test-item">{{ dialogObj.content }}</div>
-      <div class="am-test-item am-test-result">
+      <div class="am-test-item" content="SQL语句">{{ dialogObj.content }}</div>
+      <div class="am-test-item" content="查询参数">
+        <el-input v-model="testParams"></el-input>
+      </div>
+      <div class="am-test-item am-test-result" content="测试结果">
         <el-scrollbar v-loading="testLoading">
           <div class="am-test-content">{{ testResult }}</div>
         </el-scrollbar>
@@ -105,6 +108,7 @@ export default {
       dialogShow: false,
       testShow: false,
       testLoading: false,
+      testParams: '',
       dialogObj: {},
       testResult: {},
 
@@ -200,13 +204,18 @@ export default {
       }
       this.testShow = true
       this.testLoading = false
+      this.testParams = ''
       this.testResult = {}
-      this.onTest()
+      // this.onTest()
     },
     onTest () {
       this.testLoading = true
       const obj = this.dialogObj
-      getDynamicData({ suffixPath: obj.suffixPath }).then(res => {
+      let params = {}
+      if (this.testParams) {
+        params = JSON.parse(this.testParams)
+      }
+      getDynamicData({ suffixPath: obj.suffixPath, ...params }).then(res => {
         this.testResult = res.data
         this.$message.success('接口测试成功')
       }).finally(() => {
@@ -266,7 +275,7 @@ export default {
     padding: 10px;
     margin-bottom: 20px;
     &::before {
-      content: 'SQL语句';
+      content: attr(content);
       position: absolute;
       top: -10px;
       background-color: white;
@@ -277,7 +286,7 @@ export default {
     min-height: 100px;
     max-height: 300px;
     &::before {
-      content: '测试结果';
+      content: attr(content);
     }
   }
   .el-scrollbar, .el-scrollbar__wrap {

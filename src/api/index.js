@@ -164,7 +164,8 @@ export const getDynamicData = params => {
   console.log('getDynamicData', params)
   return request({
     url: '/v1/api/get/' + params.suffixPath,
-    method: 'get'
+    method: 'get',
+    params
   })
 }
 
