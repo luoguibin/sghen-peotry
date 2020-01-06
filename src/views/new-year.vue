@@ -1,6 +1,6 @@
 <template>
   <div class="new-year">
-    <div style="padding: 20px; font-size: 18px; text-align: center;" v-show="year === 2019">2020~元旦快乐</div>
+    <div style="padding: 20px; font-size: 18px; text-align: center;" v-show="yearMonthDate === '2020-1-1'">2020~元旦快乐</div>
   </div>
 </template>
 
@@ -10,7 +10,7 @@ export default {
 
   data () {
     return {
-      year: 0
+      yearMonthDate: ''
     }
   },
 
@@ -24,8 +24,8 @@ export default {
 
       const card = document.createElement('IDV')
       const date = new Date()
-      this.year = date.getFullYear()
-      card.innerHTML = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
+      this.yearMonthDate = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()
+      card.innerHTML = this.yearMonthDate + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
       card.classList.add('time-container')
       el.appendChild(card)
       cardList.push(card)
