@@ -5,7 +5,7 @@
     </el-header>
 
     <el-main ref="main">
-      <el-scrollbar ref="scrollbar">
+      <el-scrollbar ref="scrollbar" id="main-scroll">
         <div>
           <router-view />
         </div>

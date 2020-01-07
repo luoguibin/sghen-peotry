@@ -36,13 +36,12 @@
     </div>
 
     <div class="images" v-if="peotryImages.length">
-      <template v-for="value in peotryImages">
-        <el-image  :key="value" :src="value" :preview-src-list="peotryImages">
-          <div slot="error" class="image-slot">
-            <i class="el-icon-picture-outline"></i>
-          </div>
-        </el-image>
-      </template>
+      <el-image v-for="value in peotryImages" :key="value"
+        :src="value" :fit="`cover`" :preview-src-list="peotryImages" :scroll-container="mainScrollBox" lazy>
+        <div slot="error" class="image-slot">
+          <i class="el-icon-picture-outline"></i>
+        </div>
+      </el-image>
     </div>
 
     <div class="peotry-more" v-if="isDetail">
@@ -169,10 +168,17 @@ export default {
       clickTime: 0,
       canExpand: false,
       contentHeight: 'initial',
-      baseUrl
+      baseUrl,
+      mainScrollBox: null
     }
   },
   inject: ['userMap'],
+  created () {
+    const mainScrollEl = document.getElementById('main-scroll')
+    if (mainScrollEl && mainScrollEl.children) {
+      this.mainScrollBox = mainScrollEl.children[0]
+    }
+  },
   mounted () {
     this.checkCanExpand(true)
   },
@@ -487,13 +493,7 @@ $padding-set: 12px;
   .images {
     padding-bottom: $padding-set;
     margin-top: 16px;
-
-    img {
-      width: 100px;
-      height: 90px;
-      margin: 3px;
-      object-fit: cover;
-    }
+    font-size: 0;
   }
 
   .peotry-more {
@@ -607,6 +607,19 @@ $padding-set: 12px;
   .content-container {
     .content {
       white-space: normal;
+    }
+  }
+}
+</style>
+
+<style lang="scss">
+.peotry {
+  .images {
+    margin: -3px;
+    .el-image {
+      width: 110px;
+      height: 100px;
+      margin: 3px;
     }
   }
 }
