@@ -37,7 +37,7 @@
 
     <div class="images" v-if="peotryImages.length">
       <template v-for="value in peotryImages">
-        <el-image alt="image error" :key="value" :src="value" :preview-src-list="peotryImages" lazy>
+        <el-image  :key="value" :src="value" :preview-src-list="peotryImages">
           <div slot="error" class="image-slot">
             <i class="el-icon-picture-outline"></i>
           </div>
