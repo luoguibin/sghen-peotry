@@ -21,6 +21,9 @@ span {
     @media screen and (min-width: 1680px) {
         max-width: 1440px;
     }
+    @media screen and (min-width: 1900px) {
+        max-width: 1680px;
+    }
     margin: 0 auto;
 }
 

@@ -280,9 +280,10 @@ export default {
     overflow: hidden;
     .ph-main {
       float: left;
-      max-width: 780px;
+      max-width: calc(100% - 420px);
       margin-right: 20px;
       @media screen and (max-width: 1200px) {
+        max-width: 100%;
         margin-right: 0;
       }
     }
@@ -314,9 +315,17 @@ export default {
 
     /deep/ .peotry {
       width: 100%;
-      max-width: 345px;
-      margin: 0 25px 50px 0;
       box-sizing: border-box;
+      margin-bottom: 20px;
+      @media screen and (min-width: 1200px) {
+        width: 50%;
+      }
+      @media screen and (min-width: 1680px) {
+        width: 33%;
+      }
+      @media screen and (min-width: 1900px) {
+         width: 25%;
+      }
     }
 
     h3 {
