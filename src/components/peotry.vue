@@ -532,7 +532,7 @@ $padding-set: 12px;
         object-fit: contain;
 
         &:hover {
-          background-color: rgba(250, 250, 250, 0.5);
+          background-color: rgba(250, 250, 250, 0.8);
           border-radius: 3px;
         }
       }
@@ -546,7 +546,7 @@ $padding-set: 12px;
       left: 8px;
       top: -10px;
       border: solid 10px transparent;
-      border-bottom-color: rgba(222, 222, 222, 0.2);
+      border-bottom-color: rgba(250, 250, 250, 0.5);
       border-top-width: 0;
     }
 
