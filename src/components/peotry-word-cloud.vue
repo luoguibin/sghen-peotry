@@ -23,7 +23,7 @@
 
     <div class="pwc-container" v-if="!isWordsErr">
       <h3 style="padding: 10px 0;">诗词云库</h3>
-      <div ref="container" style="height: 234px;"></div>
+      <div ref="container" style="height: 348px;"></div>
     </div>
 
     <div class="pwc-container pwc-set-container">
@@ -184,6 +184,7 @@ export default {
       this.chart.setOption({
         series: [{ data: this.words }]
       })
+      this.chart.resize()
     },
 
     getPopularPoetrySets () {
@@ -217,21 +218,20 @@ export default {
 
 <style lang="scss" scoped>
 .peotry-word-cloud {
-  text-align: center;
+  max-width: 400px;
 
   .pwc-container {
-    display: inline-block;
     width: 100%;
-    max-width: 360px;
-    height: 280px;
     padding: 0 25px;
+    margin-bottom: 16px;
+    background-color: white;
+    border: 1px solid #eeeeee;
     box-sizing: border-box;
     vertical-align: top;
     text-align: initial;
   }
 
   .pwc-set-container {
-    max-width: 400px;
     height: auto;
     .pwc-set-item {
       display: inline-block;

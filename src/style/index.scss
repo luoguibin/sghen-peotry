@@ -17,7 +17,10 @@ span {
 
 
 .sg-container {
-    max-width: 1440px;
+    max-width: 1200px;
+    @media screen and (min-width: 1680px) {
+        max-width: 1440px;
+    }
     margin: 0 auto;
 }
 

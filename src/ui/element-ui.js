@@ -26,7 +26,9 @@ import {
   Select,
   Scrollbar,
   Table,
-  TableColumn
+  TableColumn,
+  Timeline,
+  TimelineItem
 } from 'element-ui'
 
 Vue.use(Button)
@@ -53,6 +55,8 @@ Vue.use(Select)
 Vue.use(Scrollbar)
 Vue.use(Table)
 Vue.use(TableColumn)
+Vue.use(Timeline)
+Vue.use(TimelineItem)
 
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm

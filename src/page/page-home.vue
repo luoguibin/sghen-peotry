@@ -1,6 +1,7 @@
 <template>
   <div class="page-home">
     <div class="sg-container">
+      <!-- 轮播卡片 -->
       <el-carousel
         v-if="carouselItems && carouselItems.length"
         :interval="4000"
@@ -16,24 +17,49 @@
           </template>
           <div v-else class="carousel-description" v-html="item.content || ''"></div>
           <div style="text-align: right; padding-right: 50px;">
-            <el-button type="text" icon="el-icon-link" @click="onClickCarousel(item)">传送门</el-button>
+            <el-button type="text" icon="el-icon-link" @click="onClickCarousel(item)">demo试玩</el-button>
+            <el-button v-if="item.gayhub" type="text" @click="onClickCarousel(item, 'gayhub')">
+              <img style="width: 14px" :src="require('@/assets/img/icon-github.svg')" />
+              github砖头
+            </el-button>
           </div>
         </el-carousel-item>
       </el-carousel>
 
-      <peotry-word-cloud></peotry-word-cloud>
+      <div class="ph-box">
+        <!-- 诗词主区域 -->
+        <div class="ph-main">
+          <!-- 热门诗词 -->
+          <div class="board-list board-top-3" @click="onClickImage($event)">
+            <h3>
+              {{boards[0].name}}
+              <el-button v-if="boards[0].hasMore" type="text" @click="onPeotryMore" class="peotry-more">更多</el-button>
+            </h3>
+            <div v-loading="boards[0].isLoading">
+              <peotry v-for="peotry in boards[0].list" :key="peotry.id" :peotry="peotry" :is-detail="false"></peotry>
+            </div>
+          </div>
 
-      <div v-for="board in boards" :key="board.key"
-        :class="{'board-list': true, 'board-top-3': board.key === 'hot' }"
-        @click="onClickImage($event)"
-      >
-        <h3>
-          {{board.name}}
-          <el-button v-if="board.hasMore" type="text" @click="onPeotryMore" class="peotry-more">更多</el-button>
-        </h3>
-        <div v-loading="board.isLoading">
-          <peotry v-for="peotry in board.list" :key="peotry.id" :peotry="peotry" :is-detail="false"></peotry>
+          <!-- 最新诗词 -->
+          <div class="board-list" @click="onClickImage($event)">
+            <h3>
+              {{boards[1].name}}
+              <el-button v-if="boards[1].hasMore" type="text" @click="onPeotryMore" class="peotry-more">更多</el-button>
+            </h3>
+            <div v-loading="boards[1].isLoading">
+              <el-timeline>
+                <el-timeline-item v-for="peotry in boards[1].list" :key="peotry.id" :timestamp="peotry.time | time-format" placement="top">
+                  <el-card>
+                    <peotry :peotry="peotry" :hideTime="true"></peotry>
+                  </el-card>
+                </el-timeline-item>
+              </el-timeline>
+            </div>
+          </div>
         </div>
+
+        <!-- 右侧诗词概况面板 -->
+        <peotry-word-cloud class="ph-float"></peotry-word-cloud>
       </div>
 
       <!-- todo:重复代码优化 -->
@@ -254,7 +280,11 @@ export default {
       this.showImageUrl = el.getAttribute('src')
     },
 
-    onClickCarousel (item) {
+    onClickCarousel (item, key) {
+      if (key && item[key]) {
+        window.open(item[key], '_blank')
+        return
+      }
       if (item.local) {
         this.$router.push(item.target)
       } else {
@@ -278,7 +308,7 @@ export default {
   position: relative;
   min-height: inherit;
   box-sizing: border-box;
-  background-color: white;
+  background-color: #fafafa;
 
   .carousel-peotry {
     text-align: center;
@@ -299,14 +329,28 @@ export default {
     line-height: 1.5em;
   }
 
-  .board-list {
-    padding: 10px;
-    margin: 0 auto;
+  .ph-box {
+    position: relative;
+    overflow: hidden;
+    .ph-main {
+      float: left;
+      max-width: 780px;
+      margin-right: 20px;
+    }
+    .ph-float {
+      float: left;
+      max-width: 400px;
+      @media screen and (max-width: 1200px) {
+        margin-top: 25px;
+      }
+    }
+  }
 
+  .board-list {
+    background-color: white;
+    border: 1px solid #eeeeee;
     h3 {
       padding: 10px;
-      border-bottom: 1px solid #66b1ff;
-      margin-bottom: 10px;
     }
 
     > div {
@@ -317,12 +361,11 @@ export default {
       flex-wrap: wrap;
       align-content: space-between;
       border-radius: 8px;
-      background-color: #f5faff;
     }
 
     /deep/ .peotry {
       width: 100%;
-      max-width: 300px;
+      max-width: 345px;
       margin: 0 25px 50px 0;
       box-sizing: border-box;
     }
@@ -349,6 +392,9 @@ export default {
         }
       }
     }
+  }
+  .board-list + .board-list {
+    margin-top: 25px;
   }
 
   .board-top-3 /deep/ .peotry {
@@ -394,11 +440,11 @@ export default {
 }
 
 .el-carousel__item:nth-child(2n) {
-  background-color: #e3f1ff;
+  background-color: rgb(225, 255, 232);
 }
 
 .el-carousel__item:nth-child(2n + 1) {
-  background-color: #f5faff;
+  background-color: rgb(209, 224, 255);
 }
 
 @media screen and (max-width: 500px) {

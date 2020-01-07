@@ -5,13 +5,21 @@
         "local": true,
         "target": {
             "name": "peotry-list"
-        }
+        },
+        "gayhub": "https://github.com/luoguibin/sghen-peotry"
     },
     {
         "label": "wiki大法好",
         "local": false,
         "content": "搬砖码农✂的零星砖头，包括Nginx、MySQL、Docker，合作伙伴来自五湖四海的资深搬砖工",
         "target": "http://wiki.sghen.cn"
+    },
+    {
+        "label": "数据质量检核平台Demo",
+        "local": false,
+        "content": "数据质量检核平台Demo",
+        "target": "http://data.sghen.cn",
+        "gayhub": "https://github.com/Hyhyhyhyhyhyh/Django-Data-quality-system"
     },
     {
         "label": "MM Juror",
@@ -28,7 +36,8 @@
             "query": {
                 "login_direct": "http://www.sghen.cn/game/index.html"
             }
-        }
+        },
+        "gayhub": "https://github.com/luoguibin/vue-game"
     },
     {
         "label": "各种砖头测试",

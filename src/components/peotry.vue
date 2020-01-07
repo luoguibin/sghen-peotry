@@ -14,7 +14,7 @@
         {{praiseComments.length}}
       </span>
     </div>
-    <div class="peot">{{peotry.user ? peotry.user.name : ""}}--{{peotry.time | time-format}}</div>
+    <div class="peot">{{peotry.user ? peotry.user.name : ""}}<template v-if="!hideTime">--{{peotry.time | time-format}}</template></div>
 
     <!-- `white-wrap: pre-wrap` and code's format -->
     <div class="content-container" ref="contentEl" :style="{height: contentHeight}">
@@ -141,6 +141,10 @@ export default {
     isDetail: {
       type: Boolean,
       default: true
+    },
+    hideTime: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
