@@ -408,3 +408,13 @@ export default {
   }
 }
 </style>
+
+<style lang="scss">
+.page-home {
+  .board-latest-list {
+    .el-card__body {
+      padding: 20px 20px 20px 5px;
+    }
+  }
+}
+</style>
