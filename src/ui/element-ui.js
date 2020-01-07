@@ -2,6 +2,7 @@ import Vue from 'vue'
 
 import {
   Button,
+  Card,
   Carousel,
   CarouselItem,
   Container,
@@ -32,6 +33,7 @@ import {
 } from 'element-ui'
 
 Vue.use(Button)
+Vue.use(Card)
 Vue.use(Carousel)
 Vue.use(CarouselItem)
 Vue.use(Container)

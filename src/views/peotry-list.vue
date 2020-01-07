@@ -21,33 +21,21 @@
     <div v-show="!isLoading && peotries.length === 0" class="show-empty">暂无数据</div>
 
     <div class="list" ref="listEl" @click="onClickImage($event)">
-      <peotry
-        v-for="(peotry, index) in peotries"
-        :key="peotry.id"
-        :peotry="peotry"
-        class="peotry"
-        @on-delete="onDelete"
-        @on-update="onUpdate"
-        @on-comment="onComment"
-        @on-comment-delete="onCommentDelete"
-      >
-        <template>{{(curPage - 1) * limit + index + 1}}</template>
-      </peotry>
+      <template  v-for="(peotry, index) in peotries">
+        <peotry
+          :key="peotry.id"
+          :peotry="peotry"
+          class="peotry"
+          @on-delete="onDelete"
+          @on-update="onUpdate"
+          @on-comment="onComment"
+          @on-comment-delete="onCommentDelete"
+        >
+          <template>{{(curPage - 1) * limit + index + 1}}</template>
+        </peotry>
+        <el-divider :key="peotry.id"></el-divider>
+      </template>
     </div>
-
-    <el-dialog title="图片" :visible.sync="showImage" class="show-image" :show-close="false" center>
-      <el-image :src="showImageUrl">
-        <div slot="error" class="image-error-slot">
-          <i class="el-icon-picture-outline"></i>
-          <p>图片加载失败</p>
-        </div>
-      </el-image>
-
-      <div v-if="curImgEl" class="show-image_btns">
-        <el-button type="text" v-show="curImgEl.previousElementSibling" @click="onClickNearImage(false)">上一张</el-button>
-        <el-button type="text" v-show="curImgEl.nextElementSibling" @click="onClickNearImage(true)">下一张</el-button>
-      </div>
-    </el-dialog>
 
     <el-pagination
       v-show="peotries.length"
@@ -88,9 +76,6 @@ export default {
       showCreate: false,
       showUser: false,
       showUserInfo: {},
-      showImage: false,
-      showImageUrl: '',
-      curImgEl: null,
       updatePeotry: null,
 
       queryUserId: 0,
@@ -326,10 +311,7 @@ export default {
       const el = e.srcElement
       if (el.tagName === 'IMG') {
         const imgType = el.getAttribute('img-type')
-        if (imgType === 'picture') {
-          this.showImageUrl = el.getAttribute('src')
-          this.curImgEl = el
-        } else if (imgType.indexOf('user-') === 0) {
+        if (imgType.indexOf('user-') === 0) {
           if (imgType === 'user-self') {
             return
           }
@@ -342,22 +324,7 @@ export default {
           this.showUser = true
           this.showUserInfo = user
         }
-      } else {
-        this.showImageUrl = ''
       }
-      this.showImage = !!this.showImageUrl
-    },
-
-    onClickNearImage (isNext) {
-      if (!this.curImgEl) {
-        return
-      }
-      const el = isNext ? this.curImgEl.nextElementSibling : this.curImgEl.previousElementSibling
-      if (!el) {
-        return
-      }
-      this.curImgEl = el
-      this.showImageUrl = el.getAttribute('src')
     },
 
     ...mapActions({
@@ -374,8 +341,8 @@ export default {
 <style lang="scss" scoped>
 .peotry-list {
   min-height: inherit;
-  max-width: 500px;
-  padding-top: 20px;
+  max-width: 800px;
+  padding: 20px 8px;
   margin: 0 auto;
 
   .list {

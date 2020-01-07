@@ -17,7 +17,7 @@
     {
         "label": "数据质量检核平台Demo",
         "local": false,
-        "content": "数据质量检核平台Demo",
+        "content": "数据质量平台包括了规则库构建、执行检核、问题检核、分析报告、形成知识库体系五大功能",
         "target": "http://data.sghen.cn",
         "gayhub": "https://github.com/Hyhyhyhyhyhyh/Django-Data-quality-system"
     },

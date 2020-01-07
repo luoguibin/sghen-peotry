@@ -24,6 +24,17 @@ span {
     margin: 0 auto;
 }
 
+.sg-flex {
+    display: flex;
+    .sg-flex-main {
+        flex: 1;
+    }
+}
+.sg-flex-column {
+    flex-direction: column;
+    height: 100%;
+}
+
 .show-image {
     .el-dialog__body {
       text-align: center !important;

@@ -1,5 +1,5 @@
 <template>
-  <div class="peotry">
+  <div :class="['peotry', 'peotry-' + mode]">
     <img class="peotry-user" img-type="user-self" :src="peotry.user | user-icon" />
     <div class="title">
       <span
@@ -14,11 +14,20 @@
         {{praiseComments.length}}
       </span>
     </div>
-    <div class="peot">{{peotry.user ? peotry.user.name : ""}}<template v-if="!hideTime">--{{peotry.time | time-format}}</template></div>
+    <div class="peot">
+      <template v-if="mode === 'row'">
+        {{peotry.user ? '--' + peotry.user.name : ""}}
+        <span v-if="!hideTime">于{{peotry.time | time-format}}</span>
+      </template>
+      <template v-else>
+        {{peotry.user ? peotry.user.name : ""}}
+        <span v-if="!hideTime">--{{peotry.time | time-format}}</span>
+      </template>
+    </div>
 
     <!-- `white-wrap: pre-wrap` and code's format -->
     <div class="content-container" ref="contentEl" :style="{height: contentHeight}">
-      <div class="content" v-html="peotry.content"></div>
+      <div :class="{'content': true }" v-html="peotry.content"></div>
       <div class="end" v-if="peotry.end">{{peotry.end}}</div>
     </div>
     <div v-if="canExpand" :class="{'content-expand': true, 'content-expand_shadow': isDetail}">
@@ -28,7 +37,11 @@
 
     <div class="images" v-if="peotryImages.length">
       <template v-for="value in peotryImages">
-        <img alt="image error" img-type="picture" :key="value" :src="value" />
+        <el-image alt="image error" :key="value" :src="value" :preview-src-list="peotryImages" lazy>
+          <div slot="error" class="image-slot">
+            <i class="el-icon-picture-outline"></i>
+          </div>
+        </el-image>
       </template>
     </div>
 
@@ -123,8 +136,6 @@
         :disabled="!peotry.comment.content.trim()"
       >提交</el-button>
     </div>
-
-    <el-divider v-if="isDetail"></el-divider>
   </div>
 </template>
 
@@ -137,6 +148,10 @@ export default {
     peotry: {
       type: Object,
       required: true
+    },
+    mode: {
+      type: String,
+      default: 'column'
     },
     isDetail: {
       type: Boolean,
@@ -432,6 +447,9 @@ $padding-set: 12px;
     padding-bottom: $padding-set;
     font-size: 14px;
     color: #888888;
+    span {
+      margin-left: 8px;
+    }
   }
 
   .content-container {
@@ -441,11 +459,10 @@ $padding-set: 12px;
     .content {
       font-size: $size-content;
       line-height: 26px;
-      box-sizing: border-box;
       white-space: pre-wrap;
+      box-sizing: border-box;
       padding-bottom: $padding-set;
     }
-
     .end {
       font-size: 12px;
       color: #333;
@@ -470,19 +487,17 @@ $padding-set: 12px;
   .images {
     padding-bottom: $padding-set;
     margin-top: 16px;
-    max-width: 320px;
 
     img {
-      width: 83px;
-      height: 75px;
-      margin: 0 5px 5px 0;
+      width: 100px;
+      height: 90px;
+      margin: 3px;
       object-fit: cover;
     }
   }
 
   .peotry-more {
     margin: 5px 0;
-    padding-right: 15px;
     text-align: right;
 
     .peotry-more_icon {
@@ -499,8 +514,7 @@ $padding-set: 12px;
     position: relative;
     margin: 0;
     padding: 5px 10px;
-    margin-right: 10px;
-    background-color: rgba(222, 222, 222, 0.2);
+    background-color: rgba(250, 250, 250, 0.5);
     border-radius: 8px;
 
     .praise-users {
@@ -580,6 +594,19 @@ $padding-set: 12px;
 
     .el-button {
       margin-top: 5px;
+    }
+  }
+}
+
+.peotry-row {
+  .title,
+  .peot {
+    display: inline-block;
+    margin-right: 20px;
+  }
+  .content-container {
+    .content {
+      white-space: normal;
     }
   }
 }

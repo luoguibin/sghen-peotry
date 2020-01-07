@@ -6,22 +6,24 @@
         v-if="carouselItems && carouselItems.length"
         :interval="4000"
         :type="carouselType"
+        indicator-position="outside"
       >
         <el-carousel-item v-for="(item, index) in carouselItems" :key="index">
-          <h3 class="medium">{{ item.label }}</h3>
+          <div class="sg-flex sg-flex-column">
+            <h3>{{ item.label }}</h3>
 
-          <template v-if="item.comp">
-            <div v-if="item.comp === 'peotry'" class="carousel-peotry">
+            <div v-if="item.comp === 'peotry'" class="carousel-peotry sg-flex-main">
               <div v-if="peotry" class="peotry-content" v-html="peotry.content"></div>
             </div>
-          </template>
-          <div v-else class="carousel-description" v-html="item.content || ''"></div>
-          <div style="text-align: right; padding-right: 50px;">
-            <el-button type="text" icon="el-icon-link" @click="onClickCarousel(item)">demo试玩</el-button>
-            <el-button v-if="item.gayhub" type="text" @click="onClickCarousel(item, 'gayhub')">
-              <img style="width: 14px" :src="require('@/assets/img/icon-github.svg')" />
-              github砖头
-            </el-button>
+            <div v-else class="carousel-description sg-flex-main" v-html="item.content || ''"></div>
+
+            <div style="text-align: right; padding: 10px 30px;">
+              <el-button type="text" icon="el-icon-link" @click="onClickCarousel(item)">demo试玩</el-button>
+              <el-button v-if="item.gayhub" type="text" @click="onClickCarousel(item, 'gayhub')">
+                <img style="width: 14px" :src="require('@/assets/img/icon-github.svg')" />
+                github砖头
+              </el-button>
+            </div>
           </div>
         </el-carousel-item>
       </el-carousel>
@@ -30,7 +32,7 @@
         <!-- 诗词主区域 -->
         <div class="ph-main">
           <!-- 热门诗词 -->
-          <div class="board-list board-top-3" @click="onClickImage($event)">
+          <div class="board-list board-top-3">
             <h3>
               {{boards[0].name}}
               <el-button v-if="boards[0].hasMore" type="text" @click="onPeotryMore" class="peotry-more">更多</el-button>
@@ -41,16 +43,17 @@
           </div>
 
           <!-- 最新诗词 -->
-          <div class="board-list" @click="onClickImage($event)">
+          <div class="board-latest-list">
             <h3>
               {{boards[1].name}}
               <el-button v-if="boards[1].hasMore" type="text" @click="onPeotryMore" class="peotry-more">更多</el-button>
             </h3>
             <div v-loading="boards[1].isLoading">
               <el-timeline>
-                <el-timeline-item v-for="peotry in boards[1].list" :key="peotry.id" :timestamp="peotry.time | time-format" placement="top">
+                <el-timeline-item v-for="peotry in boards[1].list" :key="peotry.id"
+                  :timestamp="peotry.time | time-format"  type="success" placement="top">
                   <el-card>
-                    <peotry :peotry="peotry" :hideTime="true"></peotry>
+                    <peotry :peotry="peotry" :hideTime="true" :mode="`row`"></peotry>
                   </el-card>
                 </el-timeline-item>
               </el-timeline>
@@ -61,21 +64,6 @@
         <!-- 右侧诗词概况面板 -->
         <peotry-word-cloud class="ph-float"></peotry-word-cloud>
       </div>
-
-      <!-- todo:重复代码优化 -->
-      <el-dialog title="图片" :visible.sync="showImage" class="show-image" :show-close="false" center>
-        <el-image :src="showImageUrl">
-          <div slot="error" class="image-error-slot">
-            <i class="el-icon-picture-outline"></i>
-            <p>图片加载失败</p>
-          </div>
-        </el-image>
-
-        <div v-if="curImgEl" class="show-image_btns">
-          <el-button type="text" v-show="curImgEl.previousElementSibling" @click="onClickNearImage(false)">上一张</el-button>
-          <el-button type="text" v-show="curImgEl.nextElementSibling" @click="onClickNearImage(true)">下一张</el-button>
-        </div>
-      </el-dialog>
     </div>
   </div>
 </template>
@@ -113,11 +101,7 @@ export default {
         }
       ],
 
-      peotry: null,
-
-      showImage: false,
-      showImageUrl: '',
-      curImgEl: null
+      peotry: null
     }
   },
 
@@ -242,44 +226,6 @@ export default {
       }
     },
 
-    onClickImage (e) {
-      const el = e.srcElement
-      if (el.tagName === 'IMG') {
-        const imgType = el.getAttribute('img-type')
-        if (imgType === 'picture') {
-          this.showImageUrl = el.getAttribute('src')
-          this.curImgEl = el
-        } else if (imgType.indexOf('user-') === 0) {
-          if (imgType === 'user-self') {
-            return
-          }
-          const id = parseInt(imgType.replace('user-', ''))
-          const user = this.userMap[id]
-          if (!user) {
-            this.$message.error('用户账号异常')
-            return
-          }
-          this.showUser = true
-          this.showUserInfo = user
-        }
-      } else {
-        this.showImageUrl = ''
-      }
-      this.showImage = !!this.showImageUrl
-    },
-
-    onClickNearImage (isNext) {
-      if (!this.curImgEl) {
-        return
-      }
-      const el = isNext ? this.curImgEl.nextElementSibling : this.curImgEl.previousElementSibling
-      if (!el) {
-        return
-      }
-      this.curImgEl = el
-      this.showImageUrl = el.getAttribute('src')
-    },
-
     onClickCarousel (item, key) {
       if (key && item[key]) {
         window.open(item[key], '_blank')
@@ -336,6 +282,9 @@ export default {
       float: left;
       max-width: 780px;
       margin-right: 20px;
+      @media screen and (max-width: 1200px) {
+        margin-right: 0;
+      }
     }
     .ph-float {
       float: left;
@@ -393,8 +342,12 @@ export default {
       }
     }
   }
-  .board-list + .board-list {
+  .board-latest-list {
+    padding: 10px;
     margin-top: 25px;
+    h3 {
+      padding-bottom: 10px;
+    }
   }
 
   .board-top-3 /deep/ .peotry {
