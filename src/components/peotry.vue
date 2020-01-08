@@ -1,7 +1,10 @@
 <template>
-  <div :class="['peotry', 'peotry-' + mode]">
-    <img class="peotry-user" img-type="user-self" :src="peotry.user | user-icon" />
-    <div class="title">
+  <div :class="{'peotry': true, 'peotry-peot-icon': hasPeotIcon}">
+    <!-- 诗人头像 -->
+    <img v-if="hasPeotIcon" class="peot-icon" img-type="user-self" :src="peotry.user | user-icon" />
+
+    <!-- 诗词选集及标题、点赞数 -->
+    <div :class="{'peotry-title': true, 'peotry-inline': titleInline}">
       <span
         v-if="peotry.set"
         class="tooltip peotry-set"
@@ -9,19 +12,21 @@
       >{{peotry.set.name}}</span>
       <span v-if="peotry.set && peotry.title" class="peotry-set_dot">*</span>
       <span class="peotry-title" v-show="peotry.title">{{peotry.title}}</span>
-      <span class="peotry-count" v-show="!isDetail && praiseComments.length">
+      <span class="peotry-count" v-show="showPraiseCount && praiseComments.length">
         <i class="el-icon-star-on"></i>
         {{praiseComments.length}}
       </span>
     </div>
-    <div class="peot">
-      <template v-if="mode === 'row'">
+
+    <!-- 诗词作者及创建时间 -->
+    <div :class="{'peot-name': true, 'peotry-inline': titleInline}">
+      <template v-if="titleInline">
         {{peotry.user ? '--' + peotry.user.name : ""}}
-        <span v-if="!hideTime">于{{peotry.time | time-format}}</span>
+        <span v-if="showTime">于{{peotry.time | time-format}}</span>
       </template>
       <template v-else>
         {{peotry.user ? peotry.user.name : ""}}
-        <span v-if="!hideTime">--{{peotry.time | time-format}}</span>
+        <span v-if="showTime">--{{peotry.time | time-format}}</span>
       </template>
     </div>
 
@@ -30,12 +35,14 @@
       <div :class="{'content': true }" v-html="peotry.content"></div>
       <div class="end" v-if="peotry.end">{{peotry.end}}</div>
     </div>
-    <div v-if="canExpand" :class="{'content-expand': true, 'content-expand_shadow': isDetail}">
+
+    <!-- 是否显示扩展按钮 -->
+    <div v-if="canExpand" class="content-expand">
       <p v-show="contentHeight !== 'initial'">...</p>
-      <span @click="onClickExpand">{{contentHeight === 'initial' ? '收起全文' : '展开全文'}}</span>
+      <span @click="onClickExpand">{{contentHeight === 'initial' ? '收起' : expandText}}</span>
     </div>
 
-    <div class="images" v-if="peotryImages.length">
+    <div v-if="showImage && peotryImages.length" class="images">
       <el-image v-for="value in peotryImages" :key="value"
         :src="value" :fit="`cover`" :preview-src-list="peotryImages" :scroll-container="mainScrollBox" lazy>
         <div slot="error" class="image-slot">
@@ -44,8 +51,11 @@
       </el-image>
     </div>
 
-    <div class="peotry-more" v-if="isDetail">
-      <el-dropdown @command="onCommandMore" trigger="click">
+    <div v-show="showMore || showSinglePraise" class="peotry-more">
+      <span v-if="showSinglePraise" @click="onCommentPraise()" style="cursor: pointer;">
+        <i :class="[currentPraise ? 'el-icon-star-on' : 'el-icon-star-off']"></i>
+      </span>
+      <el-dropdown v-else @command="onCommandMore" trigger="click">
         <i class="peotry-more_icon el-icon-more-outline"></i>
 
         <el-dropdown-menu slot="dropdown">
@@ -82,7 +92,7 @@
       </el-dropdown>
     </div>
 
-    <div class="comments" v-if="isDetail && (praiseComments.length || realComments.length)">
+    <div v-if="showComment && (praiseComments.length || realComments.length)" class="comments">
       <div class="praise-users">
         <img
           v-for="comment in praiseComments"
@@ -115,7 +125,7 @@
         <p>{{comment.content}}</p>
       </div>
     </div>
-    <div v-if="isDetail && inComment" class="comment-input">
+    <div v-if="inComment" class="comment-input">
       <h5
         v-if="peotry.comment.toId !== userInfo.id"
         style="text-align: left;"
@@ -140,7 +150,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { baseUrl } from '@/api/config'
+import { imagePrefixxPath } from '@/api/config'
 
 export default {
   props: {
@@ -148,17 +158,77 @@ export default {
       type: Object,
       required: true
     },
-    mode: {
-      type: String,
-      default: 'column'
-    },
-    isDetail: {
+
+    /**
+     * 是否有
+     */
+    hasPeotIcon: {
       type: Boolean,
       default: true
     },
-    hideTime: {
+
+    /**
+     * 标题和作者内联排列
+     */
+    titleInline: {
       type: Boolean,
       default: false
+    },
+
+    /**
+     * 是否显示点赞数
+     */
+    showPraiseCount: {
+      type: Boolean,
+      default: true
+    },
+
+    /**
+     * 是否显示创建时间
+     */
+    showTime: {
+      type: Boolean,
+      default: true
+    },
+
+    /**
+     * 是否显示评论
+     */
+    showComment: {
+      type: Boolean,
+      default: true
+    },
+
+    /**
+     * 是否显示图片
+     */
+    showImage: {
+      type: Boolean,
+      default: true
+    },
+
+    /**
+     * 是否显示更多操作
+     */
+    showMore: {
+      type: Boolean,
+      default: false
+    },
+
+    /**
+     * 是否暂时单一点赞操作
+     */
+    showSinglePraise: {
+      type: Boolean,
+      default: false
+    },
+
+    /**
+     * 扩展按钮
+     */
+    expandText: {
+      type: String,
+      default: '展开全文'
     }
   },
   data () {
@@ -168,7 +238,7 @@ export default {
       clickTime: 0,
       canExpand: false,
       contentHeight: 'initial',
-      baseUrl,
+      imagePrefixxPath,
       mainScrollBox: null
     }
   },
@@ -344,9 +414,9 @@ export default {
       if (imageObj && imageObj.count) {
         return JSON.parse(imageObj.images).map(v => {
           if (v.indexOf('.') === 0) {
-            return '/peotry/images/' + v.substr(1)
+            return imagePrefixxPath + v.substr(1)
           } else {
-            return '/peotry/images/' + v
+            return imagePrefixxPath + v
           }
         })
       } else {
@@ -414,9 +484,8 @@ $padding-set: 12px;
 
 .peotry {
   position: relative;
-  padding-left: 38px;
 
-  .peotry-user {
+  .peot-icon {
     width: 26px;
     height: 26px;
     object-fit: contain;
@@ -425,7 +494,7 @@ $padding-set: 12px;
     top: 0;
   }
 
-  .title {
+  .peotry-title {
     padding-bottom: $padding-set;
 
     .peotry-set {
@@ -448,8 +517,11 @@ $padding-set: 12px;
       }
     }
   }
+  .peotry-title.peotry-inline {
+    margin-right: 10px;
+  }
 
-  .peot {
+  .peot-name {
     padding-bottom: $padding-set;
     font-size: 14px;
     color: #888888;
@@ -481,13 +553,9 @@ $padding-set: 12px;
 
     span {
       cursor: pointer;
-      color: rgb(65, 65, 65);
+      color: rgb(112, 112, 112);
       font-size: 14px;
     }
-  }
-
-  .content-expand_shadow {
-    box-shadow: 0 -5px 3px 5px rgba(255, 255, 255, 0.15);
   }
 
   .images {
@@ -596,23 +664,16 @@ $padding-set: 12px;
       margin-top: 5px;
     }
   }
+
+  .peotry-inline {
+    display: inline-block;
+  }
 }
 
-.peotry-row {
-  .title,
-  .peot {
-    display: inline-block;
-    margin-right: 20px;
-  }
-  .content-container {
-    .content {
-      white-space: normal;
-      @media screen and (max-width: 400px) {
-        white-space: pre-wrap;
-      }
-    }
-  }
+.peotry-peot-icon {
+  padding-left: 38px;
 }
+
 </style>
 
 <style lang="scss">

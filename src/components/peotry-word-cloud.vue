@@ -2,7 +2,7 @@
   <div class="peotry-word-cloud">
     <div class="pwc-container pwc-set-container" v-if="yearPeotryCount">
       <div>
-        <h3 style="padding: 10px 0;">{{ yearNum }}年年度诗词概况</h3>
+        <h3 style="padding: 10px 0;">{{ yearNum - 1 }}年年度诗词概况</h3>
         <p style="text-indent: 2em;">
           本年度共创建{{ yearPeotryCount }}首诗词，其中以选集
           <span class="pwc-span" @click="onClickPeotSet(yearPeotrySets[0])">【{{ yearPeotrySets[0].name }}】</span>

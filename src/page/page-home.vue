@@ -38,7 +38,8 @@
               <el-button v-if="boards[0].hasMore" type="text" @click="onPeotryMore" class="peotry-more">更多</el-button>
             </h3>
             <div v-loading="boards[0].isLoading">
-              <peotry v-for="peotry in boards[0].list" :key="peotry.id" :peotry="peotry" :is-detail="false"></peotry>
+              <peotry v-for="peotry in boards[0].list" :key="peotry.id"
+                :peotry="peotry" :showComment="false"></peotry>
             </div>
           </div>
 
@@ -53,7 +54,7 @@
                 <el-timeline-item v-for="peotry in boards[1].list" :key="peotry.id"
                   :timestamp="peotry.time | time-format"  type="success" placement="top">
                   <el-card>
-                    <peotry :peotry="peotry" :hideTime="true" :mode="`row`"></peotry>
+                    <peotry :peotry="peotry" :titleInline="true" :showTime="false"></peotry>
                   </el-card>
                 </el-timeline-item>
               </el-timeline>
@@ -280,19 +281,18 @@ export default {
     overflow: hidden;
     .ph-main {
       float: left;
-      max-width: calc(100% - 420px);
+      width: calc(100% - 420px);
       margin-right: 20px;
       @media screen and (max-width: 1200px) {
-        max-width: 100%;
+        width: 100%;
         margin-right: 0;
       }
     }
     .ph-float {
       float: left;
-      max-width: 400px;
+      width: 400px;
       @media screen and (max-width: 1200px) {
         width: 100%;
-        max-width: initial;
         margin-top: 25px;
       }
     }

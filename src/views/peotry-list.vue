@@ -25,6 +25,7 @@
         <peotry
           :key="peotry.id"
           :peotry="peotry"
+          :showMore="true"
           class="peotry"
           @on-delete="onDelete"
           @on-update="onUpdate"
