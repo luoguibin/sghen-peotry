@@ -78,8 +78,6 @@ export default {
       showUserInfo: {},
       updatePeotry: null,
 
-      queryUserId: 0,
-
       limit: 10,
       curPage: 1,
       totalPage: 1,
@@ -95,7 +93,6 @@ export default {
 
   created () {
     window.peotryList = this
-    this.queryUserId = this.$route.query.userId || 0
     this.getPeotries()
     this.showBack(true)
     this.pushDropMenu({ command: 'peotry', name: '创建诗词' })
@@ -142,7 +139,6 @@ export default {
       this.showCreate = true
     },
     $route () {
-      this.queryUserId = this.$route.query.userId || 0
       this.getPeotries()
     }
   },
@@ -207,11 +203,12 @@ export default {
       this.isLoading = true
       this.peotries = []
 
+      const routeQuery = this.$route.query
       queryPeotries({
         limit: this.limit,
         page: this.curPage,
-        userId: this.queryUserId || 0,
-        needComment: true
+        needComment: true,
+        ...routeQuery
       })
         .then(resp => {
           const data = resp.data

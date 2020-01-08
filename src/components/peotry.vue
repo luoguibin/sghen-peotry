@@ -607,6 +607,9 @@ $padding-set: 12px;
   .content-container {
     .content {
       white-space: normal;
+      @media screen and (max-width: 400px) {
+        white-space: pre-wrap;
+      }
     }
   }
 }
@@ -617,9 +620,12 @@ $padding-set: 12px;
   .images {
     margin: -3px;
     .el-image {
-      width: 110px;
-      height: 100px;
+      max-width: 90px;
+      max-height: 80px;
       margin: 3px;
+      .image-slot {
+        font-size: 25px;
+      }
     }
   }
 }

@@ -5,17 +5,18 @@
         <h3 style="padding: 10px 0;">2019年年度诗词概况</h3>
         <p style="text-indent: 2em;">
           本年度共创建{{ yearPeotryCount }}首诗词，其中以选集
-          <span style="color: #148acf; white-space: pre;">【{{ yearPeotrySets[0].name }}】</span>
+          <span class="pwc-span" @click="onClickPeotSet(yearPeotrySets[0])">【{{ yearPeotrySets[0].name }}】</span>
           {{ yearPeotrySets[0].count }}首稳居榜首
           <template v-if="yearPoets.length">
             ；诗词创建数量最多的是
-            <span style="color: #148acf; white-space: pre; cursor: pointer;" @click="onPeotPage(yearPoets[0])">[{{ yearPoets[0].name }}]</span>
+            <span class="pwc-span" @click="onClickPeot(yearPoets[0])">[{{ yearPoets[0].name }}]</span>
             ，共创建{{ yearPoets[0].count }}首。
           </template>
         </p>
       </div>
       <h4 style="padding: 20px 0 10px;">选集TOP5</h4>
-      <span v-for="item in yearPeotrySets" :key="item.id" class="pwc-set-item">
+      <span v-for="item in yearPeotrySets" :key="item.id" class="pwc-set-item sg-label"
+        @click="onClickPeotSet(item)">
         {{ item.name }}
         <span>({{ item.count }}首)</span>
       </span>
@@ -23,12 +24,13 @@
 
     <div class="pwc-container" v-if="!isWordsErr">
       <h3 style="padding: 10px 0;">诗词云库</h3>
-      <div ref="container" style="height: 348px;"></div>
+      <div ref="container" class="pwc-main"></div>
     </div>
 
     <div class="pwc-container pwc-set-container">
       <h3 style="padding: 10px 0;">选集总排行榜</h3>
-      <span v-for="item in peotrySets" :key="item.id" class="pwc-set-item">
+      <span v-for="item in peotrySets" :key="item.id" class="pwc-set-item sg-label"
+        @click="onClickPeotSet(item)">
         {{ item.name }}
         <span>({{ item.count }}首)</span>
       </span>
@@ -160,7 +162,7 @@ export default {
         ]
       })
       this.chart.on('click', params => {
-        console.log(params.data)
+        this.onPeotryPage({ content: params.data.name })
       })
     },
     getHotWords () {
@@ -209,8 +211,14 @@ export default {
       })
     },
 
-    onPeotPage ({ id }) {
+    onClickPeot ({ id }) {
       this.$router.push({ name: 'peotry-list', query: { userId: id } })
+    },
+    onClickPeotSet ({ id }) {
+      this.onPeotryPage({ setId: id })
+    },
+    onPeotryPage (query) {
+      this.$router.push({ name: 'peotry-list', query })
     }
   }
 }
@@ -219,6 +227,16 @@ export default {
 <style lang="scss" scoped>
 .peotry-word-cloud {
   max-width: 400px;
+
+  .pwc-main {
+    width: 348px;
+    height: 348px;
+    margin: 0 auto;
+    @media screen and (max-width: 400px) {
+      width: 300px;
+      height: 300px;
+    }
+  }
 
   .pwc-container {
     width: 100%;
@@ -235,22 +253,19 @@ export default {
     height: auto;
     .pwc-set-item {
       display: inline-block;
-      padding: 5px 8px;
       margin: 0 15px 15px 0;
-      font-size: 20px;
-      color: white;
-      border-radius: 8px;
-      background-color: rgb(58, 135, 155);
-      cursor: pointer;
-      &:hover {
-        background-color: rgba(58, 135, 155, 0.9);
-      }
-      &:active {
-        background-color: rgba(58, 135, 155, 0.75);
-      }
       span {
-        font-size: 16px;
+        font-size: 14px;
       }
+    }
+  }
+
+  .pwc-span {
+    color: #148acf;
+    white-space: pre;
+    cursor: pointer;
+    &:active {
+      color: rgba(20, 139, 207, 0.75);
     }
   }
 }

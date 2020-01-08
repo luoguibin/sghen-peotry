@@ -291,6 +291,8 @@ export default {
       float: left;
       max-width: 400px;
       @media screen and (max-width: 1200px) {
+        width: 100%;
+        max-width: initial;
         margin-top: 25px;
       }
     }
@@ -317,8 +319,11 @@ export default {
       width: 100%;
       box-sizing: border-box;
       margin-bottom: 20px;
-      @media screen and (min-width: 1200px) {
+      @media screen and (min-width: 600px) {
         width: 50%;
+      }
+      @media screen and (min-width: 900px) {
+        width: 33%;
       }
       @media screen and (min-width: 1680px) {
         width: 33%;

@@ -38,6 +38,21 @@ span {
     height: 100%;
 }
 
+.sg-label {
+    padding: 3px 8px;
+    color: white;
+    font-size: 16px;
+    border-radius: 6px;
+    background-color: rgb(90, 141, 170);
+    cursor: pointer;
+    &:hover {
+        background-color: rgba(90, 141, 170, 0.9);
+    }
+    &:active {
+        background-color: rgba(90, 141, 170, 0.75);
+    }
+}
+
 .show-image {
     .el-dialog__body {
       text-align: center !important;
