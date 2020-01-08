@@ -2,7 +2,7 @@
   <div class="peotry-word-cloud">
     <div class="pwc-container pwc-set-container" v-if="yearPeotryCount">
       <div>
-        <h3 style="padding: 10px 0;">2019年年度诗词概况</h3>
+        <h3 style="padding: 10px 0;">{{ yearNum }}年年度诗词概况</h3>
         <p style="text-indent: 2em;">
           本年度共创建{{ yearPeotryCount }}首诗词，其中以选集
           <span class="pwc-span" @click="onClickPeotSet(yearPeotrySets[0])">【{{ yearPeotrySets[0].name }}】</span>
@@ -55,6 +55,7 @@ export default {
       maskImage: null,
 
       peotrySets: [],
+      yearNum: new Date().getFullYear(),
       yearPeotrySets: [],
       yearPeotryCount: 0,
       yearPoets: []
@@ -190,12 +191,18 @@ export default {
     },
 
     getPopularPoetrySets () {
-      getDynamicData({ suffixPath: 'peotry-set/popular' }).then(({ data }) => {
-        this.peotrySets = data.data
-      })
+      getDynamicData({ suffixPath: 'peotry-set/popular' })
+        .then(({ data }) => {
+          this.peotrySets = data.data
+        })
     },
     getYearPoetrySets () {
-      getDynamicData({ suffixPath: 'peotry-set/list-2019' }).then(({ data }) => {
+      const year = this.yearNum
+      getDynamicData({
+        suffixPath: 'peotry-set/list-year',
+        date0: (year - 1) + '-01-01 00:00:00',
+        date1: year + '-01-01 00:00:00'
+      }).then(({ data }) => {
         const list = data.data || []
         let count = 0
         list.forEach(o => {
@@ -206,13 +213,18 @@ export default {
       })
     },
     getYearPoets () {
-      getDynamicData({ suffixPath: 'peotry-user/list-2019' }).then(({ data }) => {
+      const year = this.yearNum
+      getDynamicData({
+        suffixPath: 'peotry-user/list-year',
+        date0: (year - 1) + '-01-01 00:00:00',
+        date1: year + '-01-01 00:00:00'
+      }).then(({ data }) => {
         this.yearPoets = data.data || []
       })
     },
 
     onClickPeot ({ id }) {
-      this.$router.push({ name: 'peotry-list', query: { userId: id } })
+      this.onPeotryPage({ userId: id })
     },
     onClickPeotSet ({ id }) {
       this.onPeotryPage({ setId: id })
