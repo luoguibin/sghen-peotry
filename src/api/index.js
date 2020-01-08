@@ -173,3 +173,33 @@ export const postDynamicData = data => request({
   method: 'post',
   data
 })
+
+/**
+ * 获取热门诗词选集
+ * @param {Object} params
+ */
+export const getPopularPoetrySets = params => request({
+  url: '/v1/api/get/peotry-set/popular',
+  method: 'get',
+  params
+})
+
+/**
+ * 获取年度诗词选集
+ * @param {Object} params
+ */
+export const getYearPoetrySets = params => request({
+  url: '/v1/api/get/peotry-set/list-year',
+  method: 'get',
+  params
+})
+
+/**
+ * 根据年度诗词创建数获取诗词作者列表
+ * @param {Object} params
+ */
+export const getYearPoets = params => request({
+  url: '/v1/api/get/peotry-user/list-year',
+  method: 'get',
+  params
+})

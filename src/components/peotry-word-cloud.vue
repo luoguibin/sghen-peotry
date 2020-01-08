@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import { getHotWords, getDynamicData } from '@/api'
+import { getHotWords, getPopularPoetrySets, getYearPoetrySets, getYearPoets } from '@/api'
 import echarts from 'echarts'
 import 'echarts-wordcloud'
 
@@ -191,15 +191,13 @@ export default {
     },
 
     getPopularPoetrySets () {
-      getDynamicData({ suffixPath: 'peotry-set/popular' })
-        .then(({ data }) => {
-          this.peotrySets = data.data
-        })
+      getPopularPoetrySets().then(({ data }) => {
+        this.peotrySets = data.data
+      })
     },
     getYearPoetrySets () {
       const year = this.yearNum
-      getDynamicData({
-        suffixPath: 'peotry-set/list-year',
+      getYearPoetrySets({
         date0: (year - 1) + '-01-01 00:00:00',
         date1: year + '-01-01 00:00:00'
       }).then(({ data }) => {
@@ -214,7 +212,7 @@ export default {
     },
     getYearPoets () {
       const year = this.yearNum
-      getDynamicData({
+      getYearPoets({
         suffixPath: 'peotry-user/list-year',
         date0: (year - 1) + '-01-01 00:00:00',
         date1: year + '-01-01 00:00:00'

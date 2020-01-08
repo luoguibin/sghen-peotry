@@ -6,7 +6,7 @@
     </div>
 
     <!-- 列表 -->
-    <el-table style="width: 100%" :data="tableData" v-loading="tableLoading" border>
+    <el-table style="width: 100%" :data="tableData" v-loading="tableLoading" stripe border>
       <el-table-column prop="id" label="ID" width="160px"></el-table-column>
       <el-table-column show-overflow-tooltip prop="suffixPath" label="路由" width="150px"></el-table-column>
       <el-table-column show-overflow-tooltip prop="name" label="名称" width="150px"></el-table-column>
@@ -210,12 +210,17 @@ export default {
       // this.onTest()
     },
     onTest () {
-      this.testLoading = true
       const obj = this.dialogObj
       let params = {}
       if (this.testParams) {
-        params = JSON.parse(this.testParams)
+        try {
+          params = JSON.parse(this.testParams)
+        } catch (e) {
+          this.$message.warning('输入参数格式错误')
+          return
+        }
       }
+      this.testLoading = true
       getDynamicData({ suffixPath: obj.suffixPath, ...params }).then(res => {
         this.testResult = res.data
         this.$message.success('接口测试成功')
