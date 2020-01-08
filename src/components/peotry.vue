@@ -620,8 +620,8 @@ $padding-set: 12px;
   .images {
     margin: -3px;
     .el-image {
-      max-width: 90px;
-      max-height: 80px;
+      width: 90px;
+      height: 80px;
       margin: 3px;
       .image-slot {
         font-size: 25px;
