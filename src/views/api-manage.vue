@@ -12,6 +12,7 @@
       <el-table-column show-overflow-tooltip prop="name" label="名称" width="150px"></el-table-column>
       <el-table-column show-overflow-tooltip prop="comment" label="说明" width="200px"></el-table-column>
       <el-table-column show-overflow-tooltip prop="content" label="SQL语句"></el-table-column>
+      <el-table-column prop="count" label="调用次数"></el-table-column>
       <el-table-column prop="timeUpdate" label="更新时间" width="160px">
         <template slot-scope="scope">
           {{ scope.row.timeUpdate | time-format }}
