@@ -88,6 +88,13 @@ export const deletePeotry = (id, userId) =>
     data: { id, userId }
   })
 
+export const addTempPeotry = params =>
+  request({
+    url: '/v1/peotry/add-temp',
+    method: 'get',
+    params
+  })
+
 export const createComment = data =>
   request({
     url: '/v1/comment/create',

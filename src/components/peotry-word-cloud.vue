@@ -184,8 +184,12 @@ export default {
     },
 
     setChartData () {
+      let words = this.words
+      if (words.length > 18) {
+        words = words.splice(0, 18)
+      }
       this.chart.setOption({
-        series: [{ data: this.words }]
+        series: [{ data: words }]
       })
       this.chart.resize()
     },

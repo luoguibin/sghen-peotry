@@ -1,6 +1,7 @@
 <template>
   <div class="api-manage">
     <div class="am-header">
+      <el-button @click="onConfirmTempPeotry">添加系统临时诗词</el-button>
       <el-button @click="queryDynamicApi()">刷新</el-button>
       <el-button type="primary" @click="onOpenUpdate()">新建</el-button>
     </div>
@@ -90,7 +91,8 @@ import {
   createDynamicApi,
   updateDynamicApi,
   deleteDynamicApi,
-  getDynamicData
+  getDynamicData,
+  addTempPeotry
 } from '@/api'
 
 export default {
@@ -136,6 +138,23 @@ export default {
   },
 
   methods: {
+    /**
+     * 添加系统临时诗词
+     */
+    onConfirmTempPeotry () {
+      this.$confirm('是否添加系统临时诗词，请确认此次操作的数据不重复？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          addTempPeotry().then(resp => {
+            this.$message.success(resp.data.msg)
+          })
+        })
+        .catch(e => {})
+    },
+
     handleCurrentChange () {
       this.queryDynamicApi()
     },
