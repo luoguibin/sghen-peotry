@@ -1,6 +1,7 @@
 <template>
   <el-dialog
     :title="createValue ? '创建诗词' : '更新诗词'"
+    :close-on-click-modal="false"
     :visible.sync="visible"
     @opened="onDialogOpened"
     @closed="onDialogClosed"
@@ -143,10 +144,17 @@ export default {
     window.peotryCreate = this
   },
   methods: {
-    getPeotrySets () {
+    getPeotrySets (option) {
       queryPeotrySets(this.userInfo.id).then(resp => {
-        const data = resp.data
-        this.peotrySets = data.data
+        const list = (resp.data && resp.data.data) || []
+        this.peotrySets = list
+        if (list.length) {
+          if (option === 'first') {
+            this.newPeotry.setId = list[0].id
+          } else if (option === 'latest') {
+            this.newPeotry.setId = list[list.length - 1].id
+          }
+        }
       })
     },
 
@@ -216,7 +224,7 @@ export default {
           } else {
             createPoetrySet({ name: value }).then(resp => {
               this.$message.success('创建选集成功')
-              this.getPeotrySets()
+              this.getPeotrySets('latest')
             })
           }
         })
@@ -230,6 +238,9 @@ export default {
         type: 'warning'
       }).then(() => {
         deletePeotrySet({ id: set.id }).then(resp => {
+          if (this.newPeotry.setId === set.id) {
+            this.newPeotry.setId = null
+          }
           this.$message.success('删除选集成功')
           this.getPeotrySets()
         })

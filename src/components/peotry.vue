@@ -3,7 +3,7 @@
     <!-- 诗人头像 -->
     <img v-if="hasPeotIcon" class="peot-icon" img-type="user-self" :src="peotry.user | user-icon" />
 
-    <!-- 诗词选集及标题、点赞数 -->
+    <!-- 诗词选集及标题 -->
     <div :class="{'peotry-title': true, 'peotry-inline': titleInline}">
       <span
         v-if="peotry.set"
@@ -12,9 +12,16 @@
       >{{peotry.set.name}}</span>
       <span v-if="peotry.set && peotry.title" class="peotry-set_dot">*</span>
       <span class="peotry-title" v-show="peotry.title">{{peotry.title}}</span>
+    </div>
+
+    <!-- 诗词点赞数 -->
+    <div v-if="showRank" :class="{'peotry-rank': true, 'peotry-inline': titleInline}">
       <span class="peotry-count" v-show="showPraiseCount && praiseComments.length">
-        <i class="el-icon-star-on"></i>
-        {{praiseComments.length}}
+      <i class="el-icon-s-data"></i>
+      {{praiseComments.length}}
+      </span>
+      <span @click="onCommentPraise(true)" class="rank-praise">
+        <i :class="[isPraise ? 'el-icon-star-on' : 'el-icon-star-off']"></i>
       </span>
     </div>
 
@@ -31,17 +38,19 @@
     </div>
 
     <!-- `white-wrap: pre-wrap` and code's format -->
+    <!-- 诗词内容 -->
     <div class="content-container" ref="contentEl" :style="{height: contentHeight}">
       <div :class="{'content': true }" v-html="peotry.content"></div>
       <div class="end" v-if="peotry.end">{{peotry.end}}</div>
     </div>
 
-    <!-- 是否显示扩展按钮 -->
+    <!-- 诗词扩展按钮 -->
     <div v-if="canExpand" class="content-expand">
       <p v-show="contentHeight !== 'initial'">...</p>
       <span @click="onClickExpand">{{contentHeight === 'initial' ? '收起' : expandText}}</span>
     </div>
 
+    <!-- 诗词图片 -->
     <div v-if="showImage && peotryImages.length" class="images">
       <el-image v-for="value in peotryImages" :key="value"
         :src="value" :fit="`cover`" :preview-src-list="peotryImages" :scroll-container="mainScrollBox" lazy>
@@ -51,10 +60,15 @@
       </el-image>
     </div>
 
-    <div v-show="showMore || showSinglePraise" class="peotry-more">
-      <span v-if="showSinglePraise" @click="onCommentPraise()" style="cursor: pointer;">
-        <i :class="[currentPraise ? 'el-icon-star-on' : 'el-icon-star-off']"></i>
-      </span>
+    <!-- 诗词功能按钮 -->
+    <div v-show="showMore" class="peotry-more">
+      <template v-if="showMoreDirect">
+        <el-button type="text" :icon="isPraise ? 'el-icon-star-on' : 'el-icon-star-off'"
+          @click="onCommandMore('praise')">{{isPraise ? "取消点赞" : "点赞"}}</el-button>
+        <!-- 冒泡事件会触发其他区域点击从而隐藏输入框？ -->
+        <el-button type="text" icon="el-icon-chat-dot-square"
+          @click.stop="onCommandMore('comment')">评论</el-button>
+      </template>
       <el-dropdown v-else @command="onCommandMore" trigger="click">
         <i class="peotry-more_icon el-icon-more-outline"></i>
 
@@ -62,15 +76,15 @@
           <el-dropdown-item command="comment">
             <span>
               评论
-              <i class="el-icon-edit-outline"></i>
+              <i class="el-icon-chat-dot-square"></i>
             </span>
           </el-dropdown-item>
 
           <el-dropdown-item command="praise">
             <span>
-              {{currentPraise ? "取消点赞" : "点赞"}}
+              {{isPraise ? "取消点赞" : "点赞"}}
               <i
-                :class="[currentPraise ? 'el-icon-star-on' : 'el-icon-star-off']"
+                :class="[isPraise ? 'el-icon-star-on' : 'el-icon-star-off']"
               ></i>
             </span>
           </el-dropdown-item>
@@ -92,15 +106,18 @@
       </el-dropdown>
     </div>
 
-    <div v-if="showComment && (praiseComments.length || realComments.length)" class="comments">
-      <div class="praise-users">
+    <!-- 诗词评论 -->
+    <div v-if="showComment && peotry.comments && peotry.comments.length" class="comments">
+      <div class="praise-users" v-show="praiseComments.length">
         <img
           v-for="comment in praiseComments"
           :key="comment.id"
           :img-type="'user-' + comment.fromId"
-          :src="(comment.fromUser ? comment.fromUser : '') | user-icon"
+          :src="comment.fromUser | user-icon"
         />
       </div>
+
+      <div v-show="praiseComments.length && realComments.length" class="comments-divider"></div>
 
       <div
         v-for="comment in realComments"
@@ -125,6 +142,8 @@
         <p>{{comment.content}}</p>
       </div>
     </div>
+
+    <!-- 诗词评论输入框 -->
     <div v-if="inComment" class="comment-input">
       <h5
         v-if="peotry.comment.toId !== userInfo.id"
@@ -151,6 +170,10 @@
 <script>
 import { mapState } from 'vuex'
 import { imagePrefixxPath } from '@/api/config'
+import {
+  createComment,
+  deleteComment
+} from '@/api'
 
 export default {
   props: {
@@ -216,9 +239,17 @@ export default {
     },
 
     /**
-     * 是否暂时单一点赞操作
+     * 是否直接展示操作按钮
      */
-    showSinglePraise: {
+    showMoreDirect: {
+      type: Boolean,
+      default: false
+    },
+
+    /**
+     * 是否显示排行
+     */
+    showRank: {
       type: Boolean,
       default: false
     },
@@ -243,6 +274,83 @@ export default {
     }
   },
   inject: ['userMap'],
+  computed: {
+    /**
+     * @returns {Boolean} 返回是否为当前用户创建的诗词
+     */
+    isSelfPeotry () {
+      return this.peotry.user && this.userInfo.id === this.peotry.user.id
+    },
+
+    /**
+     * @returns {Array} 返回诗词的直接可用图片列表
+     */
+    peotryImages () {
+      const imageObj = this.peotry.image
+      if (imageObj && imageObj.count) {
+        return JSON.parse(imageObj.images).map(v => {
+          if (v.indexOf('.') === 0) {
+            return imagePrefixxPath + v.substr(1)
+          } else {
+            return imagePrefixxPath + v
+          }
+        })
+      } else {
+        return []
+      }
+    },
+
+    /**
+     * @returns {Array} 返回用户评论列表
+     */
+    realComments () {
+      if (!this.peotry.comments) return []
+      return this.peotry.comments
+        .filter(comment => comment.toId > 0)
+        .sort(function (o0, o1) {
+          // 按时间排序评论列表
+          const time0 = new Date(o0.createTime).getTime()
+          const time1 = new Date(o1.createTime).getTime()
+          return time0 < time1 ? -1 : 1
+        })
+    },
+
+    /**
+     * @returns {Array} 返回用户点赞列表
+     */
+    praiseComments () {
+      if (!this.peotry.comments) return []
+      return this.peotry.comments
+        .filter(comment => comment.toId === -1 && comment.content === 'praise')
+        .sort(function (o0, o1) {
+          // 按时间排序评论列表
+          const time0 = new Date(o0.createTime).getTime()
+          const time1 = new Date(o1.createTime).getTime()
+          return time0 < time1 ? -1 : 1
+        })
+    },
+
+    /**
+     * @returns {Comment} 返回我的点赞对象
+     */
+    myPraiseComment () {
+      if (!this.userInfo) return
+      return this.praiseComments.find(
+        comment => comment.toId === -1 && comment.fromId === this.userInfo.id
+      )
+    },
+
+    /**
+     * @returns {Boolean} 返回当前登录用户是否点赞当前诗词
+     */
+    isPraise () {
+      return this.myPraiseComment && this.myPraiseComment.content === 'praise'
+    },
+
+    ...mapState({
+      userInfo: state => state.user
+    })
+  },
   created () {
     const mainScrollEl = document.getElementById('main-scroll')
     if (mainScrollEl && mainScrollEl.children) {
@@ -321,9 +429,8 @@ export default {
       this.checkComment(toId)
       this.$nextTick(() => {
         this.$refs.commentEl.focus()
+        this.setOutClick(true)
       })
-
-      this.setOutClick(true)
     },
 
     setOutClick (flag) {
@@ -374,106 +481,66 @@ export default {
           })
             .then(() => {
               this.inComment = false
-              this.$emit('on-comment-delete', commentId, this.peotry.id)
+              this.onCommentDelete(commentId)
             })
             .catch(e => {})
         }
       }
     },
-    onCommentPraise () {
+    onCommentPraise (needEmit) {
       if (!this.userInfo.token) {
         this.$message.warning('请登录后再操作')
         return
       }
       this.checkComment(-1)
-      const comment = this.peotry.comment
-      comment.id = this.currentPraise ? this.myPraiseComment.id : comment.id
-      comment.content = this.currentPraise ? 'unpraise' : 'praise'
 
-      this.onCommentSubmit()
-    },
-    onCommentSubmit () {
-      this.$emit('on-comment', this.peotry.comment, this.peotry.id)
-      this.setOutClick(false)
-      this.inComment = false
-    }
-  },
-  computed: {
-    /**
-     * @returns {Boolean} 返回是否为当前用户创建的诗词
-     */
-    isSelfPeotry () {
-      return this.peotry.user && this.userInfo.id === this.peotry.user.id
-    },
-
-    /**
-     * @returns {Array} 返回诗词的直接可用图片列表
-     */
-    peotryImages () {
-      const imageObj = this.peotry.image
-      if (imageObj && imageObj.count) {
-        return JSON.parse(imageObj.images).map(v => {
-          if (v.indexOf('.') === 0) {
-            return imagePrefixxPath + v.substr(1)
-          } else {
-            return imagePrefixxPath + v
-          }
-        })
+      if (this.isPraise) {
+        this.onCommentDelete(this.myPraiseComment.id, needEmit)
       } else {
-        return []
+        this.peotry.comment.content = 'praise'
+        this.onCommentSubmit(needEmit)
       }
     },
-
     /**
-     * @returns {Array} 返回用户评论列表
+     * 提交诗词评论
      */
-    realComments () {
-      if (!this.peotry.comments) return []
-      return this.peotry.comments
-        .filter(comment => comment.toId > 0)
-        .sort(function (o0, o1) {
-          // 按时间排序评论列表
-          const time0 = new Date(o0.createTime).getTime()
-          const time1 = new Date(o1.createTime).getTime()
-          return time0 < time1 ? -1 : 1
+    onCommentSubmit (needEmit) {
+      createComment(this.peotry.comment).then(resp => {
+        const comment = resp.data.data
+        this.addComment(comment)
+        this.$emit('update', { type: 'comment-create', isPraise: comment.toId === -1 })
+      })
+
+      this.setOutClick(false)
+      this.inComment = false
+    },
+    /**
+     * 添加诗词本地评论
+     */
+    addComment (comment) {
+      comment.fromUser = this.userMap[comment.fromId]
+      if (!this.peotry.comments) {
+        this.$set(this.peotry, 'comments', [])
+      }
+      window.testPeotry = this
+      this.peotry.comments.push(comment)
+    },
+    /**
+     * 删除某条评论
+     * @param {Integer} id 评论对象id
+     * @param {Boolean} needEmit 是否需要抛出事件
+     */
+    onCommentDelete (id, needEmit) {
+      deleteComment({ id, fromId: this.userInfo.id }).then(resp => {
+        const index = this.peotry.comments.findIndex(o => o.id === id)
+        const comment = this.peotry.comments.splice(index, 1)[0]
+        this.$emit('update', {
+          type: 'comment-delete',
+          peotryId: this.peotry.id,
+          isPraise: comment.toId === -1
         })
-    },
-
-    /**
-     * @returns {Array} 返回用户点赞列表
-     */
-    praiseComments () {
-      if (!this.peotry.comments) return []
-      return this.peotry.comments
-        .filter(comment => comment.toId === -1 && comment.content === 'praise')
-        .sort(function (o0, o1) {
-          // 按时间排序评论列表
-          const time0 = new Date(o0.createTime).getTime()
-          const time1 = new Date(o1.createTime).getTime()
-          return time0 < time1 ? -1 : 1
-        })
-    },
-
-    /**
-     * @returns {Comment} 返回我的点赞对象
-     */
-    myPraiseComment () {
-      if (!this.userInfo) return
-      return this.praiseComments.find(
-        comment => comment.toId === -1 && comment.fromId === this.userInfo.id
-      )
-    },
-
-    /**
-     * @returns {Boolean} 返回当前登录用户是否点赞当前诗词
-     */
-    currentPraise () {
-      return this.myPraiseComment && this.myPraiseComment.content === 'praise'
-    },
-
-    ...mapState({
-      userInfo: state => state.user
-    })
+      })
+    }
   }
 }
 </script>
@@ -507,18 +574,34 @@ $padding-set: 12px;
     .peotry-title {
       font-size: 16px;
     }
-    .peotry-count {
-      margin-left: 15px;
-      font-size: 14px;
-      i {
-        font-size: 20px;
-        color: #e6a23c;
-        vertical-align: bottom;
-      }
-    }
   }
   .peotry-title.peotry-inline {
     margin-right: 10px;
+  }
+
+  .peotry-rank {
+    padding: 2px 5px;
+    background-color: #eeeeee;
+
+    .peotry-count {
+      font-size: 14px;
+      i {
+        font-size: 20px;
+        color: #a4c8ff;
+        vertical-align: bottom;
+      }
+    }
+    .rank-praise {
+      cursor: pointer;
+      margin-left: 8px;
+      .el-icon-star-on {
+        font-size: 15px;
+        color: #e6a23c;
+      }
+      .el-icon-star-off {
+        font-size: 15px;
+      }
+    }
   }
 
   .peot-name {
@@ -538,6 +621,7 @@ $padding-set: 12px;
       font-size: $size-content;
       line-height: 26px;
       white-space: pre-wrap;
+      word-break: break-all;
       box-sizing: border-box;
       padding-bottom: $padding-set;
     }
@@ -567,7 +651,6 @@ $padding-set: 12px;
   .peotry-more {
     margin: 5px 0;
     text-align: right;
-
     .peotry-more_icon {
       font-size: 20px;
       cursor: pointer;
@@ -582,14 +665,14 @@ $padding-set: 12px;
     position: relative;
     margin: 0;
     padding: 5px 10px;
-    background-color: rgba(250, 250, 250, 0.5);
+    background-color: rgba(0, 0, 0, 0.1);
     border-radius: 8px;
 
-    .praise-users {
-      margin-top: 10px;
-      margin-bottom: 5px;
+    .comments-divider {
       border-bottom: 1px solid white;
-      line-height: 35px;
+    }
+
+    .praise-users {
       user-select: none;
 
       img {
@@ -614,7 +697,7 @@ $padding-set: 12px;
       left: 8px;
       top: -10px;
       border: solid 10px transparent;
-      border-bottom-color: rgba(250, 250, 250, 0.5);
+      border-bottom-color: rgba(0, 0, 0, 0.1);
       border-top-width: 0;
     }
 
@@ -651,6 +734,7 @@ $padding-set: 12px;
       p {
         white-space: pre-line;
         word-break: break-all;
+        line-height: 21px;
       }
     }
   }

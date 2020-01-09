@@ -26,11 +26,8 @@
           :key="peotry.id"
           :peotry="peotry"
           :showMore="true"
-          class="peotry"
           @on-delete="onDelete"
           @on-update="onUpdate"
-          @on-comment="onComment"
-          @on-comment-delete="onCommentDelete"
         >
           <template>{{(curPage - 1) * limit + index + 1}}</template>
         </peotry>
@@ -61,9 +58,7 @@ import PeotryCreate from '@/components/peotry-create'
 import {
   queryUsers,
   queryPeotries,
-  deletePeotry,
-  createComment,
-  deleteComment
+  deletePeotry
 } from '@/api'
 
 export default {
@@ -229,14 +224,22 @@ export default {
     onDelete (peotry) {
       if (!peotry || !peotry.id) return
 
-      deletePeotry(peotry.id, this.userInfo.id).then(resp => {
-        this.$message.success('删除成功')
-        if (this.peotries.length === 1) {
-          this.curPage--
-        } else {
-          this.getPeotries()
-        }
+      this.$confirm('是否删除该诗词？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
+        .then(() => {
+          deletePeotry(peotry.id, this.userInfo.id).then(resp => {
+            this.$message.success('删除成功')
+            if (this.peotries.length === 1) {
+              this.curPage--
+            } else {
+              this.getPeotries()
+            }
+          })
+        })
+        .catch(e => {})
     },
 
     onUpdate (peotry) {
@@ -254,55 +257,6 @@ export default {
         this.curPage = 1
       }
       this.getPeotries(createValue)
-    },
-
-    onComment (comment, peotryId) {
-      if (!this.userInfo.token) {
-        this.$message.warning('请登录后再操作')
-        this.showLogin()
-        return
-      }
-      createComment(comment).then(resp => {
-        comment.id = resp.data.data
-        if (comment.toId > 0) {
-          this.$message.success('评论成功')
-          this.addComment(peotryId, comment)
-          return
-        }
-        if (comment.content.indexOf('unpraise') !== -1 && peotryId) {
-          this.spliceComment(peotryId, comment.id)
-        } else {
-          this.addComment(peotryId, comment)
-        }
-      })
-    },
-
-    addComment (peotryId, comment) {
-      const peotry = this.peotries.find(o => o.id === peotryId)
-      if (peotry) {
-        // window.testPeotry = peotry
-        const newComment = JSON.parse(JSON.stringify(comment))
-        newComment.createTime = new Date().toJSON()
-        peotry.comments.push(newComment)
-      }
-    },
-
-    spliceComment (peotryId, id) {
-      this.peotries.forEach(peotry => {
-        if (peotry.id === peotryId && peotry.comments) {
-          const index = peotry.comments.findIndex(comment => comment.id === id)
-          if (index !== -1) {
-            peotry.comments.splice(index, 1)
-          }
-        }
-      })
-    },
-
-    onCommentDelete (id, peotryId) {
-      deleteComment({ id, fromId: this.userInfo.id }).then(resp => {
-        this.$message.success('删除成功')
-        this.spliceComment(peotryId, id)
-      })
     },
 
     onClickImage (e) {

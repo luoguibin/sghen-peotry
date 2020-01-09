@@ -39,7 +39,8 @@
             </h3>
             <div v-loading="boards[0].isLoading">
               <peotry v-for="peotry in boards[0].list" :key="peotry.id"
-                :peotry="peotry" :showComment="false"></peotry>
+                :peotry="peotry" :titleInline="true" :showComment="false" :showRank="true"
+                  @update="onUpdatePeotry($event, 0)"></peotry>
             </div>
           </div>
 
@@ -47,14 +48,16 @@
           <div class="board-latest-list">
             <h3>
               {{boards[1].name}}
-              <el-button v-if="boards[1].hasMore" type="text" @click="onPeotryMore" class="peotry-more">更多</el-button>
+              <el-button v-if="boards[1].hasMore" class="peotry-more"
+                type="text" @click="onPeotryMore">更多</el-button>
             </h3>
             <div v-loading="boards[1].isLoading">
               <el-timeline>
                 <el-timeline-item v-for="peotry in boards[1].list" :key="peotry.id"
                   :timestamp="peotry.time | time-format"  type="success" placement="top">
                   <el-card>
-                    <peotry :peotry="peotry" :titleInline="true" :showTime="false"></peotry>
+                    <peotry :peotry="peotry" :titleInline="true" :showTime="false" :showMore="true"
+                      :showMoreDirect="true" @update="onUpdatePeotry($event, 1)"></peotry>
                   </el-card>
                 </el-timeline-item>
               </el-timeline>
@@ -197,8 +200,6 @@ export default {
               idsSet.add(comment.toId)
             }
           })
-        } else {
-          peotry.comments = []
         }
       })
 
@@ -224,6 +225,29 @@ export default {
             })
           })
         })
+      }
+    },
+
+    /**
+     * 更新列表中的诗词，例如点赞、评论操作
+     * @param {Object} e 操作对象
+     * @param {Integer} index 列表下标
+     */
+    onUpdatePeotry (e, index) {
+      switch (e.type) {
+        case 'comment-create':
+        case 'comment-delete':
+          const board = this.boards[index]
+          if (e.isPraise && board.key === 'hot') {
+            const isMatch = board.list.some(o => o.id === e.peotryId)
+            if (isMatch) {
+              this.queryPopularPeotries()
+            }
+            // 当点赞数超过一定数量时，最新诗词列表的点赞不影响热门诗词列表
+          }
+          break
+        default:
+          break
       }
     },
 
@@ -320,16 +344,20 @@ export default {
       box-sizing: border-box;
       margin-bottom: 20px;
       @media screen and (min-width: 600px) {
+        padding-right: 10px;
         width: 50%;
       }
       @media screen and (min-width: 900px) {
+        padding-right: 10px;
         width: 33%;
       }
       @media screen and (min-width: 1680px) {
+        padding-right: 10px;
         width: 33%;
       }
       @media screen and (min-width: 1900px) {
-         width: 25%;
+        padding-right: 10px;
+        width: 25%;
       }
     }
 
@@ -366,21 +394,30 @@ export default {
 
   .board-top-3 /deep/ .peotry {
     &:nth-child(2) {
-      .title .peotry-count {
+      .peotry-rank .peotry-count {
         color: rgb(187, 47, 47);
         font-weight: bold;
+        i {
+          color: inherit;
+        }
       }
     }
     &:nth-child(3) {
-      .title .peotry-count {
+      .peotry-rank .peotry-count {
         color: rgb(19, 109, 19);
         font-weight: bold;
+        i {
+          color: inherit;
+        }
       }
     }
     &:nth-child(4) {
-      .title .peotry-count {
+      .peotry-rank .peotry-count {
         color: rgb(63, 63, 219);
         font-weight: bold;
+        i {
+          color: inherit;
+        }
       }
     }
   }

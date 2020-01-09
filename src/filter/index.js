@@ -1,7 +1,7 @@
 import { baseUrl } from '@/api/config'
 
 export const userIconFilter = function (v) {
-  let iconUrl = v
+  let iconUrl = v || ''
   if (v instanceof Object) {
     iconUrl = v.iconUrl
   }
