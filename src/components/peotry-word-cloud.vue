@@ -84,7 +84,7 @@ export default {
         tooltip: {
           show: true,
           formatter: o => {
-            return o.data.name + '&nbsp;&nbsp;&nbsp;共<span style="padding: 0 3px;">' + o.data.value + '</span>篇'
+            return '词频率<span style="padding: 0 3px;">' + o.data.rate + '</span>'
           }
         },
         series: [
@@ -169,14 +169,26 @@ export default {
     getHotWords () {
       this.isWordsErr = false
       getHotWords().then(res => {
-        this.words = res.data
+        let words = res.data
           .filter(o => o[1] > 1)
           .map(o => {
             return {
               name: o[0],
-              value: o[1]
+              value: +o[1],
+              rate: 0
             }
           })
+
+        // 计算词频率
+        let total = 0
+        words.forEach(o => {
+          total += o.value
+        })
+        words.forEach(o => {
+          o.rate = Number(o.value / total).toFixed(2)
+        })
+
+        this.words = words
         this.setChartData()
       }).catch(() => {
         this.isWordsErr = true
