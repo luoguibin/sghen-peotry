@@ -26,7 +26,7 @@
     </div>
 
     <!-- 诗词作者及创建时间 -->
-    <div :class="{'peot-name': true, 'peotry-inline': titleInline}">
+    <div :class="{'peot-name': true, 'peotry-inline': titleInline && !showRank}">
       <template v-if="titleInline">
         {{peotry.user ? '--' + peotry.user.name : ""}}
         <span v-if="showTime">于{{peotry.time | time-format}}</span>

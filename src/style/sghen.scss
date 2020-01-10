@@ -1,0 +1,41 @@
+// 容器
+.sg-container {
+    max-width: 1200px;
+    min-width: 300px;
+    margin: 0 auto;
+    @media screen and (min-width: 1680px) {
+        max-width: 1440px;
+    }
+    @media screen and (min-width: 1900px) {
+        max-width: 1680px;
+    }
+}
+
+//flex布局
+.sg-flex {
+    display: flex;
+    flex-direction: row;
+    .sg-flex-main {
+        flex: 1;
+    }
+}
+.sg-flex-column {
+    flex-direction: column;
+    height: 100%;
+}
+
+// 可点击标签
+.sg-label {
+    padding: 3px 8px;
+    color: white;
+    font-size: 16px;
+    border-radius: 6px;
+    background-color: rgb(90, 141, 170);
+    cursor: pointer;
+    &:hover {
+        background-color: rgba(90, 141, 170, 0.9);
+    }
+    &:active {
+        background-color: rgba(90, 141, 170, 0.75);
+    }
+}

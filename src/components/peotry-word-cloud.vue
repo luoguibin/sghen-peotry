@@ -267,7 +267,7 @@ export default {
 
 <style lang="scss" scoped>
 .peotry-word-cloud {
-  max-width: 400px;
+  position: relative;
 
   .pwc-main {
     width: 348px;

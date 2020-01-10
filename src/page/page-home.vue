@@ -348,21 +348,13 @@ export default {
       width: 100%;
       box-sizing: border-box;
       margin-bottom: 20px;
-      @media screen and (min-width: 600px) {
+      @media screen and (min-width: 1200px) {
         padding-right: 10px;
         width: 50%;
-      }
-      @media screen and (min-width: 900px) {
-        padding-right: 10px;
-        width: 33%;
       }
       @media screen and (min-width: 1680px) {
         padding-right: 10px;
         width: 33%;
-      }
-      @media screen and (min-width: 1900px) {
-        padding-right: 10px;
-        width: 25%;
       }
     }
 
