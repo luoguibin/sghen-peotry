@@ -1,5 +1,6 @@
 <template>
   <div class="peotry-word-cloud">
+    <!-- 年度概况 -->
     <div class="pwc-container pwc-set-container" v-if="yearPeotryCount">
       <div>
         <h3 style="padding: 10px 0;">{{ yearNum - 1 }}年年度诗词概况</h3>
@@ -22,11 +23,13 @@
       </span>
     </div>
 
+    <!-- 诗词云库 -->
     <div class="pwc-container" v-if="!isWordsErr">
       <h3 style="padding: 10px 0;">诗词云库</h3>
       <div ref="container" class="pwc-main"></div>
     </div>
 
+    <!-- 诗词选集总排行榜 -->
     <div class="pwc-container pwc-set-container">
       <h3 style="padding: 10px 0;">选集总排行榜</h3>
       <span v-for="item in peotrySets" :key="item.id" class="pwc-set-item sg-label"
@@ -40,7 +43,7 @@
 </template>
 
 <script>
-import { getHotWords, getPopularPoetrySets, getYearPoetrySets, getYearPoets } from '@/api'
+import { getPeotryHotWords, getPopularPoetrySets, getYearPoetrySets, getYearPoets } from '@/api'
 import echarts from 'echarts'
 import 'echarts-wordcloud'
 
@@ -68,16 +71,19 @@ export default {
     const image = new Image()
     image.src = this.imgSrc
     image.onload = e => {
-      this.getHotWords()
+      this.getPeotryHotWords()
     }
     this.maskImage = image
-    // this.getHotWords()
+    // this.getPeotryHotWords()
     this.getPopularPoetrySets()
     this.getYearPoetrySets()
     this.getYearPoets()
   },
 
   methods: {
+    /**
+     * 初始化云词库表图
+     */
     initChart () {
       this.chart = echarts.init(this.$refs.container)
       this.chart.setOption({
@@ -166,15 +172,58 @@ export default {
         this.onPeotryPage({ content: params.data.name })
       })
     },
-    getHotWords () {
+    /**
+     * 设置云词库数据
+     */
+    setChartData () {
+      this.chart.setOption({
+        series: [{ data: this.words }]
+      })
+      this.chart.resize()
+    },
+
+    /**
+     * 获取年度诗词选集创建数排行
+     */
+    getYearPoetrySets () {
+      const year = this.yearNum
+      getYearPoetrySets({
+        date0: (year - 1) + '-01-01 00:00:00',
+        date1: year + '-01-01 00:00:00'
+      }).then(({ data }) => {
+        const list = data.data || []
+        let count = 0
+        list.forEach(o => {
+          count += +o.count
+        })
+        this.yearPeotryCount = count
+        this.yearPeotrySets = list.splice(0, 5)
+      })
+    },
+    /**
+     * 获取年度诗词作者排行
+     */
+    getYearPoets () {
+      const year = this.yearNum
+      getYearPoets({
+        suffixPath: 'peotry-user/list-year',
+        date0: (year - 1) + '-01-01 00:00:00',
+        date1: year + '-01-01 00:00:00'
+      }).then(({ data }) => {
+        this.yearPoets = data.data || []
+      })
+    },
+    /**
+     * 获取词频数据
+     */
+    getPeotryHotWords () {
       this.isWordsErr = false
-      getHotWords().then(res => {
-        let words = res.data
-          .filter(o => o[1] > 1)
+      getPeotryHotWords({ limit: 20 }).then(res => {
+        const words = res.data.data
           .map(o => {
             return {
-              name: o[0],
-              value: +o[1],
+              name: o.word,
+              value: +o.frequency,
               rate: 0
             }
           })
@@ -194,46 +243,12 @@ export default {
         this.isWordsErr = true
       })
     },
-
-    setChartData () {
-      let words = this.words
-      if (words.length > 18) {
-        words = words.splice(0, 18)
-      }
-      this.chart.setOption({
-        series: [{ data: words }]
-      })
-      this.chart.resize()
-    },
-
+    /**
+     * 获取热门诗词选集
+     */
     getPopularPoetrySets () {
       getPopularPoetrySets().then(({ data }) => {
         this.peotrySets = data.data
-      })
-    },
-    getYearPoetrySets () {
-      const year = this.yearNum
-      getYearPoetrySets({
-        date0: (year - 1) + '-01-01 00:00:00',
-        date1: year + '-01-01 00:00:00'
-      }).then(({ data }) => {
-        const list = data.data || []
-        let count = 0
-        list.forEach(o => {
-          count += +o.count
-        })
-        this.yearPeotryCount = count
-        this.yearPeotrySets = list.splice(0, 5)
-      })
-    },
-    getYearPoets () {
-      const year = this.yearNum
-      getYearPoets({
-        suffixPath: 'peotry-user/list-year',
-        date0: (year - 1) + '-01-01 00:00:00',
-        date1: year + '-01-01 00:00:00'
-      }).then(({ data }) => {
-        this.yearPoets = data.data || []
       })
     },
 

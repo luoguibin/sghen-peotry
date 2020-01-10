@@ -145,11 +145,13 @@ export default {
       })
     },
 
-    queryPeotries () {
-      queryPeotries({ setId: 10001 }).then(({ data }) => {
-        const index = Math.floor(Math.random() * data.data.length)
-        this.peotry = data.data[index]
-      })
+    queryPeotries (isSkip) {
+      if (!isSkip) {
+        queryPeotries({ setId: 10001 }).then(({ data }) => {
+          const index = Math.floor(Math.random() * data.data.length)
+          this.peotry = data.data[index]
+        })
+      }
 
       this.boards[1].isLoading = true
       queryPeotries({ limit: 5, needComment: true })
@@ -238,10 +240,14 @@ export default {
         case 'comment-create':
         case 'comment-delete':
           const board = this.boards[index]
-          if (e.isPraise && board.key === 'hot') {
+          if (e.isPraise) {
             const isMatch = board.list.some(o => o.id === e.peotryId)
             if (isMatch) {
-              this.queryPopularPeotries()
+              if (board.key === 'hot') {
+                this.queryPopularPeotries()
+              } else {
+                this.queryPeotries(true)
+              }
             }
             // 当点赞数超过一定数量时，最新诗词列表的点赞不影响热门诗词列表
           }

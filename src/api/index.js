@@ -132,13 +132,6 @@ export const uploadFiles = (params, data) =>
     headers: { 'Content-Type': 'multipart/form-data' }
   })
 
-export const getHotWords = () =>
-  request({
-    baseURL: 'http://japi.sghen.cn',
-    url: '/api/analyze/wordfrequency/sghen_db/peotry/content',
-    method: 'get'
-  })
-
 export const queryDynamicApi = params =>
   request({
     url: '/v1/api/query',
@@ -207,6 +200,16 @@ export const getYearPoetrySets = params => request({
  */
 export const getYearPoets = params => request({
   url: '/v1/api/get/peotry-user/list-year',
+  method: 'get',
+  params
+})
+
+/**
+ * 获取诗词词频列表
+ * @param {Object} params
+ */
+export const getPeotryHotWords = params => request({
+  url: '/v1/api/get/peotry/hot-word',
   method: 'get',
   params
 })
