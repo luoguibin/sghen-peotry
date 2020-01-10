@@ -66,6 +66,10 @@
       ></vue-cropper>
       <el-button @click="onSubmitCropper">更新</el-button>
     </el-dialog>
+
+    <!-- 诗词创建 -->
+    <peotry-create :showCreate="showCreate" :peotry="updatePeotry" @on-close="onPeotryClose">
+    </peotry-create>
   </div>
 </template>
 
@@ -75,17 +79,41 @@ import { updateUser, uploadFiles } from '@/api'
 import { VueCropper } from 'vue-cropper'
 
 import LoginDialog from '@/components/login-dialog'
+import PeotryCreate from '@/components/peotry-create'
 
 export default {
   name: 'page-header',
   components: {
     LoginDialog,
-    VueCropper
+    VueCropper,
+    PeotryCreate
   },
   data () {
     return {
+      dropMenus: [
+        {
+          command: 'personal',
+          name: '个人中心'
+        },
+        {
+          command: 'my-peotry',
+          name: '我的诗词'
+        },
+        {
+          command: 'peotry',
+          name: '创建诗词'
+        },
+        {
+          command: 'logout',
+          name: '退出登录'
+        }
+      ],
+
       showUser: false,
       showUserInfo: {},
+
+      showCreate: false,
+      updatePeotry: null,
 
       iconDialogVisible: false,
       option: {
@@ -111,33 +139,27 @@ export default {
   },
 
   computed: {
-    dropMenus () {
-      return [
-        {
-          command: 'personal',
-          name: '个人中心',
-          local: true
-        },
-        ...this.extendDropMenus,
-        {
-          command: 'logout',
-          name: '退出登录',
-          local: true
-        }
-      ]
-    },
-
     ...mapState({
       userInfo: state => state.user,
       showBack: state => state.showBack,
-      extendDropMenus: state => state.extendDropMenus || []
+      peotryOption: state => state.peotryOption
     })
   },
 
   watch: {
-    userInfo: {
-      immediate: true,
-      handler () {}
+    peotryOption: {
+      deep: true,
+      handler (e) {
+        if (e.type === 'create') {
+          this.updatePeotry = null
+          this.showCreate = true
+        } else if (e.type === 'update') {
+          this.updatePeotry = JSON.parse(e.data)
+          this.showCreate = true
+        } else {
+          this.showCreate = false
+        }
+      }
     },
 
     '$route' () {
@@ -151,7 +173,10 @@ export default {
     handleCommand (key) {
       switch (key) {
         case 'peotry':
-          this.showPeotryCreate()
+          this.showCreate = true
+          break
+        case 'my-peotry':
+          this.$router.push({ name: 'peotry-list', query: { userId: this.userInfo.id } })
           break
         case 'personal':
           this.showUser = true
@@ -162,6 +187,13 @@ export default {
           break
         default:
           break
+      }
+    },
+
+    onPeotryClose ({ createValue, currentId }) {
+      this.showCreate = false
+      if (currentId) {
+        this.setPeotryOption({ type: 'success', data: currentId })
       }
     },
 
@@ -236,7 +268,7 @@ export default {
     ...mapActions({
       setUserInfo: 'setUser',
       showLogin: 'showLogin',
-      showPeotryCreate: 'showPeotryCreate'
+      setPeotryOption: 'setPeotryOption'
     })
   }
 }

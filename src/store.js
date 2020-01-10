@@ -10,11 +10,9 @@ export default new Vuex.Store({
       return JSON.parse(window.decodeURIComponent(window.atob(temp)) || '{}')
     }()),
     screenType: 'screen-large', // screen-small,screen-middle,screen-large
-    extendDropMenus: [],
     showBack: false,
-    loginCount: 0,
-    scrollTopCount: 0,
-    peotryCreate: 0
+    peotryOption: { type: '', data: '', key: '', count: 0 },
+    loginCount: 0
   },
   mutations: {
     setUser (state, user) {
@@ -36,24 +34,11 @@ export default new Vuex.Store({
     showLogin (state) {
       state.loginCount++
     },
-    showPeotryCreate (state) {
-      state.peotryCreate++
-    },
-    pushDropMenu (state, menu) {
-      const menus = state.extendDropMenus
-      const index = menus.findIndex(o => o.command === menu.command)
-      if (index === -1) {
-        if (!menu.remove) {
-          menus.push(menu)
-        }
-      } else {
-        if (menu.remove) {
-          menus.splice(index, 1)
-        }
-      }
-    },
-    resetScrollTop (state) {
-      state.scrollTopCount++
+    setPeotryOption (state, e) {
+      state.peotryOption.type = e.type
+      state.peotryOption.data = e.data
+      state.peotryOption.key = e.key
+      state.peotryOption.count++
     }
   },
   actions: {
@@ -69,14 +54,8 @@ export default new Vuex.Store({
     showLogin (context) {
       context.commit('showLogin')
     },
-    showPeotryCreate (context) {
-      context.commit('showPeotryCreate')
-    },
-    pushDropMenu (context, menu) {
-      context.commit('pushDropMenu', menu)
-    },
-    resetScrollTop (context) {
-      context.commit('resetScrollTop')
+    setPeotryOption (context, e) {
+      context.commit('setPeotryOption', e)
     }
   }
 })

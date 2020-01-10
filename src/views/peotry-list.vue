@@ -1,7 +1,5 @@
 <template>
   <div class="peotry-list" v-loading="isLoading">
-    <peotry-create :showCreate="showCreate" :peotry="updatePeotry" @on-close="onPeotryClose"></peotry-create>
-
     <div v-show="!isLoading && peotries.length === 0" class="show-empty">暂无数据</div>
 
     <div class="list" ref="listEl" >
@@ -38,7 +36,6 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 
-import PeotryCreate from '@/components/peotry-create'
 import {
   queryUsers,
   queryPeotries,
@@ -48,14 +45,10 @@ import {
 export default {
   name: 'PeotryList',
   components: {
-    peotry: () => import('@/components/peotry'),
-    PeotryCreate
+    peotry: () => import('@/components/peotry')
   },
   data () {
     return {
-      showCreate: false,
-      updatePeotry: null,
-
       limit: 10,
       curPage: 1,
       totalPage: 1,
@@ -73,23 +66,24 @@ export default {
     window.peotryList = this
     this.getPeotries()
     this.showBack(true)
-    this.pushDropMenu({ command: 'peotry', name: '创建诗词' })
-  },
-  beforeDestroy () {
-    this.pushDropMenu({ command: 'peotry', remove: true })
   },
   computed: {
     ...mapState({
       userInfo: state => state.user,
-      peotryCreate: state => state.peotryCreate
+      peotryOption: state => state.peotryOption
     })
   },
   watch: {
-    peotryCreate () {
-      this.showCreate = true
-    },
     $route () {
       this.getPeotries()
+    },
+    peotryOption: {
+      deep: true,
+      handler (e) {
+        if (e.type === 'success') {
+          this.getPeotries()
+        }
+      }
     }
   },
   methods: {
@@ -148,7 +142,7 @@ export default {
       }
     },
 
-    getPeotries (bottom) {
+    getPeotries () {
       this.$NProgress.start()
       this.isLoading = true
       this.peotries = []
@@ -167,7 +161,6 @@ export default {
           this.totalCount = data.totalCount
           this.updatePeotriesData(data.data)
           this.peotries = data.data
-          this.resetScrollTop()
         })
         .finally(() => {
           this.isLoading = false
@@ -198,27 +191,18 @@ export default {
 
     onUpdate (peotry) {
       if (!peotry || !peotry.id) return
-      this.updatePeotry = peotry
-    },
-
-    onPeotryClose ({ createValue, currentId }) {
-      this.updatePeotry = null
-      this.showCreate = false
-      if (!currentId) {
-        return
-      }
-      if (createValue) {
-        this.curPage = 1
-      }
-      this.getPeotries(createValue)
+      this.setPeotryOption({
+        type: 'update',
+        key: 'peotry-list',
+        data: JSON.stringify(peotry)
+      })
     },
 
     ...mapActions({
       setUserInfo: 'setUser',
       showLogin: 'showLogin',
       showBack: 'showBack',
-      pushDropMenu: 'pushDropMenu',
-      resetScrollTop: 'resetScrollTop'
+      setPeotryOption: 'setPeotryOption'
     })
   }
 }
