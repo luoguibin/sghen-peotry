@@ -168,7 +168,7 @@
     <!-- 作者基本信息 -->
     <el-dialog title="个人信息" :visible.sync="showUser">
       <el-form label-width="60px">
-        <el-form-item label="ID" v-if="true">
+        <el-form-item label="ID" v-if="false">
           <el-input disabled v-model="showUserInfo.id"></el-input>
         </el-form-item>
 
