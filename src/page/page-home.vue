@@ -145,7 +145,7 @@ export default {
       })
     },
 
-    queryPeotries (isSkip) {
+    queryPeotries (hideLoading, isSkip) {
       if (!isSkip) {
         queryPeotries({ setId: 10001 }).then(({ data }) => {
           const index = Math.floor(Math.random() * data.data.length)
@@ -153,7 +153,9 @@ export default {
         })
       }
 
-      this.boards[1].isLoading = true
+      if (!hideLoading) {
+        this.boards[1].isLoading = true
+      }
       queryPeotries({ limit: 5, needComment: true })
         .then(({ data }) => {
           this.boards[1].list = data.data
@@ -164,8 +166,10 @@ export default {
         })
     },
 
-    queryPopularPeotries () {
-      this.boards[0].isLoading = true
+    queryPopularPeotries (hideLoading) {
+      if (!hideLoading) {
+        this.boards[0].isLoading = true
+      }
       queryPopularPeotries({ limit: 5 })
         .then(({ data }) => {
           this.boards[0].list = data.data
@@ -239,17 +243,11 @@ export default {
       switch (e.type) {
         case 'comment-create':
         case 'comment-delete':
-          const board = this.boards[index]
           if (e.isPraise) {
-            const isMatch = board.list.some(o => o.id === e.peotryId)
-            if (isMatch) {
-              if (board.key === 'hot') {
-                this.queryPopularPeotries()
-              } else {
-                this.queryPeotries(true)
-              }
-            }
             // 当点赞数超过一定数量时，最新诗词列表的点赞不影响热门诗词列表
+            // 前期直接刷新所有
+            this.queryPopularPeotries(true)
+            this.queryPeotries(true, true)
           }
           break
         default:
