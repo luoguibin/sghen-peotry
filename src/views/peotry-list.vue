@@ -2,25 +2,9 @@
   <div class="peotry-list" v-loading="isLoading">
     <peotry-create :showCreate="showCreate" :peotry="updatePeotry" @on-close="onPeotryClose"></peotry-create>
 
-    <el-dialog title="个人信息" :visible.sync="showUser">
-      <el-form label-width="60px">
-        <el-form-item label="ID" v-if="true">
-          <el-input disabled v-model="showUserInfo.id"></el-input>
-        </el-form-item>
-
-        <el-form-item label="昵称">
-          <el-input :disabled="true" v-model="showUserInfo.name"></el-input>
-        </el-form-item>
-
-        <el-form-item label="头像">
-          <img :src="showUserInfo.iconUrl | user-icon" style="max-width: 50px; vertical-align: top;" />
-        </el-form-item>
-      </el-form>
-    </el-dialog>
-
     <div v-show="!isLoading && peotries.length === 0" class="show-empty">暂无数据</div>
 
-    <div class="list" ref="listEl" @click="onClickImage($event)">
+    <div class="list" ref="listEl" >
       <template  v-for="(peotry, index) in peotries">
         <peotry
           :key="peotry.id"
@@ -70,8 +54,6 @@ export default {
   data () {
     return {
       showCreate: false,
-      showUser: false,
-      showUserInfo: {},
       updatePeotry: null,
 
       limit: 10,
@@ -103,34 +85,6 @@ export default {
     })
   },
   watch: {
-    userInfo: {
-      immediate: true,
-      handler () {
-        const userInfo = this.userInfo
-        if (userInfo.token) {
-          // 重换登录后评论的fromId需要更新
-          this.peotries.forEach(peotry => {
-            if (peotry.comment) {
-              peotry.comment.fromId = userInfo.id
-            }
-          })
-
-          this.userMap[userInfo.id] = JSON.parse(JSON.stringify(userInfo))
-
-          if (this.showUserInfo.id) {
-            this.showUserInfo = this.userMap[this.showUserInfo.id]
-          }
-        } else {
-          // 相应token清空
-          const userMap = this.userMap
-          for (const key in userMap) {
-            if (userMap.hasOwnProperty(key) && userMap[key].token) {
-              userMap[key].token = ''
-            }
-          }
-        }
-      }
-    },
     peotryCreate () {
       this.showCreate = true
     },
@@ -257,26 +211,6 @@ export default {
         this.curPage = 1
       }
       this.getPeotries(createValue)
-    },
-
-    onClickImage (e) {
-      const el = e.srcElement
-      if (el.tagName === 'IMG') {
-        const imgType = el.getAttribute('img-type')
-        if (imgType.indexOf('user-') === 0) {
-          if (imgType === 'user-self') {
-            return
-          }
-          const id = parseInt(imgType.replace('user-', ''))
-          const user = this.userMap[id]
-          if (!user) {
-            this.$message.error('用户账号异常')
-            return
-          }
-          this.showUser = true
-          this.showUserInfo = user
-        }
-      }
     },
 
     ...mapActions({

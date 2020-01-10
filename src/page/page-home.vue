@@ -6,6 +6,7 @@
         v-if="carouselItems && carouselItems.length"
         :interval="4000"
         :type="carouselType"
+        height="260px"
         indicator-position="outside"
       >
         <el-carousel-item v-for="(item, index) in carouselItems" :key="index">
@@ -32,7 +33,7 @@
         <!-- 诗词主区域 -->
         <div class="ph-main">
           <!-- 热门诗词 -->
-          <div class="board-list board-top-3">
+          <div class="board-hot-list board-top-3">
             <h3>
               {{boards[0].name}}
               <el-button v-if="boards[0].hasMore" type="text" @click="onPeotryMore" class="peotry-more">更多</el-button>
@@ -291,6 +292,7 @@ export default {
 
     .peotry-content {
       white-space: pre-wrap;
+      word-break: break-all;
       line-height: 26px;
     }
   }
@@ -327,7 +329,7 @@ export default {
     }
   }
 
-  .board-list {
+  .board-hot-list {
     background-color: white;
     border: 1px solid #eeeeee;
     h3 {
@@ -361,24 +363,6 @@ export default {
     h3 {
       padding: 10px;
       text-align: left;
-    }
-
-    .title {
-      padding-bottom: 8px;
-      font-weight: bold;
-
-      span {
-        &:nth-child(1) {
-          font-size: 16px;
-        }
-        &:nth-child(2) {
-          font-size: 14px;
-          padding: 0 5px;
-        }
-        &:nth-child(3) {
-          font-size: 14px;
-        }
-      }
     }
   }
   .board-latest-list {
@@ -424,41 +408,33 @@ export default {
     margin-top: -5px;
   }
 }
-
-.el-carousel {
-  padding: 10px;
-}
-
-.el-carousel__item {
-  border-radius: 5px;
-}
-
-.el-carousel__item h3 {
-  padding: 30px;
-  cursor: pointer;
-  color: #475669;
-  text-align: center;
-}
-
-.el-carousel__item:nth-child(2n) {
-  background-color: rgb(225, 255, 232);
-}
-
-.el-carousel__item:nth-child(2n + 1) {
-  background-color: rgb(209, 224, 255);
-}
-
-@media screen and (max-width: 500px) {
-  .page-home {
-    .board-list /deep/.peotry {
-      margin: 0 10px 50px 0;
-    }
-  }
-}
 </style>
 
 <style lang="scss">
 .page-home {
+  .el-carousel {
+    padding: 10px;
+
+    .el-carousel__item {
+      border-radius: 5px;
+    }
+
+    .el-carousel__item h3 {
+      padding: 25px;
+      cursor: pointer;
+      color: #475669;
+      text-align: center;
+    }
+
+    .el-carousel__item:nth-child(2n) {
+      background-color: rgb(225, 255, 232);
+    }
+
+    .el-carousel__item:nth-child(2n + 1) {
+      background-color: rgb(209, 224, 255);
+    }
+  }
+
   .board-latest-list {
     .el-card__body {
       padding: 20px 20px 20px 5px;

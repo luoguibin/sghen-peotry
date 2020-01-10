@@ -1,5 +1,5 @@
 <template>
-  <div :class="{'peotry': true, 'peotry-peot-icon': hasPeotIcon}">
+  <div :class="{'peotry': true, 'peotry-peot-icon': hasPeotIcon}" @click="onClickPeotIcon($event)">
     <!-- 诗人头像 -->
     <img v-if="hasPeotIcon" class="peot-icon" img-type="user-self" :src="peotry.user | user-icon" />
 
@@ -112,7 +112,7 @@
         <img
           v-for="comment in praiseComments"
           :key="comment.id"
-          :img-type="'user-' + comment.fromId"
+          img-type="user-list"
           :src="comment.fromUser | user-icon"
         />
       </div>
@@ -164,6 +164,23 @@
         :disabled="!peotry.comment.content.trim()"
       >提交</el-button>
     </div>
+
+    <!-- 作者基本信息 -->
+    <el-dialog title="个人信息" :visible.sync="showUser">
+      <el-form label-width="60px">
+        <el-form-item label="ID" v-if="true">
+          <el-input disabled v-model="showUserInfo.id"></el-input>
+        </el-form-item>
+
+        <el-form-item label="昵称">
+          <el-input :disabled="true" v-model="showUserInfo.name"></el-input>
+        </el-form-item>
+
+        <el-form-item label="头像">
+          <img :src="showUserInfo.iconUrl | user-icon" style="max-width: 50px; vertical-align: top;" />
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -264,13 +281,16 @@ export default {
   },
   data () {
     return {
-      showDelete: false,
+      imagePrefixxPath,
+
       inComment: false,
       clickTime: 0,
       canExpand: false,
       contentHeight: 'initial',
-      imagePrefixxPath,
-      mainScrollBox: null
+      mainScrollBox: null,
+
+      showUser: false,
+      showUserInfo: {}
     }
   },
   inject: ['userMap'],
@@ -540,6 +560,31 @@ export default {
           isPraise: comment.toId === -1
         })
       })
+    },
+
+    /**
+     * 点击作者头像
+     * @param {Event} e
+     */
+    onClickPeotIcon (e) {
+      const el = e.srcElement
+      if (el.tagName === 'IMG') {
+        const imgType = el.getAttribute('img-type')
+        if (imgType === 'user-self') {
+          this.showUserInfo = this.userInfo
+          this.showUser = true
+        } else if (imgType === 'user-list') {
+          let index = 0
+          let tempEl = el
+          while (tempEl.previousElementSibling) {
+            index++
+            tempEl = tempEl.previousElementSibling
+          }
+          const id = this.praiseComments[index].fromId
+          this.showUserInfo = this.userMap[id]
+          this.showUser = true
+        }
+      }
     }
   }
 }
@@ -559,6 +604,13 @@ $padding-set: 12px;
     position: absolute;
     left: 3px;
     top: 0;
+    cursor: pointer;
+    object-fit: contain;
+
+    &:hover {
+      background-color: rgba(250, 250, 250, 0.8);
+      border-radius: 3px;
+    }
   }
 
   .peotry-title {
