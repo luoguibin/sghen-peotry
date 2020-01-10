@@ -48,6 +48,7 @@
           <div class="board-latest-list">
             <h3>
               {{boards[1].name}}
+              <el-button type="text" icon="el-icon-refresh-left" @click="queryPeotries(false, true)"></el-button>
               <el-button v-if="boards[1].hasMore" class="peotry-more"
                 type="text" @click="onPeotryMore">更多</el-button>
             </h3>
