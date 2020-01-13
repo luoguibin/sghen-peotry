@@ -119,9 +119,10 @@ export default {
     window.home = this
   },
 
-  inject: ['userMap'],
-
   watch: {
+    userInfo (e) {
+      this.updatePeotriesData()
+    },
     screenType: {
       immediate: true,
       handler () {
@@ -145,6 +146,7 @@ export default {
 
   computed: {
     ...mapState({
+      userInfo: state => state.user,
       screenType: state => state.screenType,
       peotryOption: state => state.peotryOption
     })
@@ -224,22 +226,25 @@ export default {
       if (idsSet.size) {
         const ids = Array.from(idsSet)
         queryUsers(ids).then(resp => {
-          const users = resp.data.data
-          const userMap = this.userMap
-
-          users.forEach(user => {
-            if (!userMap[user.id]) {
-              userMap[user.id] = user
-            }
+          const userMap = {}
+          resp.data.data.forEach(user => {
+            userMap[user.id] = user
           })
+
           this.boards.forEach(board => {
             board.list.forEach(peotry => {
-              if (peotry.comments && peotry.comments.length) {
-                peotry.comments = peotry.comments.map(comment => {
-                  comment.fromUser = userMap[comment.fromId]
-                  return comment
-                })
+              if (peotry.user && peotry.user.id) {
+                peotry.user = userMap[peotry.user.id]
               }
+              peotry.comments = peotry.comments.map(comment => {
+                if (comment.fromId > 1) {
+                  comment.fromUser = userMap[comment.fromId]
+                }
+                if (comment.toId > 1) {
+                  comment.toUser = userMap[comment.toId]
+                }
+                return comment
+              })
             })
           })
         })

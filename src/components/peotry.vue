@@ -130,13 +130,13 @@
             class="user"
             :user-id="comment.fromId"
             :comment-id="comment.id"
-          >{{userMap[comment.fromId] ? userMap[comment.fromId].name : comment.fromId}}</span>
+          >{{comment.fromUser ? comment.fromUser.name : comment.fromId}}</span>
           <span v-if="comment.toId !== comment.fromId" class="comment_to">回复</span>
           <span
             v-if="comment.toId !== comment.fromId"
             class="user"
             :user-id="comment.toId"
-          >{{userMap[comment.toId] ? userMap[comment.toId].name : comment.toId}}</span>
+          >{{comment.toUser ? comment.toUser.name : comment.toId}}</span>
           <span class="comment_dot">:</span>
         </div>
         <p>{{comment.content}}</p>
@@ -146,9 +146,9 @@
     <!-- 诗词评论输入框 -->
     <div v-if="inComment" class="comment-input">
       <h5
-        v-if="peotry.comment.toId !== userInfo.id"
+        v-if="newComment.toId !== userInfo.id"
         style="text-align: left;"
-      >回复：{{userMap[peotry.comment.toId] ? userMap[peotry.comment.toId].name : peotry.comment.toId}}</h5>
+      >回复：{{newComment.toUser ? newComment.toUser.name : newComment.toId}}</h5>
       <el-input
         ref="commentEl"
         type="textarea"
@@ -156,12 +156,12 @@
         maxlength="100"
         show-word-limit
         placeholder="请输入内容"
-        v-model="peotry.comment.content"
+        v-model="newComment.content"
       ></el-input>
       <el-button
         @click.stop="onCommentSubmit"
         size="small"
-        :disabled="!peotry.comment.content.trim()"
+        :disabled="!newComment.content.trim()"
       >提交</el-button>
     </div>
 
@@ -284,6 +284,15 @@ export default {
       imagePrefixxPath,
 
       inComment: false,
+      newComment: {
+        type: 1,
+        typeId: 0,
+        content: '',
+        fromId: 0,
+        fromUser: null,
+        toId: 0,
+        toUser: null
+      },
       clickTime: 0,
       canExpand: false,
       contentHeight: 'initial',
@@ -293,7 +302,6 @@ export default {
       showUserInfo: {}
     }
   },
-  inject: ['userMap'],
   computed: {
     /**
      * @returns {Boolean} 返回是否为当前用户创建的诗词
@@ -411,21 +419,20 @@ export default {
      * @param {Integer} toId
      */
     checkComment (toId) {
-      let comment = this.peotry.comment
-      if (!comment) {
-        comment = {
-          id: 0,
-          content: '',
-          type: 1,
-          typeId: this.peotry.id,
-          fromId: this.userInfo.id,
-          toId: toId
-        }
-        this.$set(this.peotry, 'comment', comment)
-      }
-      comment.fromId = this.userInfo.id
-      comment.toId = toId
+      window.testPeotry = this
+      const comment = this.newComment
       comment.content = ''
+      comment.typeId = this.peotry.id
+      comment.fromId = this.userInfo.id
+      comment.fromUser = { ...this.userInfo }
+      delete comment.fromUser.token
+      comment.toId = toId
+      if (toId > 1 && toId !== comment.fromId) {
+        const fromComment = this.realComments.find(o => o.fromId === toId)
+        comment.toUser = { ...fromComment.fromUser }
+      } else {
+        comment.toUser = null
+      }
     },
     checkCanExpand (widthExpand) {
       const contentEl = this.$refs.contentEl
@@ -459,7 +466,13 @@ export default {
           this.onOutClick = e => {
             let el = e.srcElement
             let count = 0
-            const parentElement = this.$refs.commentEl.$el.parentElement
+            const commentEl = this.$refs.commentEl
+            if (!commentEl.$el) {
+              this.inComment = false
+              this.setOutClick(false)
+              return
+            }
+            const parentElement = commentEl.$el.parentElement
             // 3代节点内检测是否还处于评论编辑框附近
             while (el && count < 3) {
               if (el === parentElement) {
@@ -512,12 +525,12 @@ export default {
         this.$message.warning('请登录后再操作')
         return
       }
-      this.checkComment(-1)
 
       if (this.isPraise) {
         this.onCommentDelete(this.myPraiseComment.id, needEmit)
       } else {
-        this.peotry.comment.content = 'praise'
+        this.checkComment(-1)
+        this.newComment.content = 'praise'
         this.onCommentSubmit(needEmit)
       }
     },
@@ -525,7 +538,7 @@ export default {
      * 提交诗词评论
      */
     onCommentSubmit (needEmit) {
-      createComment(this.peotry.comment).then(resp => {
+      createComment(this.newComment).then(resp => {
         const comment = resp.data.data
         this.addComment(comment)
         this.$emit('update', { type: 'comment-create', isPraise: comment.toId === -1 })
@@ -538,12 +551,20 @@ export default {
      * 添加诗词本地评论
      */
     addComment (comment) {
-      comment.fromUser = this.userMap[comment.fromId]
-      if (!this.peotry.comments) {
+      if (comment.fromId > 1) {
+        comment.fromUser = { ...this.userInfo }
+        delete comment.fromUser.token
+      }
+      // 正常流程都是点击评论列表中的某个用户，所以存在用户
+      const comments = this.peotry.comments
+      if (comment.toId > 1) {
+        const toComment = comments.find(o => o.fromId === comment.toId)
+        comment.toUser = { ...toComment.fromUser }
+      }
+      if (!comments) {
         this.$set(this.peotry, 'comments', [])
       }
-      window.testPeotry = this
-      this.peotry.comments.push(comment)
+      comments.push(comment)
     },
     /**
      * 删除某条评论
@@ -580,9 +601,13 @@ export default {
             index++
             tempEl = tempEl.previousElementSibling
           }
-          const id = this.praiseComments[index].fromId
-          this.showUserInfo = this.userMap[id]
-          this.showUser = true
+          const user = this.praiseComments[index].fromUser
+          if (user) {
+            this.showUserInfo = user
+            this.showUser = true
+          } else {
+            this.$message.info('获取用户信息失败')
+          }
         }
       }
     }

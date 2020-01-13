@@ -23,15 +23,7 @@ export default {
   name: 'app',
 
   data () {
-    return {
-      userMap: {}
-    }
-  },
-
-  provide () {
-    return {
-      userMap: this.userMap
-    }
+    return {}
   },
 
   mounted () {

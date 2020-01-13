@@ -60,8 +60,6 @@ export default {
     }
   },
 
-  inject: ['userMap'],
-
   created () {
     window.peotryList = this
     this.getPeotries()
@@ -84,6 +82,9 @@ export default {
           this.getPeotries()
         }
       }
+    },
+    userInfo (e) {
+      this.updatePeotriesData()
     }
   },
   methods: {
@@ -97,7 +98,8 @@ export default {
       this.getPeotries()
     },
 
-    updatePeotriesData (datas) {
+    updatePeotriesData () {
+      const datas = this.peotries
       const idsSet = new Set()
       datas.forEach(peotry => {
         if (peotry.user && peotry.user.id) {
@@ -119,27 +121,32 @@ export default {
         }
       })
 
-      if (idsSet.size) {
-        const ids = Array.from(idsSet)
-        queryUsers(ids).then(resp => {
-          const users = resp.data.data
-          const userMap = this.userMap
+      if (idsSet.size < 1) {
+        return
+      }
 
-          users.forEach(user => {
-            if (!userMap[user.id]) {
-              userMap[user.id] = user
+      const ids = Array.from(idsSet)
+      queryUsers(ids).then(resp => {
+        const userMap = {}
+        resp.data.data.forEach(user => {
+          userMap[user.id] = user
+        })
+
+        datas.forEach(peotry => {
+          if (peotry.user && peotry.user.id) {
+            peotry.user = userMap[peotry.user.id]
+          }
+          peotry.comments = peotry.comments.map(comment => {
+            if (comment.fromId > 1) {
+              comment.fromUser = userMap[comment.fromId]
             }
-          })
-          datas.forEach(peotry => {
-            if (peotry.comments && peotry.comments.length) {
-              peotry.comments = peotry.comments.map(comment => {
-                comment.fromUser = userMap[comment.fromId]
-                return comment
-              })
+            if (comment.toId > 1) {
+              comment.toUser = userMap[comment.toId]
             }
+            return comment
           })
         })
-      }
+      })
     },
 
     getPeotries () {
@@ -159,8 +166,8 @@ export default {
           this.curPage = data.curPage
           this.totalPage = data.totalPage
           this.totalCount = data.totalCount
-          this.updatePeotriesData(data.data)
           this.peotries = data.data
+          this.updatePeotriesData()
         })
         .finally(() => {
           this.isLoading = false
