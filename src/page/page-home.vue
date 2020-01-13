@@ -444,11 +444,11 @@ export default {
     }
 
     .el-carousel__item:nth-child(2n) {
-      background-color: rgb(225, 255, 232);
+      background-color: rgb(210, 255, 220);
     }
 
     .el-carousel__item:nth-child(2n + 1) {
-      background-color: rgb(209, 224, 255);
+      background-color: rgb(211, 226, 255);
     }
   }
 

@@ -1,7 +1,7 @@
 <template>
   <div :class="{'peotry': true, 'peotry-peot-icon': hasPeotIcon}" @click="onClickPeotIcon($event)">
     <!-- 诗人头像 -->
-    <img v-if="hasPeotIcon" class="peot-icon" img-type="user-self" :src="peotry.user | user-icon" />
+    <img v-if="hasPeotIcon" class="peot-icon" img-type="user-peot" :src="peotry.user | user-icon" />
 
     <!-- 诗词选集及标题 -->
     <div :class="{'peotry-title': true, 'peotry-inline': titleInline}">
@@ -591,8 +591,8 @@ export default {
       const el = e.srcElement
       if (el.tagName === 'IMG') {
         const imgType = el.getAttribute('img-type')
-        if (imgType === 'user-self') {
-          this.showUserInfo = this.userInfo
+        if (imgType === 'user-peot') {
+          this.showUserInfo = { ...this.peotry.user }
           this.showUser = true
         } else if (imgType === 'user-list') {
           let index = 0
@@ -603,7 +603,7 @@ export default {
           }
           const user = this.praiseComments[index].fromUser
           if (user) {
-            this.showUserInfo = user
+            this.showUserInfo = { ...user }
             this.showUser = true
           } else {
             this.$message.info('获取用户信息失败')
