@@ -220,6 +220,8 @@ export default {
               idsSet.add(comment.toId)
             }
           })
+        } else {
+          peotry.comments = []
         }
       })
 
@@ -365,7 +367,7 @@ export default {
       width: 100%;
       box-sizing: border-box;
       margin-bottom: 20px;
-      @media screen and (min-width: 1200px) {
+      @media screen and (min-width: 700px) {
         padding-right: 10px;
         width: 50%;
       }
