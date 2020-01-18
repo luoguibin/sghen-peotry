@@ -34,6 +34,25 @@
         ></el-input>
       </el-form-item>
 
+      <el-form-item v-if="createValue && false" label="图片" class="pc-upload-form-item">
+        <!-- todo: 图片文件自动上传 -->
+        <!-- todo: 提供接口下载生产数据同步到本地开发、测试 -->
+        <el-upload
+          ref="upload"
+          class="pc-upload"
+          action=""
+          list-type="picture-card"
+          :file-list="imgFileList"
+          :auto-upload="false"
+          accept="image/png,image/jpeg"
+          :on-change="handleImagesChange"
+          :on-remove="handleImageRemove"
+          multiple
+        >
+          <i class="el-icon-plus"></i>
+        </el-upload>
+      </el-form-item>
+
       <el-form-item label="尾注" prop="end">
         <el-input type="textarea" placeholder="尾注" v-model="newPeotry.end"></el-input>
       </el-form-item>
@@ -79,8 +98,10 @@ export default {
         setId: null,
         title: '',
         content: '',
+        images: '',
         end: ''
       },
+      imgFileList: [],
       setName: '',
       peotrySets: [],
 
@@ -126,10 +147,12 @@ export default {
         }
       } else {
         this.createValue = true
+        this.imgFileList = []
         this.newPeotry = {
           setId: null,
           title: '',
           content: '',
+          images: '',
           end: ''
         }
       }
@@ -157,12 +180,18 @@ export default {
         }
       })
     },
+    handleImageRemove (file, fileList) {
+      this.imgFileList = fileList
+    },
+    handleImagesChange (file, fileList) {
+      this.imgFileList = fileList.slice(0, 10)
+    },
 
     onCreateUpdate () {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
           if (this.createValue) {
-            this.onCreate()
+            this.checkImages()
           } else {
             this.onUpdate()
           }
@@ -172,6 +201,13 @@ export default {
       })
     },
 
+    checkImages () {
+      if (!this.imgFileList.length) {
+        this.onCreate()
+        return
+      }
+      // todo
+    },
     onCreate () {
       this.inRequest = true
       const newPeotry = this.newPeotry
@@ -287,5 +323,16 @@ export default {
 
 .hover .set_delete {
   display: inline-block;
+}
+
+.pc-upload-form-item .pc-upload {
+  .el-upload--picture-card,
+  .el-upload-list__item {
+    width: 80px;
+    height: 80px;
+  }
+  .el-upload--picture-card {
+    line-height: 84px;
+  }
 }
 </style>
