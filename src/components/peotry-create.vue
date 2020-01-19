@@ -212,7 +212,7 @@ export default {
       for (let i = 0; i < list.length; i++) {
         if (list[i].size / 1024 / 1024 > 1) {
           this.$message.warning('上传的图片大小不能超过1M')
-          break
+          return
         }
         form.append('file', list[i].raw)
       }
