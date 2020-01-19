@@ -70,6 +70,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import Lrz from 'lrz'
 import {
   queryPeotrySets,
   createPeotry,
@@ -127,6 +128,7 @@ export default {
   watch: {
     showCreate () {
       this.visible = this.showCreate
+      this.imgFileList = []
       if (this.visible) {
         this.getPeotrySets()
       }
@@ -203,19 +205,44 @@ export default {
     },
 
     checkImages () {
-      if (!this.imgFileList.length) {
+      const fileList = this.imgFileList
+      if (!fileList.length) {
         this.onCreate()
         return
       }
-      const list = this.imgFileList
-      const form = new FormData()
-      for (let i = 0; i < list.length; i++) {
-        if (list[i].size / 1024 / 1024 > 1) {
-          this.$message.warning('上传的图片大小不能超过1M')
-          return
+
+      const overIndexList = []
+      const list = fileList.map((o, i) => {
+        if (o.size / 1024 / 1024 > 1) {
+          overIndexList.push(i)
         }
-        form.append('file', list[i].raw)
+        return o.raw
+      })
+      if (overIndexList.length) {
+        let count = 0
+        overIndexList.forEach(i => {
+          console.log(list[i])
+          Lrz(list[i]).then(e => {
+            list[i] = e.file
+            console.log(list[i])
+            count++
+            if (count === overIndexList.length) {
+              this.uploadImages(list)
+            }
+          })
+            .catch(() => {
+              this.$message.error('图片压缩失败，请重试')
+            })
+        })
+      } else {
+        this.uploadImages(list)
       }
+    },
+    uploadImages (fileList) {
+      const form = new FormData()
+      fileList.forEach(file => {
+        form.append('file', file)
+      })
 
       this.inRequest = true
       uploadFiles({ pathType: 'peotry' }, form).then(resp => {

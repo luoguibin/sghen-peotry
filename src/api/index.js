@@ -129,6 +129,7 @@ export const uploadFiles = (params, data) =>
     method: 'post',
     params,
     data,
+    timeout: 33000,
     headers: { 'Content-Type': 'multipart/form-data' }
   })
 
