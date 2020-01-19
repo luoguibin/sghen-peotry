@@ -131,13 +131,14 @@ export default {
         this.getPeotrySets()
       }
     },
-    peotry () {
-      if (this.peotry) {
+    peotry (v) {
+      this.imgFileList = []
+      const peotry = v
+      if (v && v.id) {
         this.visible = true
         this.createValue = false
         this.getPeotrySets()
 
-        const peotry = this.peotry
         this.newPeotry = {
           id: peotry.id,
           userId: peotry.user && peotry.user.id,
@@ -148,7 +149,6 @@ export default {
         }
       } else {
         this.createValue = true
-        this.imgFileList = []
         this.newPeotry = {
           setId: null,
           title: '',
