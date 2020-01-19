@@ -91,7 +91,7 @@ export default {
       type: Object
     }
   },
-  data () {
+  data() {
     return {
       visible: false,
       createValue: true,
@@ -126,14 +126,14 @@ export default {
     }
   },
   watch: {
-    showCreate () {
+    showCreate() {
       this.visible = this.showCreate
       this.imgFileList = []
       if (this.visible) {
         this.getPeotrySets()
       }
     },
-    peotry (v) {
+    peotry(v) {
       this.imgFileList = []
       const peotry = v
       if (v && v.id) {
@@ -166,11 +166,11 @@ export default {
       userInfo: state => state.user
     })
   },
-  mounted () {
+  mounted() {
     window.peotryCreate = this
   },
   methods: {
-    getPeotrySets (option) {
+    getPeotrySets(option) {
       queryPeotrySets(this.userInfo.id).then(resp => {
         const list = (resp.data && resp.data.data) || []
         this.peotrySets = list
@@ -183,14 +183,14 @@ export default {
         }
       })
     },
-    handleImageRemove (file, fileList) {
+    handleImageRemove(file, fileList) {
       this.imgFileList = fileList
     },
-    handleImagesChange (file, fileList) {
+    handleImagesChange(file, fileList) {
       this.imgFileList = fileList.slice(0, 10)
     },
 
-    onCreateUpdate () {
+    onCreateUpdate() {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
           if (this.createValue) {
@@ -204,7 +204,7 @@ export default {
       })
     },
 
-    checkImages () {
+    checkImages() {
       const fileList = this.imgFileList
       if (!fileList.length) {
         this.onCreate()
@@ -221,10 +221,8 @@ export default {
       if (overIndexList.length) {
         let count = 0
         overIndexList.forEach(i => {
-          console.log(list[i])
           Lrz(list[i]).then(e => {
             list[i] = e.file
-            console.log(list[i])
             count++
             if (count === overIndexList.length) {
               this.uploadImages(list)
@@ -238,7 +236,7 @@ export default {
         this.uploadImages(list)
       }
     },
-    uploadImages (fileList) {
+    uploadImages(fileList) {
       const form = new FormData()
       fileList.forEach(file => {
         form.append('file', file)
@@ -253,7 +251,7 @@ export default {
         this.inRequest = false
       })
     },
-    onCreate () {
+    onCreate() {
       this.inRequest = true
       const newPeotry = this.newPeotry
       const data = {
@@ -272,7 +270,7 @@ export default {
         })
     },
 
-    onUpdate () {
+    onUpdate() {
       const peotry = this.newPeotry
       if (!peotry || !peotry.id) return
       this.inRequest = true
@@ -291,7 +289,7 @@ export default {
       })
     },
 
-    addPeotrySet () {
+    addPeotrySet() {
       this.$prompt('请输入选集名字', '创建选集', {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
@@ -312,7 +310,7 @@ export default {
         .catch(() => {})
     },
 
-    onDeletePeotrySet (set) {
+    onDeletePeotrySet(set) {
       this.$confirm(`是否删除“${set.name}”?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -328,10 +326,10 @@ export default {
       })
     },
 
-    onDialogOpened () {
+    onDialogOpened() {
       this.inRequest = false
     },
-    onDialogClosed () {
+    onDialogClosed() {
       this.$emit('on-close', {
         createValue: this.createValue,
         currentId: this.currentId

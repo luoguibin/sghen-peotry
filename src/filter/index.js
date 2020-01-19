@@ -1,6 +1,6 @@
 import { baseUrl } from '@/api/config'
 
-export const userIconFilter = function (v) {
+export const userIconFilter = function(v) {
   let iconUrl = v || ''
   if (v instanceof Object) {
     iconUrl = v.iconUrl
@@ -12,7 +12,7 @@ export const userIconFilter = function (v) {
   }
 }
 
-export const timeFormat = function (date, fmt = 'yyyy-MM-dd hh:mm:ss') {
+export const timeFormat = function(date, fmt = 'yyyy-MM-dd hh:mm:ss') {
   // 2018-04-15T10:10:10+08:00
   date = new Date(date)
   const o = {

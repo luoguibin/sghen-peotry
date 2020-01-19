@@ -22,11 +22,11 @@ import throttle from 'lodash/throttle'
 export default {
   name: 'app',
 
-  data () {
+  data() {
     return {}
   },
 
-  mounted () {
+  mounted() {
     window.app = this
     this.initResize()
     if (this.$route.query.login_direct) {
@@ -35,7 +35,7 @@ export default {
   },
 
   watch: {
-    scrollTopCount () {
+    scrollTopCount() {
       const scrollbar = this.$refs.scrollbar
       if (!scrollbar) {
         return
@@ -51,7 +51,7 @@ export default {
   },
 
   methods: {
-    initResize () {
+    initResize() {
       this.resize = () => {
         const footer = this.$refs.footer.$el
         const target = (footer || {}).previousElementSibling
@@ -81,7 +81,7 @@ export default {
     ...mapActions(['showLogin', 'setScreenType'])
   },
 
-  beforeDestroy () {
+  beforeDestroy() {
     window.removeEventListener('resize', this.resize)
   }
 }

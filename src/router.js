@@ -39,7 +39,7 @@ const router = new Router({
       redirect: '/home'
     }
   ],
-  scrollBehavior (to, from, savedPosition) {
+  scrollBehavior(to, from, savedPosition) {
     return savedPosition || { x: 0, y: 0 }
   }
 })

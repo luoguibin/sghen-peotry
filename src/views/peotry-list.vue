@@ -47,7 +47,7 @@ export default {
   components: {
     peotry: () => import('@/components/peotry')
   },
-  data () {
+  data() {
     return {
       limit: 10,
       curPage: 1,
@@ -60,7 +60,7 @@ export default {
     }
   },
 
-  created () {
+  created() {
     window.peotryList = this
     this.getPeotries()
     this.showBack(true)
@@ -72,33 +72,33 @@ export default {
     })
   },
   watch: {
-    $route () {
+    $route() {
       this.getPeotries()
     },
     peotryOption: {
       deep: true,
-      handler (e) {
+      handler(e) {
         if (e.type === 'success') {
           this.getPeotries()
         }
       }
     },
-    userInfo (e) {
+    userInfo(e) {
       this.updatePeotriesData()
     }
   },
   methods: {
-    handleCurrentChange (val) {
+    handleCurrentChange(val) {
       this.curPage = val
       this.getPeotries()
     },
 
-    handleSizeChange (val) {
+    handleSizeChange(val) {
       this.limit = val
       this.getPeotries()
     },
 
-    updatePeotriesData () {
+    updatePeotriesData() {
       const datas = this.peotries
       const idsSet = new Set()
       datas.forEach(peotry => {
@@ -149,7 +149,7 @@ export default {
       })
     },
 
-    getPeotries () {
+    getPeotries() {
       this.$NProgress.start()
       this.isLoading = true
       this.peotries = []
@@ -175,7 +175,7 @@ export default {
         })
     },
 
-    onDelete (peotry) {
+    onDelete(peotry) {
       if (!peotry || !peotry.id) return
 
       this.$confirm('是否删除该诗词？', '提示', {
@@ -196,7 +196,7 @@ export default {
         .catch(e => {})
     },
 
-    onUpdate (peotry) {
+    onUpdate(peotry) {
       if (!peotry || !peotry.id) return
       this.setPeotryOption({
         type: 'update',

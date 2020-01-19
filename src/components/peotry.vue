@@ -279,7 +279,7 @@ export default {
       default: '展开全文'
     }
   },
-  data () {
+  data() {
     return {
       imagePrefixxPath,
 
@@ -306,14 +306,14 @@ export default {
     /**
      * @returns {Boolean} 返回是否为当前用户创建的诗词
      */
-    isSelfPeotry () {
+    isSelfPeotry() {
       return this.peotry.user && this.userInfo.id === this.peotry.user.id
     },
 
     /**
      * @returns {Array} 返回诗词的直接可用图片列表
      */
-    peotryImages () {
+    peotryImages() {
       const imageObj = this.peotry.image
       if (imageObj && imageObj.count) {
         return JSON.parse(imageObj.images).map(v => {
@@ -335,11 +335,11 @@ export default {
     /**
      * @returns {Array} 返回用户评论列表
      */
-    realComments () {
+    realComments() {
       if (!this.peotry.comments) return []
       return this.peotry.comments
         .filter(comment => comment.toId > 0)
-        .sort(function (o0, o1) {
+        .sort(function(o0, o1) {
           // 按时间排序评论列表
           const time0 = new Date(o0.createTime).getTime()
           const time1 = new Date(o1.createTime).getTime()
@@ -350,11 +350,11 @@ export default {
     /**
      * @returns {Array} 返回用户点赞列表
      */
-    praiseComments () {
+    praiseComments() {
       if (!this.peotry.comments) return []
       return this.peotry.comments
         .filter(comment => comment.toId === -1 && comment.content === 'praise')
-        .sort(function (o0, o1) {
+        .sort(function(o0, o1) {
           // 按时间排序评论列表
           const time0 = new Date(o0.createTime).getTime()
           const time1 = new Date(o1.createTime).getTime()
@@ -365,7 +365,7 @@ export default {
     /**
      * @returns {Comment} 返回我的点赞对象
      */
-    myPraiseComment () {
+    myPraiseComment() {
       if (!this.userInfo) return
       return this.praiseComments.find(
         comment => comment.toId === -1 && comment.fromId === this.userInfo.id
@@ -375,7 +375,7 @@ export default {
     /**
      * @returns {Boolean} 返回当前登录用户是否点赞当前诗词
      */
-    isPraise () {
+    isPraise() {
       return this.myPraiseComment && this.myPraiseComment.content === 'praise'
     },
 
@@ -383,20 +383,20 @@ export default {
       userInfo: state => state.user
     })
   },
-  created () {
+  created() {
     const mainScrollEl = document.getElementById('main-scroll')
     if (mainScrollEl && mainScrollEl.children) {
       this.mainScrollBox = mainScrollEl.children[0]
     }
   },
-  mounted () {
+  mounted() {
     this.checkCanExpand(true)
   },
   methods: {
     /**
      * 分发诗词操作
      */
-    onCommandMore (key) {
+    onCommandMore(key) {
       switch (key) {
         case 'comment':
           this.openComment(this.userInfo.id)
@@ -422,7 +422,7 @@ export default {
      * 否则为回复某用户的评论
      * @param {Integer} toId
      */
-    checkComment (toId) {
+    checkComment(toId) {
       window.testPeotry = this
       const comment = this.newComment
       comment.content = ''
@@ -438,7 +438,7 @@ export default {
         comment.toUser = null
       }
     },
-    checkCanExpand (widthExpand) {
+    checkCanExpand(widthExpand) {
       const contentEl = this.$refs.contentEl
       if (contentEl.clientHeight >= 120) {
         this.canExpand = true
@@ -447,11 +447,11 @@ export default {
         }
       }
     },
-    onClickExpand () {
+    onClickExpand() {
       this.contentHeight = this.contentHeight === 'initial' ? '105px' : 'initial'
     },
 
-    openComment (toId) {
+    openComment(toId) {
       if (!this.userInfo.token) {
         this.$message.warning('请登录后再操作')
         return
@@ -464,7 +464,7 @@ export default {
       })
     },
 
-    setOutClick (flag) {
+    setOutClick(flag) {
       if (flag) {
         if (!this.onOutClick) {
           this.onOutClick = e => {
@@ -499,7 +499,7 @@ export default {
       }
     },
 
-    onCommentUser (e) {
+    onCommentUser(e) {
       if (!this.userInfo.token) {
         this.$message.warning('请登录后再操作')
         return
@@ -524,7 +524,7 @@ export default {
         }
       }
     },
-    onCommentPraise (needEmit) {
+    onCommentPraise(needEmit) {
       if (!this.userInfo.token) {
         this.$message.warning('请登录后再操作')
         return
@@ -541,7 +541,7 @@ export default {
     /**
      * 提交诗词评论
      */
-    onCommentSubmit (needEmit) {
+    onCommentSubmit(needEmit) {
       createComment(this.newComment).then(resp => {
         const comment = resp.data.data
         this.addComment(comment)
@@ -554,7 +554,7 @@ export default {
     /**
      * 添加诗词本地评论
      */
-    addComment (comment) {
+    addComment(comment) {
       if (comment.fromId > 1) {
         comment.fromUser = { ...this.userInfo }
         delete comment.fromUser.token
@@ -575,7 +575,7 @@ export default {
      * @param {Integer} id 评论对象id
      * @param {Boolean} needEmit 是否需要抛出事件
      */
-    onCommentDelete (id, needEmit) {
+    onCommentDelete(id, needEmit) {
       deleteComment({ id, fromId: this.userInfo.id }).then(resp => {
         const index = this.peotry.comments.findIndex(o => o.id === id)
         const comment = this.peotry.comments.splice(index, 1)[0]
@@ -591,7 +591,7 @@ export default {
      * 点击作者头像
      * @param {Event} e
      */
-    onClickPeotIcon (e) {
+    onClickPeotIcon(e) {
       const el = e.srcElement
       if (el.tagName === 'IMG') {
         const imgType = el.getAttribute('img-type')

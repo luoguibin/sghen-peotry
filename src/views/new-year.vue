@@ -8,13 +8,13 @@
 export default {
   name: 'NewYear',
 
-  data () {
+  data() {
     return {
       yearMonthDate: ''
     }
   },
 
-  mounted () {
+  mounted() {
     const cardList = []
     this.timer = setInterval(() => {
       const el = this.$el
@@ -38,7 +38,7 @@ export default {
     }, 1000)
   },
 
-  beforeDestroy () {
+  beforeDestroy() {
     clearInterval(this.timer)
   }
 }

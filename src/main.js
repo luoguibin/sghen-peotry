@@ -27,7 +27,7 @@ Vue.config.productionTip = false
 new Vue({
   router,
   store,
-  created () {
+  created() {
     NProgress.configure({ showSpinner: false })
   },
   render: h => h(App)

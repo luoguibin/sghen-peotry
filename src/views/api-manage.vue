@@ -98,7 +98,7 @@ import {
 export default {
   name: 'ApiManage',
 
-  data () {
+  data() {
     return {
       tableData: [],
       tableLoading: false,
@@ -132,7 +132,7 @@ export default {
     }
   },
 
-  created () {
+  created() {
     window.apiManage = this
     this.queryDynamicApi()
   },
@@ -141,7 +141,7 @@ export default {
     /**
      * 添加系统临时诗词
      */
-    onConfirmTempPeotry () {
+    onConfirmTempPeotry() {
       this.$confirm('是否添加系统临时诗词，请确认此次操作的数据不重复？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -155,10 +155,10 @@ export default {
         .catch(e => {})
     },
 
-    handleCurrentChange () {
+    handleCurrentChange() {
       this.queryDynamicApi()
     },
-    onChangeStatus (v, obj) {
+    onChangeStatus(v, obj) {
       const data = {
         id: obj.id,
         suffixPath: obj.suffixPath,
@@ -172,7 +172,7 @@ export default {
         obj.timeUpdate = data.data.timeUpdate
       })
     },
-    onOpenUpdate (obj) {
+    onOpenUpdate(obj) {
       if (obj) {
         this.dialogObj = {
           id: obj.id,
@@ -191,7 +191,7 @@ export default {
         this.$refs.form.resetFields()
       }
     },
-    queryDynamicApi () {
+    queryDynamicApi() {
       this.tableLoading = true
       const { pageSize: limit, current: page } = this.pagination
       queryDynamicApi({ limit, page }).then(({ data }) => {
@@ -201,7 +201,7 @@ export default {
         this.tableLoading = false
       })
     },
-    onSave () {
+    onSave() {
       this.$refs.form.validate(valid => {
         if (!valid) {
           return
@@ -213,7 +213,7 @@ export default {
         }
       })
     },
-    onOpenTest (obj) {
+    onOpenTest(obj) {
       this.dialogObj = {
         id: obj.id,
         suffixPath: obj.suffixPath,
@@ -228,7 +228,7 @@ export default {
       this.testResult = {}
       // this.onTest()
     },
-    onTest () {
+    onTest() {
       const obj = this.dialogObj
       let params = {}
       if (this.testParams) {
@@ -247,19 +247,19 @@ export default {
         this.testLoading = false
       })
     },
-    createDynamicApi () {
+    createDynamicApi() {
       createDynamicApi(this.dialogObj).then(({ data }) => {
         this.dialogShow = false
         this.queryDynamicApi()
       })
     },
-    updateDynamicApi () {
+    updateDynamicApi() {
       updateDynamicApi(this.dialogObj).then(({ data }) => {
         this.dialogShow = false
         this.queryDynamicApi()
       })
     },
-    deleteDynamicApi (id) {
+    deleteDynamicApi(id) {
       deleteDynamicApi({ id }).then(({ data }) => {
         this.queryDynamicApi()
       })

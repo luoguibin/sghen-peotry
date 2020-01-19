@@ -18,7 +18,7 @@
 export default {
   name: 'page-footer',
 
-  data () {
+  data() {
     return {
       authYear: '©2019-' + new Date().getFullYear(),
       beianSrc: require('@/assets/img/beian.png')
@@ -26,7 +26,7 @@ export default {
   },
 
   methods: {
-    onPageHome () {
+    onPageHome() {
       this.$router.push({ name: 'home' })
     }
   }

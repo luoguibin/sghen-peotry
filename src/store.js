@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    user: (function () {
+    user: (function() {
       const temp = sessionStorage.getItem('sghen_user_info') || ''
       return JSON.parse(window.decodeURIComponent(window.atob(temp)) || '{}')
     }()),
@@ -15,7 +15,7 @@ export default new Vuex.Store({
     loginCount: 0
   },
   mutations: {
-    setUser (state, user) {
+    setUser(state, user) {
       if (user) {
         const temp = JSON.stringify(user) || ''
         sessionStorage.setItem('sghen_user_info', window.btoa(window.encodeURIComponent(temp)))
@@ -25,16 +25,16 @@ export default new Vuex.Store({
         state.user = {}
       }
     },
-    setScreenType (state, type) {
+    setScreenType(state, type) {
       state.screenType = type
     },
-    showBack (state, showBack) {
+    showBack(state, showBack) {
       state.showBack = showBack
     },
-    showLogin (state) {
+    showLogin(state) {
       state.loginCount++
     },
-    setPeotryOption (state, e) {
+    setPeotryOption(state, e) {
       state.peotryOption.type = e.type
       state.peotryOption.data = e.data
       state.peotryOption.key = e.key
@@ -42,19 +42,19 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    setUser (context, user) {
+    setUser(context, user) {
       context.commit('setUser', user)
     },
-    setScreenType (context, type) {
+    setScreenType(context, type) {
       context.commit('setScreenType', type)
     },
-    showBack (context, showBack) {
+    showBack(context, showBack) {
       context.commit('showBack', showBack)
     },
-    showLogin (context) {
+    showLogin(context) {
       context.commit('showLogin')
     },
-    setPeotryOption (context, e) {
+    setPeotryOption(context, e) {
       context.commit('setPeotryOption', e)
     }
   }

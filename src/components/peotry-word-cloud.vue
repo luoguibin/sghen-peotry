@@ -50,7 +50,7 @@ import 'echarts-wordcloud'
 export default {
   name: 'PeotryWordCloud',
 
-  data () {
+  data() {
     return {
       words: [],
       isWordsErr: false,
@@ -65,7 +65,7 @@ export default {
     }
   },
 
-  mounted () {
+  mounted() {
     window.pwc = this
     this.initChart()
     const image = new Image()
@@ -84,7 +84,7 @@ export default {
     /**
      * 初始化云词库表图
      */
-    initChart () {
+    initChart() {
       this.chart = echarts.init(this.$refs.container)
       this.chart.setOption({
         tooltip: {
@@ -144,7 +144,7 @@ export default {
                 fontFamily: 'sans-serif',
                 fontWeight: 'bold',
                 // Color can be a callback function or a color string
-                color: function () {
+                color: function() {
                   // Random color
                   return (
                     'rgb(' +
@@ -175,7 +175,7 @@ export default {
     /**
      * 设置云词库数据
      */
-    setChartData () {
+    setChartData() {
       this.chart.setOption({
         series: [{ data: this.words }]
       })
@@ -185,7 +185,7 @@ export default {
     /**
      * 获取年度诗词选集创建数排行
      */
-    getYearPoetrySets () {
+    getYearPoetrySets() {
       const year = this.yearNum
       getYearPoetrySets({
         date0: (year - 1) + '-01-01 00:00:00',
@@ -203,7 +203,7 @@ export default {
     /**
      * 获取年度诗词作者排行
      */
-    getYearPoets () {
+    getYearPoets() {
       const year = this.yearNum
       getYearPoets({
         suffixPath: 'peotry-user/list-year',
@@ -216,7 +216,7 @@ export default {
     /**
      * 获取词频数据
      */
-    getPeotryHotWords () {
+    getPeotryHotWords() {
       this.isWordsErr = false
       const date = new Date()
       const yesterDay = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + (date.getDate() - 1) + ' 00:00:00'
@@ -248,19 +248,19 @@ export default {
     /**
      * 获取热门诗词选集
      */
-    getPopularPoetrySets () {
+    getPopularPoetrySets() {
       getPopularPoetrySets().then(({ data }) => {
         this.peotrySets = data.data
       })
     },
 
-    onClickPeot ({ id }) {
+    onClickPeot({ id }) {
       this.onPeotryPage({ userId: id })
     },
-    onClickPeotSet ({ id }) {
+    onClickPeotSet({ id }) {
       this.onPeotryPage({ setId: id })
     },
-    onPeotryPage (query) {
+    onPeotryPage(query) {
       this.$router.push({ name: 'peotry-list', query })
     }
   }

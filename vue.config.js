@@ -24,8 +24,8 @@ module.exports = {
     // })
 
     const plugins = config.plugins
-    plugins.delete(`prefetch`)
-    plugins.delete(`preload`)
+    plugins.delete('prefetch')
+    plugins.delete('preload')
 
     if (argv.analyzer) {
       config.plugin('webpack-bundle-analyzer')

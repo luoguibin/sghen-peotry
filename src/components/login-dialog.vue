@@ -62,7 +62,7 @@ import { loginByAccount, createUser, sendSmsCode } from '@/api'
 
 export default {
   name: 'login-dialog',
-  data () {
+  data() {
     return {
       visible: false,
       signUpValue: false,
@@ -111,10 +111,10 @@ export default {
     }
   },
   watch: {
-    loginCount () {
+    loginCount() {
       this.visible = true
     },
-    visible (v) {
+    visible(v) {
       if (v) {
         if (this.userInfo && this.userInfo.token) {
           this.checkDirect()
@@ -128,7 +128,7 @@ export default {
       userInfo: state => state.user
     })
   },
-  created () {
+  created() {
     window.loginDialog = this
     const codeTimeStr = sessionStorage.getItem('codeTime')
     if (codeTimeStr) {
@@ -139,21 +139,21 @@ export default {
     }
   },
   methods: {
-    validateId (rule, value, callback) {
+    validateId(rule, value, callback) {
       if (!/^1[34578]\d{9}$/.test(value)) {
         callback(new Error('请输入11位手机号码'))
       } else {
         callback()
       }
     },
-    validatePass2 (rule, value, callback) {
+    validatePass2(rule, value, callback) {
       if (value !== this.account.pw) {
         callback(new Error('两次密码不一致'))
       } else {
         callback()
       }
     },
-    signUpChange () {
+    signUpChange() {
       this.$refs.ruleForm.clearValidate()
       this.inRequest = false
       if (this.signUpValue) {
@@ -166,7 +166,7 @@ export default {
       }
     },
 
-    onGetCode () {
+    onGetCode() {
       if (this.codeTime) {
         return
       }
@@ -185,7 +185,7 @@ export default {
       })
     },
 
-    startCodeCount (time) {
+    startCodeCount(time) {
       this.stopCodeCount()
       this.codeTime = time
 
@@ -200,7 +200,7 @@ export default {
       }, 1000)
     },
 
-    stopCodeCount () {
+    stopCodeCount() {
       if (!this.timeHandle) {
         return
       }
@@ -209,7 +209,7 @@ export default {
       this.codeTime = 0
     },
 
-    checkDirect () {
+    checkDirect() {
       const query = this.$route.query
       const loginDirect = window.decodeURIComponent(query.login_direct || '')
       if (!loginDirect) {
@@ -231,7 +231,7 @@ export default {
       }
     },
 
-    onLoginCreate () {
+    onLoginCreate() {
       this.$refs.ruleForm.validate(valid => {
         if (!valid) {
           this.$message.warning('请输入表单内容')

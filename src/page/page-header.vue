@@ -88,7 +88,7 @@ export default {
     VueCropper,
     PeotryCreate
   },
-  data () {
+  data() {
     return {
       dropMenus: [
         {
@@ -131,7 +131,7 @@ export default {
     }
   },
 
-  created () {
+  created() {
     window.homeHeader = this
     if (this.$route.name === 'blank') {
       this.onShowLogin()
@@ -149,7 +149,7 @@ export default {
   watch: {
     peotryOption: {
       deep: true,
-      handler (e) {
+      handler(e) {
         if (e.type === 'create') {
           this.updatePeotry = null
           this.showCreate = true
@@ -162,7 +162,7 @@ export default {
       }
     },
 
-    '$route' () {
+    '$route'() {
       if (this.$route.name === 'blank') {
         this.onShowLogin()
       }
@@ -170,7 +170,7 @@ export default {
   },
 
   methods: {
-    handleCommand (key) {
+    handleCommand(key) {
       switch (key) {
         case 'peotry':
           this.showCreate = true
@@ -190,24 +190,24 @@ export default {
       }
     },
 
-    onPeotryClose ({ createValue, currentId }) {
+    onPeotryClose({ createValue, currentId }) {
       this.showCreate = false
       if (currentId) {
         this.setPeotryOption({ type: 'success', data: currentId })
       }
     },
 
-    onShowLogin () {
+    onShowLogin() {
       this.showLogin()
     },
 
-    onClickIconUpdate () {
+    onClickIconUpdate() {
       this.$refs.iconInput.click()
     },
     /**
      * 打开图片选择
      */
-    onIconChange (e) {
+    onIconChange(e) {
       const file = e.target.files && e.target.files[0]
       if (!file) {
         return
@@ -221,7 +221,7 @@ export default {
       reader.readAsDataURL(file)
     },
 
-    onSubmitCropper () {
+    onSubmitCropper() {
       this.$refs.cropper.getCropBlob(data => {
         const file = new File([data], 'example.png', {
           type: 'image/png',
@@ -249,7 +249,7 @@ export default {
       })
     },
 
-    onUpdateUserInfo () {
+    onUpdateUserInfo() {
       if (this.showUserInfo.name.length) {
         updateUser({
           name: this.showUserInfo.name,
