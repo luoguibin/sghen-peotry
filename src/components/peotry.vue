@@ -186,7 +186,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { imagePrefixxPath } from '@/api/config'
+import { baseUrl, imagePrefixxPath } from '@/api/config'
 import {
   createComment,
   deleteComment
@@ -318,7 +318,11 @@ export default {
       if (imageObj && imageObj.count) {
         return JSON.parse(imageObj.images).map(v => {
           if (v.indexOf('.') === 0) {
-            return imagePrefixxPath + v.substr(1)
+            if (v.indexOf('./file') === 0) {
+              return baseUrl + v.substr(1)
+            } else {
+              return imagePrefixxPath + v.substr(1)
+            }
           } else {
             return imagePrefixxPath + v
           }

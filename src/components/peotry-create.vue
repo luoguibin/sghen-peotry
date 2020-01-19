@@ -34,7 +34,7 @@
         ></el-input>
       </el-form-item>
 
-      <el-form-item v-if="createValue && false" label="图片" class="pc-upload-form-item">
+      <el-form-item v-if="createValue" label="图片" class="pc-upload-form-item">
         <!-- todo: 图片文件自动上传 -->
         <!-- todo: 提供接口下载生产数据同步到本地开发、测试 -->
         <el-upload
@@ -75,7 +75,8 @@ import {
   createPeotry,
   updatePeotry,
   createPoetrySet,
-  deletePeotrySet
+  deletePeotrySet,
+  uploadFiles
 } from '@/api'
 
 export default {
@@ -98,7 +99,7 @@ export default {
         setId: null,
         title: '',
         content: '',
-        images: '',
+        imageNames: '',
         end: ''
       },
       imgFileList: [],
@@ -152,7 +153,7 @@ export default {
           setId: null,
           title: '',
           content: '',
-          images: '',
+          imageNames: '',
           end: ''
         }
       }
@@ -206,7 +207,24 @@ export default {
         this.onCreate()
         return
       }
-      // todo
+      const list = this.imgFileList
+      const form = new FormData()
+      for (let i = 0; i < list.length; i++) {
+        if (list[i].size / 1024 / 1024 > 1) {
+          this.$message.warning('上传的图片大小不能超过1M')
+          break
+        }
+        form.append('file', list[i].raw)
+      }
+
+      this.inRequest = true
+      uploadFiles({ pathType: 'peotry' }, form).then(resp => {
+        const data = resp.data.data
+        this.newPeotry.imageNames = JSON.stringify(data)
+        this.onCreate()
+      }).catch(() => {
+        this.inRequest = false
+      })
     },
     onCreate () {
       this.inRequest = true
