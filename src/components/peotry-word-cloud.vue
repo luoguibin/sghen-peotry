@@ -219,7 +219,7 @@ export default {
     getPeotryHotWords () {
       this.isWordsErr = false
       const date = new Date()
-      const yesterDay = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' 00:00:00'
+      const yesterDay = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + (date.getDate() - 1) + ' 00:00:00'
       getPeotryHotWords({ limit: 20, date0: yesterDay }).then(res => {
         const words = res.data.data
           .map(o => {
