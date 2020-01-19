@@ -24,8 +24,13 @@
     </div>
 
     <!-- 诗词云库 -->
-    <div class="pwc-container" v-if="!isWordsErr">
-      <h3 style="padding: 10px 0;">诗词云库</h3>
+    <div class="pwc-container" v-if="!isWordsErr" v-show="words.length">
+      <h3 style="padding: 10px 0;">
+        诗词云库
+        <el-popover trigger="hover"  width="230" content="词频率：全部诗词中出现次数最高的名词，取前20个名词的出现次数总和为基准，进行计算的结果（每天更新）">
+          <i slot="reference" class="el-icon-question" style="color: #bbbbbb;"></i>
+        </el-popover>
+      </h3>
       <div ref="container" class="pwc-main"></div>
     </div>
 

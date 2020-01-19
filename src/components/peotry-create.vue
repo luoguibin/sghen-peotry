@@ -210,7 +210,7 @@ export default {
         this.onCreate()
         return
       }
-
+      this.inRequest = true
       const overIndexList = []
       const list = fileList.map((o, i) => {
         if (o.size / 1024 / 1024 > 1) {
@@ -230,6 +230,7 @@ export default {
           })
             .catch(() => {
               this.$message.error('图片压缩失败，请重试')
+              this.inRequest = false
             })
         })
       } else {

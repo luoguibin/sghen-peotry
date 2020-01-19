@@ -23,6 +23,7 @@ import {
   Main,
   Option,
   Pagination,
+  Popover,
   Switch,
   Select,
   Scrollbar,
@@ -53,6 +54,7 @@ Vue.use(Loading)
 Vue.use(Main)
 Vue.use(Option)
 Vue.use(Pagination)
+Vue.use(Popover)
 Vue.use(Switch)
 Vue.use(Select)
 Vue.use(Scrollbar)
