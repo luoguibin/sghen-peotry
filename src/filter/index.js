@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import { baseUrl } from '@/api/config'
 
 export const userIconFilter = function(v) {
@@ -42,3 +43,6 @@ export const timeFormat = function(date, fmt = 'yyyy-MM-dd hh:mm:ss') {
   }
   return fmt
 }
+
+Vue.filter('user-icon', userIconFilter)
+Vue.filter('time-format', timeFormat)

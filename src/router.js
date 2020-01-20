@@ -17,7 +17,7 @@ const router = new Router({
     {
       path: '/home',
       name: 'home',
-      component: () => import(/* webpackChunkName: "home" */ './page/page-home')
+      component: () => import(/* webpackChunkName: "home" */ './views/home')
     },
     {
       path: '/peotry-list',

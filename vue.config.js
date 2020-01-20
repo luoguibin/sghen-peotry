@@ -1,28 +1,42 @@
 const path = require('path')
 const argv = require('yargs').argv
 
+// cdn配置列表
+const CdnConfig = {
+  prod: {
+    js: [
+      '//unpkg.com/vue@2.6.11/dist/vue.js',
+      '//unpkg.com/vue-router@3.1.5/dist/vue-router.js',
+      '//unpkg.com/vuex@3.1.2/dist/vuex.js',
+      '//cdn.bootcss.com/axios/0.17.1/axios.min.js',
+      '//unpkg.com/element-ui@2.13.0/lib/index.js'
+    ],
+    css: [
+      '//unpkg.com/element-ui@2.13.0/lib/theme-chalk/index.css'
+    ]
+  }
+}
+
 module.exports = {
   lintOnSave: true,
 
   publicPath: process.env.NODE_ENV === 'production' ? '/peotry/' : './',
 
   chainWebpack: config => {
-    config
-      .output
-      .filename('js/[name].js?[hash]')
-      .chunkFilename('js/[name].js?[hash]')
-      .end()
+    // config
+    //   .output
+    //   .filename('js/[name].js?[hash]')
+    //   .chunkFilename('js/[name].js?[hash]')
+    //   .end()
 
-    config.resolve.alias.set(
-      'img',
-      path.join(__dirname, 'src/assets/img')
-    )
+    // alias注册
+    config.resolve.alias
+      .set('@_api', path.resolve('src/api'))
+      .set('@_components', path.resolve('src/components'))
+      .set('@_assets', path.resolve('src/assets'))
+      .set('@_utils', path.resolve('src/utils'))
 
-    // 忽略的打包文件
-    // config.externals({
-    //   'element-ui': 'ELEMENT'
-    // })
-
+    // 去除预加载
     const plugins = config.plugins
     plugins.delete('prefetch')
     plugins.delete('preload')
@@ -30,6 +44,24 @@ module.exports = {
     if (argv.analyzer) {
       config.plugin('webpack-bundle-analyzer')
         .use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
+    }
+
+    // production模式直接引入cdn
+    if (process.env.NODE_ENV === 'production') {
+      // 忽略的打包文件
+      config.externals({
+        'vue': 'Vue',
+        'vue-router': 'VueRouter',
+        'vuex': 'Vuex',
+        'axios': 'axios',
+        'element-ui': 'ELEMENT'
+      })
+
+      // webpack配置cdn
+      config.plugin('html').tap(args => {
+        args[0].cdn = CdnConfig.prod
+        return args
+      })
     }
   },
   configureWebpack: config => {

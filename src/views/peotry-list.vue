@@ -150,7 +150,7 @@ export default {
     },
 
     getPeotries() {
-      this.$NProgress.start()
+      this.$nprogress.start()
       this.isLoading = true
       this.peotries = []
 
@@ -171,7 +171,7 @@ export default {
         })
         .finally(() => {
           this.isLoading = false
-          this.$NProgress.done()
+          this.$nprogress.done()
         })
     },
 
