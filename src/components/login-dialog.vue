@@ -130,6 +130,8 @@ export default {
   },
   created() {
     window.loginDialog = this
+
+    // 判断是否刷新了注册界面
     const codeTimeStr = sessionStorage.getItem('codeTime')
     if (codeTimeStr) {
       const codeTime = +codeTimeStr || 0
@@ -166,6 +168,9 @@ export default {
       }
     },
 
+    /**
+     * 获取验证码
+     */
     onGetCode() {
       if (this.codeTime) {
         return
@@ -185,6 +190,9 @@ export default {
       })
     },
 
+    /**
+     * 验证码获取的防抖倒计时
+     */
     startCodeCount(time) {
       this.stopCodeCount()
       this.codeTime = time
@@ -199,7 +207,9 @@ export default {
         }
       }, 1000)
     },
-
+    /**
+     * 停止倒计时
+     */
     stopCodeCount() {
       if (!this.timeHandle) {
         return
@@ -209,6 +219,9 @@ export default {
       this.codeTime = 0
     },
 
+    /**
+     * 检测登陆后是否需要跳转
+     */
     checkDirect() {
       const query = this.$route.query
       const loginDirect = window.decodeURIComponent(query.login_direct || '')
@@ -231,6 +244,9 @@ export default {
       }
     },
 
+    /**
+     * 登陆或注册
+     */
     onLoginCreate() {
       this.$refs.ruleForm.validate(valid => {
         if (!valid) {

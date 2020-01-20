@@ -7,7 +7,10 @@
     <el-main ref="main">
       <el-scrollbar ref="scrollbar" id="main-scroll">
         <div>
-          <router-view />
+          <keep-alive>
+            <router-view v-if="$route.meta.keepAlive"></router-view>
+          </keep-alive>
+          <router-view v-if="!$route.meta.keepAlive"></router-view>
         </div>
         <page-footer ref="footer"></page-footer>
       </el-scrollbar>

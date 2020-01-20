@@ -7,20 +7,15 @@ const router = new Router({
   base: process.env.BASE_URL,
   routes: [
     {
-      path: '/',
-      redirect: '/home'
-    },
-    {
-      path: '/blank',
-      name: 'blank'
-    },
-    {
       path: '/home',
       name: 'home',
+      meta: {
+        keepAlive: true
+      },
       component: () => import(/* webpackChunkName: "home" */ './views/home')
     },
     {
-      path: '/peotry-list',
+      path: '/peotry/list',
       name: 'peotry-list',
       component: () => import(/* webpackChunkName: "peotry-list" */ './views/peotry-list')
     },
@@ -40,7 +35,11 @@ const router = new Router({
     }
   ],
   scrollBehavior(to, from, savedPosition) {
-    return savedPosition || { x: 0, y: 0 }
+    if (savedPosition && to.meta.keepAlive) {
+      return savedPosition
+    } else {
+      return { x: 0, y: 0 }
+    }
   }
 })
 

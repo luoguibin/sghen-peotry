@@ -92,12 +92,14 @@ export default {
       this.curPage = val
       this.getPeotries()
     },
-
     handleSizeChange(val) {
       this.limit = val
       this.getPeotries()
     },
 
+    /**
+     * 更新诗词数据，如携带的作者信息
+     */
     updatePeotriesData() {
       const datas = this.peotries
       const idsSet = new Set()
@@ -148,7 +150,9 @@ export default {
         })
       })
     },
-
+    /**
+     * 获取诗词列表
+     */
     getPeotries() {
       this.$nprogress.start()
       this.isLoading = true
@@ -174,7 +178,9 @@ export default {
           this.$nprogress.done()
         })
     },
-
+    /**
+     * 删除诗词
+     */
     onDelete(peotry) {
       if (!peotry || !peotry.id) return
 
@@ -195,7 +201,9 @@ export default {
         })
         .catch(e => {})
     },
-
+    /**
+     * 更新诗词
+     */
     onUpdate(peotry) {
       if (!peotry || !peotry.id) return
       this.setPeotryOption({

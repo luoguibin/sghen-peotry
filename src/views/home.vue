@@ -153,12 +153,20 @@ export default {
   },
 
   methods: {
+    /**
+     * 获取卡片列表数据
+     */
     getCarousels() {
       import('@/assets/config/carousels.json').then(o => {
         this.carouselItems = o.default
       })
     },
 
+    /**
+     * 获取诗词列表
+     * @param {Boolean} hideLoading 是否需要隐藏加载过渡
+     * @param {Boolean} isSkip 是否需要跳过选集筛选的诗词
+     */
     queryPeotries(hideLoading, isSkip) {
       if (!isSkip) {
         queryPeotries({ setId: 10001 }).then(({ data }) => {
@@ -179,7 +187,9 @@ export default {
           this.boards[1].isLoading = false
         })
     },
-
+    /**
+     * 查询热门诗词
+     */
     queryPopularPeotries(hideLoading) {
       if (!hideLoading) {
         this.boards[0].isLoading = true
@@ -193,7 +203,9 @@ export default {
           this.boards[0].isLoading = false
         })
     },
-
+    /**
+     * 更新诗词数据，如携带的作者信息
+     */
     updatePeotriesData() {
       const boards = this.boards
       if (boards.some(o => o.list.length === 0)) {
@@ -274,6 +286,9 @@ export default {
       }
     },
 
+    /**
+     * 点击轮询卡片
+     */
     onClickCarousel(item, key) {
       if (key && item[key]) {
         window.open(item[key], '_blank')

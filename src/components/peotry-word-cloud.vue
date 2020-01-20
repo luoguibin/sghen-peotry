@@ -259,6 +259,9 @@ export default {
       })
     },
 
+    /**
+     * 点击跳转界面
+     */
     onClickPeot({ id }) {
       this.onPeotryPage({ userId: id })
     },
