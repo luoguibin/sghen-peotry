@@ -135,6 +135,9 @@ export default {
 
   created() {
     window.homeHeader = this
+    if (this.$route.name === 'blank') {
+      this.onShowLogin()
+    }
   },
 
   computed: {
@@ -161,6 +164,14 @@ export default {
         } else {
           this.showCreate = false
         }
+      }
+    },
+    /**
+     * 监听是否跳转空白页
+     */
+    '$route'() {
+      if (this.$route.name === 'blank') {
+        this.onShowLogin()
       }
     }
   },
