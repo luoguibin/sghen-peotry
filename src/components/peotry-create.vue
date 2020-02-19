@@ -133,6 +133,9 @@ export default {
       if (this.visible) {
         this.getPeotrySets()
       }
+      if (this.newPeotry) {
+        this.newPeotry.imageNames = ''
+      }
     },
     /**
      * 监听是否创建诗词还是编辑
@@ -243,8 +246,8 @@ export default {
       if (overIndexList.length) {
         let count = 0
         overIndexList.forEach(i => {
-          Lrz(list[i]).then(e => {
-            list[i] = e.file
+          Lrz(list[i], { width: 800, height: 600 }).then(e => {
+            list[i] = new File([e.file], e.origin.name)
             count++
             if (count === overIndexList.length) {
               this.uploadImages(list)
