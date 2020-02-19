@@ -1,5 +1,7 @@
 <template>
   <div class="peotry-word-cloud">
+    <music-box></music-box>
+
     <!-- 年度概况 -->
     <div class="pwc-container pwc-set-container" v-if="yearPeotryCount">
       <div>
@@ -54,6 +56,10 @@ import 'echarts-wordcloud'
 
 export default {
   name: 'PeotryWordCloud',
+
+  components: {
+    MusicBox: () => import('@/components/music-box')
+  },
 
   data() {
     return {
