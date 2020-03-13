@@ -15,16 +15,15 @@ export const sendSmsCode = data =>
     data
   })
 
-export const loginByAccount = ({ id, pw }) => {
-  const pw0 = enc.Base64.stringify(MD5(pw))
+export const loginByAccount = data => {
+  if (data.pw) {
+    data.pw = enc.Base64.stringify(MD5(data.pw))
+  }
   // console.log(pw0);
   return request({
     url: '/v1/user/login',
     method: 'post',
-    data: {
-      id,
-      pw: pw0
-    }
+    data
   })
 }
 

@@ -276,7 +276,7 @@ export default {
           successMsg = '注册成功'
         } else {
           method = loginByAccount
-          params = { id: account.id, pw: account.pw }
+          params = { id: account.id, pw: account.pw, code: account.code }
         }
 
         method(params)
