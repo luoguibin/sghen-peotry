@@ -276,7 +276,11 @@ export default {
           successMsg = '注册成功'
         } else {
           method = loginByAccount
-          params = { id: account.id, pw: account.pw, code: account.code }
+          params = { id: account.id, pw: account.pw }
+          if (account.code) {
+            params.code = account.code
+            params.pw = '******' // 防止接口校验非空
+          }
         }
 
         method(params)
