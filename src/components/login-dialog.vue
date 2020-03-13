@@ -170,14 +170,14 @@ export default {
     signUpChange() {
       this.$refs.ruleForm.clearValidate()
       this.inRequest = false
+      const account = this.account
       if (this.signUpValue) {
-        const account = this.account
         account.id = null
         account.name = ''
-        account.code = ''
         account.pw = ''
         account.pw2 = ''
       }
+      account.code = ''
     },
 
     /**
