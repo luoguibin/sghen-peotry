@@ -19,7 +19,7 @@
         <el-input v-model.trim="account.name"></el-input>
       </el-form-item>
 
-      <el-form-item label="验证码" prop="code" v-if="signUpValue">
+      <el-form-item label="验证码" prop="code" v-if="signUpValue || showCode">
         <el-input v-model="account.code">
           <el-button
             slot="append"
@@ -30,7 +30,7 @@
         </el-input>
       </el-form-item>
 
-      <el-form-item label="密 码" prop="pw">
+      <el-form-item label="密 码" prop="pw" v-if="signUpValue || !showCode">
         <el-input @keyup.native.enter="onLoginCreate" v-model="account.pw" show-password clearable></el-input>
       </el-form-item>
 
@@ -39,18 +39,29 @@
       </el-form-item>
 
       <el-form-item>
-        <el-button
-          type="primary"
-          @click.stop="onLoginCreate"
-          :loading="inRequest"
-        >{{signUpValue ? "注册" : "登录"}}</el-button>
         <el-switch
-          style="float: right; margin-top: 20px;"
+          v-if="!signUpValue"
+          v-model="showCode"
+          style="margin-right: 50px;"
+          @change="signUpChange"
+          active-color="#13ce66"
+          active-text="验证码登陆"
+        ></el-switch>
+        <el-switch
           v-model="signUpValue"
           @change="signUpChange"
           active-color="#13ce66"
           active-text="注册"
         ></el-switch>
+      </el-form-item>
+
+      <el-form-item>
+        <el-button
+          type="primary"
+          style="width: 100%;"
+          @click.stop="onLoginCreate"
+          :loading="inRequest"
+        >{{signUpValue ? "注册" : "登录"}}</el-button>
       </el-form-item>
     </el-form>
   </el-dialog>
@@ -75,6 +86,7 @@ export default {
         pw2: ''
       },
       codeTime: 0,
+      showCode: false,
 
       formRules: {
         id: [
