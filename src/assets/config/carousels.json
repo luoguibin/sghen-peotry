@@ -12,20 +12,20 @@
         "label": "wiki大法好",
         "local": false,
         "content": "搬砖码农✂的零星砖头，包括Nginx、MySQL、Docker，合作伙伴来自五湖四海的资深搬砖工",
-        "target": "http://wiki.sghen.cn"
+        "target": "https://wiki.sghen.cn"
     },
     {
         "label": "数据质量检核平台Demo",
         "local": false,
         "content": "数据质量平台包括了规则库构建、执行检核、问题检核、分析报告、形成知识库体系五大功能",
-        "target": "http://data.sghen.cn",
+        "target": "https://data.sghen.cn",
         "gayhub": "https://github.com/Hyhyhyhyhyhyh/Django-Data-quality-system"
     },
     {
         "label": "MM Juror",
         "local": false,
         "content": "一个快死掉的外包项目：陪审的案件管理系统，分为用户管理，陪审员管理，案件管理，案件自动分配",
-        "target": "http://www.sghen.cn/mm-juror/index.html"
+        "target": "https://www.sghen.cn/mm-juror/index.html"
     },
     {
         "label": "Sghen-World",
@@ -34,7 +34,7 @@
         "target": {
             "name": "blank",
             "query": {
-                "login_direct": "http://www.sghen.cn/game/index.html"
+                "login_direct": "https://www.sghen.cn/game/index.html"
             }
         },
         "gayhub": "https://github.com/luoguibin/vue-game"
@@ -43,6 +43,6 @@
         "label": "各种砖头测试",
         "local": false,
         "content": "非搬砖的不推荐进入，但工地还是欢迎你的到来。。。",
-        "target": "http://www.sghen.cn/vue-test/index.html"
+        "target": "https://www.sghen.cn/vue-test/index.html"
     }
 ]
