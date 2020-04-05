@@ -4,7 +4,7 @@ import { SCREEN_TYPE } from './constant'
  * 屏幕类型工具
  */
 export const ScreenTypeUtil = {
-  init (root) {
+  init(root) {
     const listener = e => {
       root.$store.state.screenType = window.innerWidth < 500 ? SCREEN_TYPE.MOBILE : SCREEN_TYPE.PC
     }

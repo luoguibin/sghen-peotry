@@ -7,7 +7,10 @@
     <el-main ref="main">
       <el-scrollbar ref="scrollbar" id="main-scroll">
         <div>
-          <router-view />
+          <keep-alive>
+            <router-view v-if="$route.meta.keepAlive"></router-view>
+          </keep-alive>
+          <router-view v-if="!$route.meta.keepAlive"></router-view>
         </div>
         <page-footer ref="footer"></page-footer>
       </el-scrollbar>
@@ -22,11 +25,11 @@ import throttle from 'lodash/throttle'
 export default {
   name: 'app',
 
-  data () {
+  data() {
     return {}
   },
 
-  mounted () {
+  mounted() {
     window.app = this
     this.initResize()
     if (this.$route.query.login_direct) {
@@ -35,7 +38,7 @@ export default {
   },
 
   watch: {
-    scrollTopCount () {
+    scrollTopCount() {
       const scrollbar = this.$refs.scrollbar
       if (!scrollbar) {
         return
@@ -51,7 +54,7 @@ export default {
   },
 
   methods: {
-    initResize () {
+    initResize() {
       this.resize = () => {
         const footer = this.$refs.footer.$el
         const target = (footer || {}).previousElementSibling
@@ -81,7 +84,7 @@ export default {
     ...mapActions(['showLogin', 'setScreenType'])
   },
 
-  beforeDestroy () {
+  beforeDestroy() {
     window.removeEventListener('resize', this.resize)
   }
 }

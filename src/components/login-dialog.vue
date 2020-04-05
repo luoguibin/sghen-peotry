@@ -19,7 +19,7 @@
         <el-input v-model.trim="account.name"></el-input>
       </el-form-item>
 
-      <el-form-item label="验证码" prop="code" v-if="signUpValue">
+      <el-form-item label="验证码" prop="code" v-if="signUpValue || showCode">
         <el-input v-model="account.code">
           <el-button
             slot="append"
@@ -30,7 +30,7 @@
         </el-input>
       </el-form-item>
 
-      <el-form-item label="密 码" prop="pw">
+      <el-form-item label="密 码" prop="pw" v-if="signUpValue || !showCode">
         <el-input @keyup.native.enter="onLoginCreate" v-model="account.pw" show-password clearable></el-input>
       </el-form-item>
 
@@ -39,18 +39,29 @@
       </el-form-item>
 
       <el-form-item>
-        <el-button
-          type="primary"
-          @click.stop="onLoginCreate"
-          :loading="inRequest"
-        >{{signUpValue ? "注册" : "登录"}}</el-button>
         <el-switch
-          style="float: right; margin-top: 20px;"
+          v-if="!signUpValue"
+          v-model="showCode"
+          style="margin-right: 50px;"
+          @change="signUpChange"
+          active-color="#13ce66"
+          active-text="验证码登陆"
+        ></el-switch>
+        <el-switch
           v-model="signUpValue"
           @change="signUpChange"
           active-color="#13ce66"
           active-text="注册"
         ></el-switch>
+      </el-form-item>
+
+      <el-form-item>
+        <el-button
+          type="primary"
+          style="width: 100%;"
+          @click.stop="onLoginCreate"
+          :loading="inRequest"
+        >{{signUpValue ? "注册" : "登录"}}</el-button>
       </el-form-item>
     </el-form>
   </el-dialog>
@@ -62,7 +73,7 @@ import { loginByAccount, createUser, sendSmsCode } from '@/api'
 
 export default {
   name: 'login-dialog',
-  data () {
+  data() {
     return {
       visible: false,
       signUpValue: false,
@@ -75,6 +86,7 @@ export default {
         pw2: ''
       },
       codeTime: 0,
+      showCode: false,
 
       formRules: {
         id: [
@@ -111,10 +123,10 @@ export default {
     }
   },
   watch: {
-    loginCount () {
+    loginCount() {
       this.visible = true
     },
-    visible (v) {
+    visible(v) {
       if (v) {
         if (this.userInfo && this.userInfo.token) {
           this.checkDirect()
@@ -128,8 +140,10 @@ export default {
       userInfo: state => state.user
     })
   },
-  created () {
+  created() {
     window.loginDialog = this
+
+    // 判断是否刷新了注册界面
     const codeTimeStr = sessionStorage.getItem('codeTime')
     if (codeTimeStr) {
       const codeTime = +codeTimeStr || 0
@@ -139,34 +153,37 @@ export default {
     }
   },
   methods: {
-    validateId (rule, value, callback) {
+    validateId(rule, value, callback) {
       if (!/^1[34578]\d{9}$/.test(value)) {
         callback(new Error('请输入11位手机号码'))
       } else {
         callback()
       }
     },
-    validatePass2 (rule, value, callback) {
+    validatePass2(rule, value, callback) {
       if (value !== this.account.pw) {
         callback(new Error('两次密码不一致'))
       } else {
         callback()
       }
     },
-    signUpChange () {
+    signUpChange() {
       this.$refs.ruleForm.clearValidate()
       this.inRequest = false
+      const account = this.account
       if (this.signUpValue) {
-        const account = this.account
         account.id = null
         account.name = ''
-        account.code = ''
         account.pw = ''
         account.pw2 = ''
       }
+      account.code = ''
     },
 
-    onGetCode () {
+    /**
+     * 获取验证码
+     */
+    onGetCode() {
       if (this.codeTime) {
         return
       }
@@ -185,7 +202,10 @@ export default {
       })
     },
 
-    startCodeCount (time) {
+    /**
+     * 验证码获取的防抖倒计时
+     */
+    startCodeCount(time) {
       this.stopCodeCount()
       this.codeTime = time
 
@@ -199,8 +219,10 @@ export default {
         }
       }, 1000)
     },
-
-    stopCodeCount () {
+    /**
+     * 停止倒计时
+     */
+    stopCodeCount() {
       if (!this.timeHandle) {
         return
       }
@@ -209,7 +231,10 @@ export default {
       this.codeTime = 0
     },
 
-    checkDirect () {
+    /**
+     * 检测登陆后是否需要跳转
+     */
+    checkDirect() {
       const query = this.$route.query
       const loginDirect = window.decodeURIComponent(query.login_direct || '')
       if (!loginDirect) {
@@ -231,7 +256,10 @@ export default {
       }
     },
 
-    onLoginCreate () {
+    /**
+     * 登陆或注册
+     */
+    onLoginCreate() {
       this.$refs.ruleForm.validate(valid => {
         if (!valid) {
           this.$message.warning('请输入表单内容')
@@ -249,6 +277,10 @@ export default {
         } else {
           method = loginByAccount
           params = { id: account.id, pw: account.pw }
+          if (account.code) {
+            params.code = account.code
+            params.pw = '******' // 防止接口校验非空
+          }
         }
 
         method(params)

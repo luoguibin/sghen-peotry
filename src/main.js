@@ -3,32 +3,32 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
-import PageHeader from './page/page-header'
-import PageFooter from './page/page-footer'
+import ElementUI from 'element-ui'
 
-import { userIconFilter, timeFormat } from './filter/index'
-
-import NProgress from 'nprogress'
-import 'nprogress/nprogress.css'
-
-import './ui/element-ui'
-import './ui/element-ui.css'
+// 加载全局组件、过滤器、样式等配置
+import './filter/index'
+import './components/global/index'
 import './style/index.scss'
 
-Vue.filter('user-icon', userIconFilter)
-Vue.filter('time-format', timeFormat)
+// 加载进度
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+Vue.prototype.$nprogress = NProgress
 
-Vue.prototype.$NProgress = NProgress
-Vue.component(PageHeader.name, PageHeader)
-Vue.component(PageFooter.name, PageFooter)
+// production模式直接引入cdn加载ui组件库
+if (process.env.NODE_ENV !== 'production') {
+  Vue.use(ElementUI)
+  require('element-ui/lib/theme-chalk/index.css')
+}
+require('promise.prototype.finally').shim()
 
 Vue.config.productionTip = false
 
 new Vue({
   router,
   store,
-  created () {
-    NProgress.configure({ showSpinner: false })
+  created() {
+    this.$nprogress.configure({ showSpinner: false })
   },
   render: h => h(App)
 }).$mount('#app')

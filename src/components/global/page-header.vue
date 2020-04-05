@@ -2,6 +2,7 @@
   <div class="page-header">
     <el-button v-show="showBack" type="text" @click="$router.go(-1)">返回</el-button>
 
+    <!-- 登陆或用户下拉菜单 -->
     <el-button v-if="!userInfo.token" class="float-right" type="text" @click="onShowLogin">登录~</el-button>
     <el-dropdown v-else class="float-right" @command="handleCommand" trigger="click">
       <span style="cursor: pointer;">
@@ -19,20 +20,21 @@
 
     <login-dialog></login-dialog>
 
+    <!-- 个人信息对话框 -->
     <el-dialog title="个人信息" :visible.sync="showUser">
       <el-form label-width="60px">
         <el-form-item label="ID">
-          <el-input disabled v-model="showUserInfo.id"></el-input>
+          <el-input disabled v-model="mUserInfo.id"></el-input>
         </el-form-item>
 
         <el-form-item label="昵称">
-          <el-input v-model="showUserInfo.name"></el-input>
+          <el-input v-model="mUserInfo.name"></el-input>
         </el-form-item>
 
         <el-form-item label="头像">
-          <img :src="showUserInfo.iconUrl | user-icon" style="max-width: 50px; vertical-align: top;" />
+          <img :src="mUserInfo.iconUrl | user-icon" style="max-width: 50px; vertical-align: top;" />
           <span>
-            <el-button @click="onClickIconUpdate">更换</el-button>
+            <el-button type="text" @click="onClickIconUpdate">更换</el-button>
             <input
               type="file"
               ref="iconInput"
@@ -88,7 +90,7 @@ export default {
     VueCropper,
     PeotryCreate
   },
-  data () {
+  data() {
     return {
       dropMenus: [
         {
@@ -110,7 +112,7 @@ export default {
       ],
 
       showUser: false,
-      showUserInfo: {},
+      mUserInfo: {},
 
       showCreate: false,
       updatePeotry: null,
@@ -131,7 +133,7 @@ export default {
     }
   },
 
-  created () {
+  created() {
     window.homeHeader = this
     if (this.$route.name === 'blank') {
       this.onShowLogin()
@@ -147,9 +149,12 @@ export default {
   },
 
   watch: {
+    /**
+     * 监听诗词操作对象，是否新建还是编辑诗词
+     */
     peotryOption: {
       deep: true,
-      handler (e) {
+      handler(e) {
         if (e.type === 'create') {
           this.updatePeotry = null
           this.showCreate = true
@@ -161,8 +166,10 @@ export default {
         }
       }
     },
-
-    '$route' () {
+    /**
+     * 监听是否跳转空白页
+     */
+    '$route'() {
       if (this.$route.name === 'blank') {
         this.onShowLogin()
       }
@@ -170,7 +177,10 @@ export default {
   },
 
   methods: {
-    handleCommand (key) {
+    /**
+     * 回调下拉菜单，分发操作
+     */
+    handleCommand(key) {
       switch (key) {
         case 'peotry':
           this.showCreate = true
@@ -180,7 +190,7 @@ export default {
           break
         case 'personal':
           this.showUser = true
-          this.showUserInfo = JSON.parse(JSON.stringify(this.userInfo))
+          this.mUserInfo = JSON.parse(JSON.stringify(this.userInfo))
           break
         case 'logout':
           this.setUserInfo()
@@ -190,24 +200,33 @@ export default {
       }
     },
 
-    onPeotryClose ({ createValue, currentId }) {
+    /**
+     * 回调当前诗词对话框关闭
+     */
+    onPeotryClose({ createValue, currentId }) {
       this.showCreate = false
       if (currentId) {
         this.setPeotryOption({ type: 'success', data: currentId })
       }
     },
 
-    onShowLogin () {
+    /**
+     * 打开登陆界面
+     */
+    onShowLogin() {
       this.showLogin()
     },
 
-    onClickIconUpdate () {
+    /**
+     * 模拟点击开打图片选择
+     */
+    onClickIconUpdate() {
       this.$refs.iconInput.click()
     },
     /**
-     * 打开图片选择
+     * 回调图片选择
      */
-    onIconChange (e) {
+    onIconChange(e) {
       const file = e.target.files && e.target.files[0]
       if (!file) {
         return
@@ -221,9 +240,12 @@ export default {
       reader.readAsDataURL(file)
     },
 
-    onSubmitCropper () {
+    /**
+     * 回调图片裁剪、上传头像
+     */
+    onSubmitCropper() {
       this.$refs.cropper.getCropBlob(data => {
-        const file = new File([data], 'example.png', {
+        const file = new File([data], 'user-icon.png', {
           type: 'image/png',
           lastModified: Date.now()
         })
@@ -231,9 +253,11 @@ export default {
         const formData = new FormData()
         formData.append('file', file)
 
-        uploadFiles({ pathType: 'normal' }, formData).then(resp => {
+        // 上传头像
+        uploadFiles({ pathType: 'icon' }, formData).then(resp => {
           const iconUrl = resp.data.data[0]
 
+          // 更新用户头信息
           updateUser({
             iconUrl,
             id: this.userInfo.id
@@ -249,14 +273,17 @@ export default {
       })
     },
 
-    onUpdateUserInfo () {
-      if (this.showUserInfo.name.length) {
+    /**
+     * 更新个人信息
+     */
+    onUpdateUserInfo() {
+      if (this.mUserInfo.name.length) {
         updateUser({
-          name: this.showUserInfo.name,
+          name: this.mUserInfo.name,
           id: this.userInfo.id
         }).then(resp => {
           this.$message.success('更新个人信息成功')
-          const info = { ...this.userInfo, name: this.showUserInfo.name }
+          const info = { ...this.userInfo, name: this.mUserInfo.name }
           this.setUserInfo(info)
           this.showUser = false
         })
@@ -282,7 +309,6 @@ export default {
 
   .float-right {
     float: right;
-    // margin-top: 10px;
   }
 
   .vue-cropper {

@@ -86,7 +86,7 @@ export default {
     'peotry-word-cloud': () => import('@/components/peotry-word-cloud')
   },
 
-  data () {
+  data() {
     return {
       carouselItems: [],
       carouselType: 'card',
@@ -111,7 +111,7 @@ export default {
     }
   },
 
-  created () {
+  created() {
     this.showBack(false)
     this.getCarousels()
     this.queryPeotries()
@@ -120,12 +120,12 @@ export default {
   },
 
   watch: {
-    userInfo (e) {
+    userInfo(e) {
       this.updatePeotriesData()
     },
     screenType: {
       immediate: true,
-      handler () {
+      handler() {
         if (this.screenType === 'screen-large') {
           this.carouselType = 'card'
         } else {
@@ -135,7 +135,7 @@ export default {
     },
     peotryOption: {
       deep: true,
-      handler (e) {
+      handler(e) {
         if (e.type === 'success') {
           this.$refs.latestAnchor.scrollIntoView()
           this.queryPeotries(false, true)
@@ -153,13 +153,21 @@ export default {
   },
 
   methods: {
-    getCarousels () {
+    /**
+     * 获取卡片列表数据
+     */
+    getCarousels() {
       import('@/assets/config/carousels.json').then(o => {
         this.carouselItems = o.default
       })
     },
 
-    queryPeotries (hideLoading, isSkip) {
+    /**
+     * 获取诗词列表
+     * @param {Boolean} hideLoading 是否需要隐藏加载过渡
+     * @param {Boolean} isSkip 是否需要跳过选集筛选的诗词
+     */
+    queryPeotries(hideLoading, isSkip) {
       if (!isSkip) {
         queryPeotries({ setId: 10001 }).then(({ data }) => {
           const index = Math.floor(Math.random() * data.data.length)
@@ -179,8 +187,10 @@ export default {
           this.boards[1].isLoading = false
         })
     },
-
-    queryPopularPeotries (hideLoading) {
+    /**
+     * 查询热门诗词
+     */
+    queryPopularPeotries(hideLoading) {
       if (!hideLoading) {
         this.boards[0].isLoading = true
       }
@@ -193,8 +203,10 @@ export default {
           this.boards[0].isLoading = false
         })
     },
-
-    updatePeotriesData () {
+    /**
+     * 更新诗词数据，如携带的作者信息
+     */
+    updatePeotriesData() {
       const boards = this.boards
       if (boards.some(o => o.list.length === 0)) {
         return
@@ -258,7 +270,7 @@ export default {
      * @param {Object} e 操作对象
      * @param {Integer} index 列表下标
      */
-    onUpdatePeotry (e, index) {
+    onUpdatePeotry(e, index) {
       switch (e.type) {
         case 'comment-create':
         case 'comment-delete':
@@ -274,7 +286,10 @@ export default {
       }
     },
 
-    onClickCarousel (item, key) {
+    /**
+     * 点击轮询卡片
+     */
+    onClickCarousel(item, key) {
       if (key && item[key]) {
         window.open(item[key], '_blank')
         return
@@ -286,7 +301,7 @@ export default {
       }
     },
 
-    onPeotryMore () {
+    onPeotryMore() {
       this.$router.push({ name: 'peotry-list' })
     },
 

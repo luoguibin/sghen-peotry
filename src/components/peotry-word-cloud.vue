@@ -1,5 +1,7 @@
 <template>
   <div class="peotry-word-cloud">
+    <music-box></music-box>
+
     <!-- 年度概况 -->
     <div class="pwc-container pwc-set-container" v-if="yearPeotryCount">
       <div>
@@ -24,8 +26,13 @@
     </div>
 
     <!-- 诗词云库 -->
-    <div class="pwc-container" v-if="!isWordsErr">
-      <h3 style="padding: 10px 0;">诗词云库</h3>
+    <div class="pwc-container" v-if="!isWordsErr" v-show="words.length">
+      <h3 style="padding: 10px 0;">
+        诗词云库
+        <el-popover trigger="hover"  width="240" content="词频率：全部诗词中出现次数最高的名词，取前20个名词的出现次数总和为基准，进行计算的结果（每天更新）">
+          <i slot="reference" class="el-icon-question" style="color: #bbbbbb;"></i>
+        </el-popover>
+      </h3>
       <div ref="container" class="pwc-main"></div>
     </div>
 
@@ -50,7 +57,11 @@ import 'echarts-wordcloud'
 export default {
   name: 'PeotryWordCloud',
 
-  data () {
+  components: {
+    MusicBox: () => import('@/components/music-box')
+  },
+
+  data() {
     return {
       words: [],
       isWordsErr: false,
@@ -65,7 +76,7 @@ export default {
     }
   },
 
-  mounted () {
+  mounted() {
     window.pwc = this
     this.initChart()
     const image = new Image()
@@ -84,7 +95,7 @@ export default {
     /**
      * 初始化云词库表图
      */
-    initChart () {
+    initChart() {
       this.chart = echarts.init(this.$refs.container)
       this.chart.setOption({
         tooltip: {
@@ -144,7 +155,7 @@ export default {
                 fontFamily: 'sans-serif',
                 fontWeight: 'bold',
                 // Color can be a callback function or a color string
-                color: function () {
+                color: function() {
                   // Random color
                   return (
                     'rgb(' +
@@ -175,7 +186,7 @@ export default {
     /**
      * 设置云词库数据
      */
-    setChartData () {
+    setChartData() {
       this.chart.setOption({
         series: [{ data: this.words }]
       })
@@ -185,7 +196,7 @@ export default {
     /**
      * 获取年度诗词选集创建数排行
      */
-    getYearPoetrySets () {
+    getYearPoetrySets() {
       const year = this.yearNum
       getYearPoetrySets({
         date0: (year - 1) + '-01-01 00:00:00',
@@ -203,7 +214,7 @@ export default {
     /**
      * 获取年度诗词作者排行
      */
-    getYearPoets () {
+    getYearPoets() {
       const year = this.yearNum
       getYearPoets({
         suffixPath: 'peotry-user/list-year',
@@ -216,9 +227,11 @@ export default {
     /**
      * 获取词频数据
      */
-    getPeotryHotWords () {
+    getPeotryHotWords() {
       this.isWordsErr = false
-      getPeotryHotWords({ limit: 20 }).then(res => {
+      const date = new Date()
+      const yesterDay = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + (date.getDate() - 1) + ' 00:00:00'
+      getPeotryHotWords({ limit: 20, date0: yesterDay }).then(res => {
         const words = res.data.data
           .map(o => {
             return {
@@ -246,19 +259,22 @@ export default {
     /**
      * 获取热门诗词选集
      */
-    getPopularPoetrySets () {
+    getPopularPoetrySets() {
       getPopularPoetrySets().then(({ data }) => {
         this.peotrySets = data.data
       })
     },
 
-    onClickPeot ({ id }) {
+    /**
+     * 点击跳转界面
+     */
+    onClickPeot({ id }) {
       this.onPeotryPage({ userId: id })
     },
-    onClickPeotSet ({ id }) {
+    onClickPeotSet({ id }) {
       this.onPeotryPage({ setId: id })
     },
-    onPeotryPage (query) {
+    onPeotryPage(query) {
       this.$router.push({ name: 'peotry-list', query })
     }
   }

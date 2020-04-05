@@ -47,7 +47,7 @@ export default {
   components: {
     peotry: () => import('@/components/peotry')
   },
-  data () {
+  data() {
     return {
       limit: 10,
       curPage: 1,
@@ -60,7 +60,7 @@ export default {
     }
   },
 
-  created () {
+  created() {
     window.peotryList = this
     this.getPeotries()
     this.showBack(true)
@@ -72,33 +72,35 @@ export default {
     })
   },
   watch: {
-    $route () {
+    $route() {
       this.getPeotries()
     },
     peotryOption: {
       deep: true,
-      handler (e) {
+      handler(e) {
         if (e.type === 'success') {
           this.getPeotries()
         }
       }
     },
-    userInfo (e) {
+    userInfo(e) {
       this.updatePeotriesData()
     }
   },
   methods: {
-    handleCurrentChange (val) {
+    handleCurrentChange(val) {
       this.curPage = val
       this.getPeotries()
     },
-
-    handleSizeChange (val) {
+    handleSizeChange(val) {
       this.limit = val
       this.getPeotries()
     },
 
-    updatePeotriesData () {
+    /**
+     * 更新诗词数据，如携带的作者信息
+     */
+    updatePeotriesData() {
       const datas = this.peotries
       const idsSet = new Set()
       datas.forEach(peotry => {
@@ -148,9 +150,11 @@ export default {
         })
       })
     },
-
-    getPeotries () {
-      this.$NProgress.start()
+    /**
+     * 获取诗词列表
+     */
+    getPeotries() {
+      this.$nprogress.start()
       this.isLoading = true
       this.peotries = []
 
@@ -171,11 +175,13 @@ export default {
         })
         .finally(() => {
           this.isLoading = false
-          this.$NProgress.done()
+          this.$nprogress.done()
         })
     },
-
-    onDelete (peotry) {
+    /**
+     * 删除诗词
+     */
+    onDelete(peotry) {
       if (!peotry || !peotry.id) return
 
       this.$confirm('是否删除该诗词？', '提示', {
@@ -195,8 +201,10 @@ export default {
         })
         .catch(e => {})
     },
-
-    onUpdate (peotry) {
+    /**
+     * 更新诗词
+     */
+    onUpdate(peotry) {
       if (!peotry || !peotry.id) return
       this.setPeotryOption({
         type: 'update',

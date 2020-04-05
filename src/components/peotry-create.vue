@@ -8,6 +8,7 @@
   >
     <el-form :model="newPeotry" :rules="formRules" ref="ruleForm" label-width="60px">
       <el-form-item label="选集" prop="setId">
+        <!-- 选择诗词选集 -->
         <el-select v-model="newPeotry.setId" placeholder="请选择">
           <el-option v-for="set in peotrySets" :key="set.id" :value="set.id"
             :label="set.name">
@@ -34,9 +35,9 @@
         ></el-input>
       </el-form-item>
 
-      <el-form-item v-if="createValue && false" label="图片" class="pc-upload-form-item">
-        <!-- todo: 图片文件自动上传 -->
-        <!-- todo: 提供接口下载生产数据同步到本地开发、测试 -->
+      <!-- 编辑诗词时不能操作图片 -->
+      <el-form-item v-if="createValue" label="图片" class="pc-upload-form-item">
+        <!-- 手动上传多张图片 -->
         <el-upload
           ref="upload"
           class="pc-upload"
@@ -70,12 +71,14 @@
 
 <script>
 import { mapState } from 'vuex'
+import Lrz from 'lrz'
 import {
   queryPeotrySets,
   createPeotry,
   updatePeotry,
   createPoetrySet,
-  deletePeotrySet
+  deletePeotrySet,
+  uploadFiles
 } from '@/api'
 
 export default {
@@ -89,7 +92,7 @@ export default {
       type: Object
     }
   },
-  data () {
+  data() {
     return {
       visible: false,
       createValue: true,
@@ -98,7 +101,7 @@ export default {
         setId: null,
         title: '',
         content: '',
-        images: '',
+        imageNames: '',
         end: ''
       },
       imgFileList: [],
@@ -124,19 +127,27 @@ export default {
     }
   },
   watch: {
-    showCreate () {
+    showCreate() {
       this.visible = this.showCreate
+      this.imgFileList = []
       if (this.visible) {
         this.getPeotrySets()
       }
+      if (this.newPeotry) {
+        this.newPeotry.imageNames = ''
+      }
     },
-    peotry () {
-      if (this.peotry) {
+    /**
+     * 监听是否创建诗词还是编辑
+     */
+    peotry(v) {
+      this.imgFileList = []
+      const peotry = v
+      if (v && v.id) {
         this.visible = true
         this.createValue = false
         this.getPeotrySets()
 
-        const peotry = this.peotry
         this.newPeotry = {
           id: peotry.id,
           userId: peotry.user && peotry.user.id,
@@ -147,12 +158,11 @@ export default {
         }
       } else {
         this.createValue = true
-        this.imgFileList = []
         this.newPeotry = {
           setId: null,
           title: '',
           content: '',
-          images: '',
+          imageNames: '',
           end: ''
         }
       }
@@ -163,11 +173,15 @@ export default {
       userInfo: state => state.user
     })
   },
-  mounted () {
+  mounted() {
     window.peotryCreate = this
   },
   methods: {
-    getPeotrySets (option) {
+    /**
+     * 获取用户选集
+     * @param {String} option 自动选中类型
+     */
+    getPeotrySets(option) {
       queryPeotrySets(this.userInfo.id).then(resp => {
         const list = (resp.data && resp.data.data) || []
         this.peotrySets = list
@@ -180,14 +194,24 @@ export default {
         }
       })
     },
-    handleImageRemove (file, fileList) {
+
+    /**
+     * 删除图片
+     */
+    handleImageRemove(file, fileList) {
       this.imgFileList = fileList
     },
-    handleImagesChange (file, fileList) {
+    /**
+     * 添加图片
+     */
+    handleImagesChange(file, fileList) {
       this.imgFileList = fileList.slice(0, 10)
     },
 
-    onCreateUpdate () {
+    /**
+     * 分发创建或更新诗词
+     */
+    onCreateUpdate() {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
           if (this.createValue) {
@@ -200,15 +224,66 @@ export default {
         }
       })
     },
-
-    checkImages () {
-      if (!this.imgFileList.length) {
+    /**
+     * 检测是否需要上传图片
+     */
+    checkImages() {
+      const fileList = this.imgFileList
+      if (!fileList.length) {
         this.onCreate()
         return
       }
-      // todo
+
+      this.inRequest = true
+      const overIndexList = []
+      const list = fileList.map((o, i) => {
+        if (o.size / 1024 / 1024 > 1) {
+          overIndexList.push(i)
+        }
+        return o.raw
+      })
+      // 判断是否需要压缩图片，超过1M的图片进行压缩
+      if (overIndexList.length) {
+        let count = 0
+        overIndexList.forEach(i => {
+          Lrz(list[i], { width: 800, height: 600 }).then(e => {
+            list[i] = new File([e.file], e.origin.name)
+            count++
+            if (count === overIndexList.length) {
+              this.uploadImages(list)
+            }
+          })
+            .catch(() => {
+              this.$message.error('图片压缩失败，请重试')
+              this.inRequest = false
+            })
+        })
+      } else {
+        this.uploadImages(list)
+      }
     },
-    onCreate () {
+    /**
+     * 上传图片
+     */
+    uploadImages(fileList) {
+      const form = new FormData()
+      fileList.forEach(file => {
+        form.append('file', file)
+      })
+
+      this.inRequest = true
+      uploadFiles({ pathType: 'peotry' }, form).then(resp => {
+        const data = resp.data.data
+        this.newPeotry.imageNames = JSON.stringify(data)
+        this.onCreate()
+      }).catch(() => {
+        this.inRequest = false
+      })
+    },
+    /**
+     * 创建诗词
+     */
+    onCreate() {
       this.inRequest = true
       const newPeotry = this.newPeotry
       const data = {
@@ -227,7 +302,10 @@ export default {
         })
     },
 
-    onUpdate () {
+    /**
+     * 更新诗词
+     */
+    onUpdate() {
       const peotry = this.newPeotry
       if (!peotry || !peotry.id) return
       this.inRequest = true
@@ -246,7 +324,10 @@ export default {
       })
     },
 
-    addPeotrySet () {
+    /**
+     * 添加用户选集
+     */
+    addPeotrySet() {
       this.$prompt('请输入选集名字', '创建选集', {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
@@ -266,8 +347,10 @@ export default {
         })
         .catch(() => {})
     },
-
-    onDeletePeotrySet (set) {
+    /**
+     * 删除用户选集
+     */
+    onDeletePeotrySet(set) {
       this.$confirm(`是否删除“${set.name}”?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -283,10 +366,10 @@ export default {
       })
     },
 
-    onDialogOpened () {
+    onDialogOpened() {
       this.inRequest = false
     },
-    onDialogClosed () {
+    onDialogClosed() {
       this.$emit('on-close', {
         createValue: this.createValue,
         currentId: this.currentId
