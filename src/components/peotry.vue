@@ -52,12 +52,15 @@
 
     <!-- 诗词图片 -->
     <div v-if="showImage && thumbnails.length" class="images">
-      <el-image v-for="value in thumbnails" :key="value"
-        :src="value" :fit="`cover`" :preview-src-list="peotryImages" :scroll-container="mainScrollBox" lazy>
+      <!-- :preview-src-list="peotryImages" -->
+      <el-image v-for="value in thumbnails" :key="value" @click="onShowPreview(value)"
+        :src="value" :fit="`cover`" :scroll-container="mainScrollBox" lazy>
         <div slot="error" class="image-slot">
           <i class="el-icon-picture-outline"></i>
         </div>
       </el-image>
+
+      <el-image-viewer v-if="previewVisible" :on-close="onClosePreview" :initialIndex="previewIndex" :url-list="peotryImages"></el-image-viewer>
     </div>
 
     <!-- 诗词功能按钮 -->
@@ -191,6 +194,7 @@ import {
   createComment,
   deleteComment
 } from '@/api'
+import ElImageViewer from 'element-ui/packages/image/src/image-viewer'
 
 export default {
   props: {
@@ -279,6 +283,9 @@ export default {
       default: '展开全文'
     }
   },
+  components: {
+    'el-image-viewer': ElImageViewer
+  },
   data() {
     return {
       imagePrefixxPath,
@@ -299,7 +306,10 @@ export default {
       mainScrollBox: null,
 
       showUser: false,
-      showUserInfo: {}
+      showUserInfo: {},
+
+      previewVisible: false,
+      previewIndex: 0
     }
   },
   computed: {
@@ -624,6 +634,16 @@ export default {
           }
         }
       }
+    },
+    onClosePreview() {
+      this.previewVisible = false
+    },
+    onShowPreview(src) {
+      this.previewIndex = this.thumbnails.findIndex(v => v === src)
+      if (this.previewIndex < 0) {
+        this.previewIndex = 0
+      }
+      this.previewVisible = true
     }
   }
 }
