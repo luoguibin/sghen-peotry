@@ -51,8 +51,8 @@
     </div>
 
     <!-- 诗词图片 -->
-    <div v-if="showImage && peotryImages.length" class="images">
-      <el-image v-for="value in peotryImages" :key="value"
+    <div v-if="showImage && thumbnails.length" class="images">
+      <el-image v-for="value in thumbnails" :key="value"
         :src="value" :fit="`cover`" :preview-src-list="peotryImages" :scroll-container="mainScrollBox" lazy>
         <div slot="error" class="image-slot">
           <i class="el-icon-picture-outline"></i>
@@ -317,19 +317,29 @@ export default {
       const imageObj = this.peotry.image
       if (imageObj && imageObj.count) {
         return JSON.parse(imageObj.images).map(v => {
+          let path
           if (v.indexOf('.') === 0) {
             if (v.indexOf('./file') === 0) {
-              return baseUrl + v.substr(1)
+              path = baseUrl + v.substr(1)
             } else {
-              return imagePrefixxPath + v.substr(1)
+              path = imagePrefixxPath + v.substr(1)
             }
           } else {
-            return imagePrefixxPath + v
+            path = imagePrefixxPath + v
           }
+          return path
         })
       } else {
         return []
       }
+    },
+    thumbnails() {
+      return this.peotryImages.map(v => {
+        v = v.replace(/.jpg$/, '_100.jpg')
+        v = v.replace(/.jpeg$/, '_100.jpeg')
+        v = v.replace(/.png$/, '_100.png')
+        return v
+      })
     },
 
     /**
