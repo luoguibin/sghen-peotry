@@ -189,7 +189,6 @@
 
 <script>
 import { mapState } from 'vuex'
-import { baseUrl, imagePrefixxPath } from '@/api/config'
 import {
   createComment,
   deleteComment
@@ -288,8 +287,6 @@ export default {
   },
   data() {
     return {
-      imagePrefixxPath,
-
       inComment: false,
       newComment: {
         type: 1,
@@ -330,12 +327,12 @@ export default {
           let path
           if (v.indexOf('.') === 0) {
             if (v.indexOf('./file') === 0) {
-              path = baseUrl + v.substr(1)
+              path = '/sapi' + v.substr(1)
             } else {
-              path = imagePrefixxPath + v.substr(1)
+              path = '/sapi/file/peotry/img' + v.substr(1)
             }
           } else {
-            path = imagePrefixxPath + v
+            path = '/sapi/file/peotry/img/' + v
           }
           return path
         })

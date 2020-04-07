@@ -1,5 +1,4 @@
 import Vue from 'vue'
-import { baseUrl } from '@/api/config'
 
 export const userIconFilter = function(v) {
   let iconUrl = v || ''
@@ -7,7 +6,7 @@ export const userIconFilter = function(v) {
     iconUrl = v.iconUrl
   }
   if (iconUrl) {
-    return baseUrl + iconUrl.substr(1)
+    return '/sapi' + iconUrl.substr(1)
   } else {
     return process.env.NODE_ENV === 'production' ? '/peotry/favicon.ico' : './favicon.ico'
   }
