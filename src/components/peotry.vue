@@ -342,9 +342,16 @@ export default {
     },
     thumbnails() {
       return this.peotryImages.map(v => {
-        v = v.replace(/.jpg$/, '_100.jpg')
-        v = v.replace(/.jpeg$/, '_100.jpeg')
-        v = v.replace(/.png$/, '_100.png')
+        if (v.endsWith('.jpg')) {
+          v = v.replace(/.jpg$/, '_100.jpg')
+        } else if (v.endsWith('.png')) {
+          v = v.replace(/.png$/, '_100.png')
+        } else if (v.endsWith('.jpeg')) {
+          v = v.replace(/.jpeg$/, '_100.jpeg')
+        } else {
+          v += '_100.jpg'
+        }
+
         return v
       })
     },
