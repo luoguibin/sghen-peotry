@@ -128,9 +128,9 @@ export default {
       }
 
       const ids = Array.from(idsSet)
-      queryUsers(ids).then(resp => {
+      queryUsers(ids).then(data => {
         const userMap = {}
-        resp.data.data.forEach(user => {
+        data.forEach(user => {
           userMap[user.id] = user
         })
 
