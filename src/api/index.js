@@ -50,10 +50,10 @@ export const queryUsers = ids => {
   const len = Math.ceil(ids.length / max)
   for (let i = 0; i < len; i++) {
     reqs.push(request({
-      url: '/sapi/v1/user/query-list',
+      url: '/sapi/v1/api/get/user/list',
       method: 'get',
       params: {
-        idStrs: ids.slice(i * max, i * max + max).toString()
+        datas: ids.slice(i * max, i * max + max).toString()
       }
     }))
   }

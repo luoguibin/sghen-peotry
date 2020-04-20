@@ -133,6 +133,7 @@ export default {
         data.forEach(user => {
           userMap[user.id] = user
         })
+        this.userMap = userMap
 
         datas.forEach(peotry => {
           if (peotry.user && peotry.user.id) {

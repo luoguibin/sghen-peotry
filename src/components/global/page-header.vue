@@ -6,8 +6,8 @@
     <el-button v-if="!userInfo.token" class="float-right" type="text" @click="onShowLogin">登录~</el-button>
     <el-dropdown v-else class="float-right" @command="handleCommand" trigger="click">
       <span style="cursor: pointer;">
-        <span class="el-dropdown-link" style="vertical-align: middle;">{{userInfo.name}}</span>
-        <img :src="userInfo.iconUrl | user-icon" style="width: 33px; vertical-align: middle;" />
+        <span class="el-dropdown-link" style="vertical-align: middle;">{{userInfo.username}}</span>
+        <img :src="userInfo.avatar | user-icon" style="width: 33px; vertical-align: middle;" />
       </span>
       <el-dropdown-menu>
         <el-dropdown-item
@@ -28,11 +28,11 @@
         </el-form-item>
 
         <el-form-item label="昵称">
-          <el-input v-model="mUserInfo.name"></el-input>
+          <el-input v-model="mUserInfo.username"></el-input>
         </el-form-item>
 
         <el-form-item label="头像">
-          <img :src="mUserInfo.iconUrl | user-icon" style="max-width: 50px; vertical-align: top;" />
+          <img :src="mUserInfo.avatar | user-icon" style="max-width: 50px; vertical-align: top;" />
           <span>
             <el-button type="text" @click="onClickIconUpdate">更换</el-button>
             <input
@@ -255,16 +255,16 @@ export default {
 
         // 上传头像
         uploadFiles({ pathType: 'icon' }, formData).then(resp => {
-          const iconUrl = resp.data.data[0]
+          const avatar = resp.data.data[0]
 
           // 更新用户头信息
           updateUser({
-            iconUrl,
+            avatar,
             id: this.userInfo.id
           }).then(resp => {
             this.$message.success('更新头像成功')
 
-            const info = { ...this.userInfo, iconUrl: iconUrl }
+            const info = { ...this.userInfo, avatar: avatar }
             this.setUserInfo(info)
             this.handleCommand('personal')
             this.iconDialogVisible = false
@@ -277,13 +277,13 @@ export default {
      * 更新个人信息
      */
     onUpdateUserInfo() {
-      if (this.mUserInfo.name.length) {
+      if (this.mUserInfo.username.length) {
         updateUser({
-          name: this.mUserInfo.name,
+          name: this.mUserInfo.username,
           id: this.userInfo.id
         }).then(resp => {
           this.$message.success('更新个人信息成功')
-          const info = { ...this.userInfo, name: this.mUserInfo.name }
+          const info = { ...this.userInfo, name: this.mUserInfo.username }
           this.setUserInfo(info)
           this.showUser = false
         })

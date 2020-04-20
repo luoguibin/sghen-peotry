@@ -1,12 +1,12 @@
 import Vue from 'vue'
 
 export const userIconFilter = function(v) {
-  let iconUrl = v || ''
+  let avatar = v || ''
   if (v instanceof Object) {
-    iconUrl = v.iconUrl
+    avatar = v.avatar
   }
-  if (iconUrl) {
-    return '/sapi' + iconUrl.substr(1)
+  if (avatar) {
+    return '/sapi' + avatar.substr(1)
   } else {
     return process.env.NODE_ENV === 'production' ? '/peotry/favicon.ico' : './favicon.ico'
   }

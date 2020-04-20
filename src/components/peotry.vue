@@ -28,11 +28,11 @@
     <!-- 诗词作者及创建时间 -->
     <div :class="{'peot-name': true, 'peotry-inline': titleInline && !showRank}">
       <template v-if="titleInline">
-        {{peotry.user ? '--' + peotry.user.name : ""}}
+        {{peotry.user ? '--' + peotry.user.username : ""}}
         <span v-if="showTime">于{{peotry.time | time-format}}</span>
       </template>
       <template v-else>
-        {{peotry.user ? peotry.user.name : ""}}
+        {{peotry.user ? peotry.user.username : ""}}
         <span v-if="showTime">--{{peotry.time | time-format}}</span>
       </template>
     </div>
@@ -133,13 +133,13 @@
             class="user"
             :user-id="comment.fromId"
             :comment-id="comment.id"
-          >{{comment.fromUser ? comment.fromUser.name : comment.fromId}}</span>
+          >{{comment.fromUser ? comment.fromUser.username : comment.fromId}}</span>
           <span v-if="comment.toId !== comment.fromId" class="comment_to">回复</span>
           <span
             v-if="comment.toId !== comment.fromId"
             class="user"
             :user-id="comment.toId"
-          >{{comment.toUser ? comment.toUser.name : comment.toId}}</span>
+          >{{comment.toUser ? comment.toUser.username : comment.toId}}</span>
           <span class="comment_dot">:</span>
         </div>
         <p>{{comment.content}}</p>
@@ -151,7 +151,7 @@
       <h5
         v-if="newComment.toId !== userInfo.id"
         style="text-align: left;"
-      >回复：{{newComment.toUser ? newComment.toUser.name : newComment.toId}}</h5>
+      >回复：{{newComment.toUser ? newComment.toUser.username : newComment.toId}}</h5>
       <el-input
         ref="commentEl"
         type="textarea"
@@ -180,7 +180,7 @@
         </el-form-item>
 
         <el-form-item label="头像">
-          <img :src="showUserInfo.iconUrl | user-icon" style="max-width: 50px; vertical-align: top;" />
+          <img :src="showUserInfo.avatar | user-icon" style="max-width: 50px; vertical-align: top;" />
         </el-form-item>
       </el-form>
     </el-dialog>

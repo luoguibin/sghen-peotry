@@ -94,13 +94,13 @@ module.exports = {
     // hotOnly: false,
     proxy: {
       '/sapi/': {
-        target: 'https://www.sghen.cn',
+        target: 'http://localhost:8085',
         ws: false,
         secure: true,
-        changeOrigin: true
-        // pathRewrite: {
-        //   '^/rng': ''
-        // }
+        changeOrigin: true,
+        pathRewrite: {
+          '/sapi': ''
+        }
       }
     }
   }
