@@ -40,14 +40,31 @@ export const updateUser = data =>
     data
   })
 
-export const queryUsers = ids =>
-  request({
-    url: '/sapi/v1/user/query-list',
-    method: 'get',
-    params: {
-      idStrs: ids.toString()
-    }
+/**
+ *
+ * @param {Array} ids
+ */
+export const queryUsers = ids => {
+  const reqs = []
+  const max = 99
+  const len = Math.ceil(ids.length / max)
+  for (let i = 0; i < len; i++) {
+    reqs.push(request({
+      url: '/sapi/v1/user/query-list',
+      method: 'get',
+      params: {
+        idStrs: ids.slice(i * max, i * max + max).toString()
+      }
+    }))
+  }
+  return Promise.all(reqs).then(results => {
+    let data = []
+    results.forEach(o => {
+      data = data.concat(o.data.data)
+    })
+    return data
   })
+}
 
 export const queryPeotries = params =>
   request({
