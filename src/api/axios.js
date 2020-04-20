@@ -33,16 +33,19 @@ axios.interceptors.request.use(
   }
 )
 
+let isMatainence = false
 axios.interceptors.response.use(
   res => {
     const status = Number(res.status) || 0
     const data = res.data || {}
-    if (status !== 200 || data.code !== 1000) {
-      Message.error({ message: data.msg || '操作失败' })
+    if (data.code === 999 || isMatainence) {
+      isMatainence = true
+      Message.error({ message: data.msg || '服务器维护中' })
       return Promise.reject(res)
     }
-    if (data.code === 999) {
-      Message.error({ message: data.msg || '服务器维护中' })
+
+    if (status !== 200 || data.code !== 1000) {
+      Message.error({ message: data.msg || '操作失败' })
       return Promise.reject(res)
     }
 
