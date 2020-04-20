@@ -1,6 +1,12 @@
 import request from './axios'
 import { MD5, enc } from 'crypto-js'
 
+export const getPageConfig = () =>
+  request({
+    url: '/sapi/v1/common/page-config',
+    method: 'get'
+  })
+
 export const createUser = data =>
   request({
     url: '/sapi/v1/user/create',

@@ -21,12 +21,17 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import throttle from 'lodash/throttle'
+import { getPageConfig } from '@/api'
 
 export default {
   name: 'app',
 
   data() {
     return {}
+  },
+
+  created() {
+    getPageConfig()
   },
 
   mounted() {

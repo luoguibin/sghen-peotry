@@ -41,6 +41,10 @@ axios.interceptors.response.use(
       Message.error({ message: data.msg || '操作失败' })
       return Promise.reject(res)
     }
+    if (data.code === 999) {
+      Message.error({ message: data.msg || '服务器维护中' })
+      return Promise.reject(res)
+    }
 
     return res
   },
