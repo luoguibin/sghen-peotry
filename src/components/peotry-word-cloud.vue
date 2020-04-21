@@ -72,22 +72,22 @@ import {
   getPopularPoetrySets,
   getYearPoetrySets,
   getYearPoets
-} from "@/api";
-import echarts from "echarts";
-import "echarts-wordcloud";
+} from '@/api'
+import echarts from 'echarts'
+import 'echarts-wordcloud'
 
 export default {
-  name: "PeotryWordCloud",
+  name: 'PeotryWordCloud',
 
   components: {
-    MusicBox: () => import("@/components/music-box")
+    MusicBox: () => import('@/components/music-box')
   },
 
   data() {
     return {
       words: [],
       isWordsErr: false,
-      imgSrc: require("@/assets/img/icon.png"),
+      imgSrc: require('@/assets/img/icon.png'),
       maskImage: null,
 
       peotrySets: [],
@@ -95,22 +95,22 @@ export default {
       yearPeotrySets: [],
       yearPeotryCount: 0,
       yearPoets: []
-    };
+    }
   },
 
   mounted() {
-    window.pwc = this;
-    this.initChart();
-    const image = new Image();
-    image.src = this.imgSrc;
+    window.pwc = this
+    this.initChart()
+    const image = new Image()
+    image.src = this.imgSrc
     image.onload = e => {
-      this.getPeotryHotWords();
-    };
-    this.maskImage = image;
+      this.getPeotryHotWords()
+    }
+    this.maskImage = image
     // this.getPeotryHotWords()
-    this.getPopularPoetrySets();
-    this.getYearPoetrySets();
-    this.getYearPoets();
+    this.getPopularPoetrySets()
+    this.getYearPoetrySets()
+    this.getYearPoets()
   },
 
   methods: {
@@ -118,26 +118,26 @@ export default {
      * 初始化云词库表图
      */
     initChart() {
-      this.chart = echarts.init(this.$refs.container);
+      this.chart = echarts.init(this.$refs.container)
       this.chart.setOption({
         tooltip: {
           show: true,
           formatter: o => {
             return (
-              '词频率<span style="padding: 0 3px;">' + o.data.rate + "</span>"
-            );
+              '词频率<span style="padding: 0 3px;">' + o.data.rate + '</span>'
+            )
           }
         },
         series: [
           {
-            type: "wordCloud",
+            type: 'wordCloud',
 
             // The shape of the "cloud" to draw. Can be any polar equation represented as a
             // callback function, or a keyword present. Available presents are circle (default),
             // cardioid (apple or heart shape curve, the most known polar equation), diamond (
             // alias of square), triangle-forward, triangle, (alias of triangle-upright, pentagon, and star.
 
-            shape: "star",
+            shape: 'star',
 
             // A silhouette image which the white area will be excluded from drawing texts.
             // The shape option will continue to apply as the shape of the cloud to grow.
@@ -147,10 +147,10 @@ export default {
             // Folllowing left/top/width/height/right/bottom are used for positioning the word cloud
             // Default to be put in the center and has 75% x 80% size.
 
-            left: "center",
-            top: "center",
-            width: "95%",
-            height: "95%",
+            left: 'center',
+            top: 'center',
+            width: '95%',
+            height: '95%',
             right: null,
             bottom: null,
 
@@ -176,25 +176,25 @@ export default {
             // Global text style
             textStyle: {
               normal: {
-                fontFamily: "sans-serif",
-                fontWeight: "bold",
+                fontFamily: 'sans-serif',
+                fontWeight: 'bold',
                 // Color can be a callback function or a color string
                 color: function() {
                   // Random color
                   return (
-                    "rgb(" +
+                    'rgb(' +
                     [
                       Math.round(Math.random() * 160),
                       Math.round(Math.random() * 160),
                       Math.round(Math.random() * 160)
-                    ].join(",") +
-                    ")"
-                  );
+                    ].join(',') +
+                    ')'
+                  )
                 }
               },
               emphasis: {
                 shadowBlur: 10,
-                shadowColor: "#333"
+                shadowColor: '#333'
               }
             },
 
@@ -202,10 +202,10 @@ export default {
             data: []
           }
         ]
-      });
-      this.chart.on("click", params => {
-        this.onPeotryPage({ content: params.data.name });
-      });
+      })
+      this.chart.on('click', params => {
+        this.onPeotryPage({ content: params.data.name })
+      })
     },
     /**
      * 设置云词库数据
@@ -213,54 +213,54 @@ export default {
     setChartData() {
       this.chart.setOption({
         series: [{ data: this.words }]
-      });
-      this.chart.resize();
+      })
+      this.chart.resize()
     },
 
     /**
      * 获取年度诗词选集创建数排行
      */
     getYearPoetrySets() {
-      const year = this.yearNum;
+      const year = this.yearNum
       getYearPoetrySets({
-        date0: year - 1 + "-01-01 00:00:00",
-        date1: year + "-01-01 00:00:00"
+        date0: year - 1 + '-01-01 00:00:00',
+        date1: year + '-01-01 00:00:00'
       }).then(({ data }) => {
-        const list = data.data || [];
-        let count = 0;
+        const list = data.data || []
+        let count = 0
         list.forEach(o => {
-          count += +o.count;
-        });
-        this.yearPeotryCount = count;
-        this.yearPeotrySets = list.splice(0, 5);
-      });
+          count += +o.count
+        })
+        this.yearPeotryCount = count
+        this.yearPeotrySets = list.splice(0, 5)
+      })
     },
     /**
      * 获取年度诗词作者排行
      */
     getYearPoets() {
-      const year = this.yearNum;
+      const year = this.yearNum
       getYearPoets({
-        suffixPath: "peotry-user/list-year",
-        date0: year - 1 + "-01-01 00:00:00",
-        date1: year + "-01-01 00:00:00"
+        suffixPath: 'peotry-user/list-year',
+        date0: year - 1 + '-01-01 00:00:00',
+        date1: year + '-01-01 00:00:00'
       }).then(({ data }) => {
-        this.yearPoets = data.data || [];
-      });
+        this.yearPoets = data.data || []
+      })
     },
     /**
      * 获取词频数据
      */
     getPeotryHotWords() {
-      this.isWordsErr = false;
-      const date = new Date();
+      this.isWordsErr = false
+      const date = new Date()
       const yesterDay =
         date.getFullYear() +
-        "-" +
+        '-' +
         (date.getMonth() + 1) +
-        "-" +
+        '-' +
         (date.getDate() - 1) +
-        " 00:00:00";
+        ' 00:00:00'
       getPeotryHotWords({ limit: 20, date0: yesterDay })
         .then(res => {
           const words = res.data.data.map(o => {
@@ -268,48 +268,48 @@ export default {
               name: o.word,
               value: +o.frequency,
               rate: 0
-            };
-          });
+            }
+          })
 
           // 计算词频率
-          let total = 0;
+          let total = 0
           words.forEach(o => {
-            total += o.value;
-          });
+            total += o.value
+          })
           words.forEach(o => {
-            o.rate = Number(o.value / total).toFixed(2);
-          });
+            o.rate = Number(o.value / total).toFixed(2)
+          })
 
-          this.words = words;
-          this.setChartData();
+          this.words = words
+          this.setChartData()
         })
         .catch(() => {
-          this.isWordsErr = true;
-        });
+          this.isWordsErr = true
+        })
     },
     /**
      * 获取热门诗词选集
      */
     getPopularPoetrySets() {
       getPopularPoetrySets().then(({ data }) => {
-        this.peotrySets = data.data;
-      });
+        this.peotrySets = data.data
+      })
     },
 
     /**
      * 点击跳转界面
      */
     onClickPeot({ id }) {
-      this.onPeotryPage({ userId: id });
+      this.onPeotryPage({ userId: id })
     },
     onClickPeotSet({ id }) {
-      this.onPeotryPage({ setId: id });
+      this.onPeotryPage({ setId: id })
     },
     onPeotryPage(query) {
-      this.$router.push({ name: "peotry-list", query });
+      this.$router.push({ name: 'peotry-list', query })
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
