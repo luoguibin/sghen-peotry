@@ -283,7 +283,7 @@ export default {
           id: this.userInfo.id
         }).then(resp => {
           this.$message.success('更新个人信息成功')
-          const info = { ...this.userInfo, name: this.mUserInfo.username }
+          const info = { ...this.userInfo, username: this.mUserInfo.username }
           this.setUserInfo(info)
           this.showUser = false
         })

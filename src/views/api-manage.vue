@@ -15,17 +15,40 @@
       <el-table-column show-overflow-tooltip prop="content" label="SQL语句"></el-table-column>
       <el-table-column prop="count" label="调用次数"></el-table-column>
       <el-table-column prop="timeUpdate" label="更新时间" width="160px">
-        <template slot-scope="scope">
-          {{ scope.row.timeUpdate | time-format }}
-        </template>
+        <template slot-scope="scope">{{ scope.row.timeUpdate | time-format }}</template>
       </el-table-column>
-      <el-table-column label="操作" width="230px">
-        <template slot-scope="scope">
+
+      <el-table-column label="配置" width="230px" fixed="right">
+        <el-button-group slot-scope="scope">
+          <el-button
+            :type="scope.row.status === 2 ? 'primary' : ''"
+            @click="onChangeStatus(2, scope.row)"
+          >缓存</el-button>
+          <el-button
+            :type="scope.row.status === 1 ? 'primary' : ''"
+            @click="onChangeStatus(1, scope.row)"
+          >启用</el-button>
+          <el-button
+            :type="scope.row.status < 1 ? 'primary' : ''"
+            @click="onChangeStatus(0, scope.row)"
+          >禁用</el-button>
+        </el-button-group>
+
+        <!-- <template slot-scope="scope">
+          <el-switch :value="scope.row.status" active-color="#13ce66" inactive-color="#dcdfe6"
+            :active-value="2" :inactive-value="1" active-text="缓存" style="margin-right: 10px;"
+            @change="onChangeStatus($event, scope.row)">
+          </el-switch>
           <el-switch :value="scope.row.status" active-color="#13ce66" inactive-color="#dcdfe6"
             :active-value="1" :inactive-value="-1" active-text="启用" style="margin-right: 10px;"
             @change="onChangeStatus($event, scope.row)">
           </el-switch>
-          <el-button type="text" :disabled="scope.row.status !== 1" @click="onOpenTest(scope.row)">测试</el-button>
+          <el-button type="text" :disabled="scope.row.status < 1" @click="onOpenTest(scope.row)">测试</el-button>
+        </template>-->
+      </el-table-column>
+      <el-table-column label="操作" width="180px" fixed="right">
+        <template slot-scope="scope">
+          <el-button type="text" @click="onOpenTest(scope.row)">测试</el-button>
           <el-button type="text" @click="onOpenUpdate(scope.row)">编辑</el-button>
           <el-button type="text" @click="deleteDynamicApi(scope.row.id)">删除</el-button>
         </template>
@@ -37,8 +60,8 @@
       :current-page.sync="pagination.current"
       :page-size="pagination.pageSize"
       hide-on-single-page
-      @current-change="handleCurrentChange">
-    </el-pagination>
+      @current-change="handleCurrentChange"
+    ></el-pagination>
 
     <!-- 新增或更新 -->
     <el-dialog :visible.sync="dialogShow" :title="dialogObj.id ? '编辑接口' : '创建接口'">
@@ -56,11 +79,15 @@
           <el-input type="textarea" v-model="dialogObj.content" :rows="5"></el-input>
         </el-form-item>
         <el-form-item label="是否启用" prop="status">
-          <el-switch v-model="dialogObj.status" active-color="#13ce66" inactive-color="#dcdfe6"
-            :active-value="1" :inactive-value="-1">
-          </el-switch>
+          <el-switch
+            v-model="dialogObj.status"
+            active-color="#13ce66"
+            inactive-color="#dcdfe6"
+            :active-value="1"
+            :inactive-value="-1"
+          ></el-switch>
         </el-form-item>
-        <el-form-item label="">
+        <el-form-item label>
           <el-button @click="dialogShow = false">取消</el-button>
           <el-button type="primary" @click="onSave">保存</el-button>
         </el-form-item>
@@ -68,7 +95,11 @@
     </el-dialog>
 
     <!-- 测试接口 -->
-    <el-dialog :visible.sync="testShow" :title="'接口测试: ' + dialogObj.name" custom-class="am-test-dialog">
+    <el-dialog
+      :visible.sync="testShow"
+      :title="'接口测试: ' + dialogObj.name"
+      custom-class="am-test-dialog"
+    >
       <div class="am-test-item" content="SQL语句">{{ dialogObj.content }}</div>
       <div class="am-test-item" content="查询参数">
         <el-input v-model="testParams"></el-input>
@@ -126,7 +157,12 @@ export default {
         ],
         content: [
           { required: true, message: '请输入SQL语句', trigger: 'blur' },
-          { min: 10, max: 500, message: '长度在 10 到 500 个字符', trigger: 'blur' }
+          {
+            min: 10,
+            max: 500,
+            message: '长度在 10 到 500 个字符',
+            trigger: 'blur'
+          }
         ]
       }
     }
@@ -142,11 +178,15 @@ export default {
      * 添加系统临时诗词
      */
     onConfirmTempPeotry() {
-      this.$confirm('是否添加系统临时诗词，请确认此次操作的数据不重复？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      })
+      this.$confirm(
+        '是否添加系统临时诗词，请确认此次操作的数据不重复？',
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      )
         .then(() => {
           addTempPeotry().then(resp => {
             this.$message.success(resp.data.msg)
@@ -194,12 +234,14 @@ export default {
     queryDynamicApi() {
       this.tableLoading = true
       const { pageSize: limit, current: page } = this.pagination
-      queryDynamicApi({ limit, page }).then(({ data }) => {
-        this.tableData = data.data
-        this.pagination.total = data.totalCount
-      }).finally(() => {
-        this.tableLoading = false
-      })
+      queryDynamicApi({ limit, page })
+        .then(({ data }) => {
+          this.tableData = data.data
+          this.pagination.total = data.totalCount
+        })
+        .finally(() => {
+          this.tableLoading = false
+        })
     },
     onSave() {
       this.$refs.form.validate(valid => {
@@ -240,12 +282,14 @@ export default {
         }
       }
       this.testLoading = true
-      getDynamicData({ suffixPath: obj.suffixPath, ...params }).then(res => {
-        this.testResult = res.data
-        this.$message.success('接口测试成功')
-      }).finally(() => {
-        this.testLoading = false
-      })
+      getDynamicData({ suffixPath: obj.suffixPath, ...params })
+        .then(res => {
+          this.testResult = res.data
+          this.$message.success('接口测试成功')
+        })
+        .finally(() => {
+          this.testLoading = false
+        })
     },
     createDynamicApi() {
       createDynamicApi(this.dialogObj).then(({ data }) => {
@@ -260,8 +304,10 @@ export default {
       })
     },
     deleteDynamicApi(id) {
-      deleteDynamicApi({ id }).then(({ data }) => {
-        this.queryDynamicApi()
+      this.$confirm('删除后不可恢复，确认是否删除？', '警告').then(() => {
+        deleteDynamicApi({ id }).then(({ data }) => {
+          this.queryDynamicApi()
+        })
       })
     }
   }
@@ -314,7 +360,8 @@ export default {
       content: attr(content);
     }
   }
-  .el-scrollbar, .el-scrollbar__wrap {
+  .el-scrollbar,
+  .el-scrollbar__wrap {
     max-height: inherit;
   }
   .am-test-content {
