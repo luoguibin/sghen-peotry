@@ -176,7 +176,7 @@
         </el-form-item>
 
         <el-form-item label="昵称">
-          <el-input :disabled="true" v-model="showUserInfo.name"></el-input>
+          <el-input :disabled="true" v-model="showUserInfo.username"></el-input>
         </el-form-item>
 
         <el-form-item label="头像">
