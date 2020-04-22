@@ -20,9 +20,11 @@
       </el-form-item>
 
       <el-form-item v-if="signUpValue || showCode" style="margin-bottom: 0;">
-        <div style="display: flex; flex-drection: row;">
+        <div style="display: flex; flex-drection: row; height: 40px;">
           <el-input style="flex: 1;" v-model="captchaData.value"></el-input>
-          <img v-if="captchaData.id" @click="getCaptcha" :src="captchaData.base64" />
+          <div v-if="captchaData.id" style="min-width: 120px; text-align: center;">
+            <img @click="getCaptcha" :src="captchaData.base64" />
+          </div>
         </div>
       </el-form-item>
       <el-form-item label="验证码" prop="code" v-if="signUpValue || showCode">
@@ -221,7 +223,11 @@ export default {
         this.codeTime = 60 // 预先阻止多次点击
 
         const { id, value } = this.captchaData
-        sendSmsCode({ phone: this.account.id, captchaId: id, captchaValue: value })
+        sendSmsCode({
+          phone: this.account.id,
+          captchaId: id,
+          captchaValue: value
+        })
           .then(res => {
             this.startCodeCount(60)
           })
