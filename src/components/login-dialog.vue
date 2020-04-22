@@ -20,9 +20,10 @@
       </el-form-item>
 
       <el-form-item v-if="signUpValue || showCode" style="margin-bottom: 0;">
-        <el-input v-if="captchaData.id" v-model="captchaData.value">
-          <img slot="prepend" @click="getCaptcha" :src="captchaData.base64" />
-        </el-input>
+        <div style="display: flex; flex-drection: row;">
+          <el-input style="flex: 1;" v-model="captchaData.value"></el-input>
+          <img v-if="captchaData.id" @click="getCaptcha" :src="captchaData.base64" />
+        </div>
       </el-form-item>
       <el-form-item label="验证码" prop="code" v-if="signUpValue || showCode">
         <el-input v-model="account.code">

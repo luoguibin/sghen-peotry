@@ -84,6 +84,7 @@ export default {
       }
     },
     userInfo(e) {
+      // todo: 只更新对应的作者信息
       this.updatePeotriesData()
     }
   },
