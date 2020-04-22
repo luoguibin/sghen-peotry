@@ -7,11 +7,19 @@ export const getPageConfig = () =>
     method: 'get'
   })
 
-export const createUser = data =>
-  request({
+export const createUser = data => {
+  data.pw = enc.Base64.stringify(MD5(data.pw))
+  return request({
     url: '/sapi/v1/user/create',
     method: 'post',
     data
+  })
+}
+
+export const getCaptcha = () =>
+  request({
+    url: '/sapi/v1/sms/captcha',
+    method: 'get'
   })
 
 export const sendSmsCode = data =>

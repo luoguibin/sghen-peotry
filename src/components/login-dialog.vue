@@ -19,12 +19,17 @@
         <el-input v-model.trim="account.name"></el-input>
       </el-form-item>
 
+      <el-form-item v-if="signUpValue || showCode" style="margin-bottom: 0;">
+        <el-input v-if="captchaData.id" v-model="captchaData.value">
+          <img slot="prepend" @click="getCaptcha" :src="captchaData.base64" />
+        </el-input>
+      </el-form-item>
       <el-form-item label="验证码" prop="code" v-if="signUpValue || showCode">
         <el-input v-model="account.code">
           <el-button
             slot="append"
             style="min-width: 120px;"
-            :disabled="!!codeTime"
+            :disabled="!canGetCode"
             @click="onGetCode"
           >{{codeTime ? codeTime + 's' : '获取验证码'}}</el-button>
         </el-input>
@@ -69,7 +74,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import { loginByAccount, createUser, sendSmsCode } from '@/api'
+import { loginByAccount, createUser, sendSmsCode, getCaptcha } from '@/api'
 
 export default {
   name: 'login-dialog',
@@ -87,6 +92,12 @@ export default {
       },
       codeTime: 0,
       showCode: false,
+
+      captchaData: {
+        id: '',
+        base64: '',
+        value: ''
+      },
 
       formRules: {
         id: [
@@ -135,6 +146,9 @@ export default {
     }
   },
   computed: {
+    canGetCode() {
+      return !this.codeTime && this.captchaData.value
+    },
     ...mapState({
       loginCount: state => state.loginCount,
       userInfo: state => state.user
@@ -177,7 +191,19 @@ export default {
         account.pw = ''
         account.pw2 = ''
       }
+      this.captchaData.id = ''
+      this.captchaData.value = ''
+      if (this.signUpValue || this.showCode) {
+        this.getCaptcha()
+      }
+
       account.code = ''
+    },
+
+    getCaptcha() {
+      getCaptcha().then(resp => {
+        this.captchaData = resp.data.data
+      })
     },
 
     /**
@@ -192,7 +218,9 @@ export default {
           return
         }
         this.codeTime = 60 // 预先阻止多次点击
-        sendSmsCode({ phone: this.account.id })
+
+        const { id, value } = this.captchaData
+        sendSmsCode({ phone: this.account.id, captchaId: id, captchaValue: value })
           .then(res => {
             this.startCodeCount(60)
           })
@@ -272,7 +300,9 @@ export default {
 
         if (this.signUpValue) {
           method = createUser
-          params = account
+          params = JSON.parse(JSON.stringify(account))
+          params.account = params.id
+          delete params.id
           successMsg = '注册成功'
         } else {
           method = loginByAccount
