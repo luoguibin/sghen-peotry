@@ -18,7 +18,7 @@
             <span
               class="pwc-span"
               @click="onClickPeot(yearPoets[0])"
-            >[{{ yearPoets[0].name }}]</span>
+            >[{{ yearPoets[0].username }}]</span>
             ，共创建{{ yearPoets[0].count }}首。
           </template>
         </p>
@@ -59,7 +59,7 @@
         class="pwc-set-item sg-label"
         @click="onClickPeotSet(item)"
       >
-        {{ item.username }}
+        {{ item.name }}
         <span>({{ item.count }}首)</span>
       </span>
     </div>
