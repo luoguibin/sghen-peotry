@@ -314,7 +314,7 @@ export default {
      * @returns {Boolean} 返回是否为当前用户创建的诗词
      */
     isSelfPeotry() {
-      return this.peotry.user && this.userInfo.id === this.peotry.user.id
+      return this.peotry.user && +this.userInfo.id === +this.peotry.user.id
     },
 
     /**
