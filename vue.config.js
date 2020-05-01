@@ -5,9 +5,9 @@ const argv = require('yargs').argv
 const CdnConfig = {
   prod: {
     js: [
-      '//unpkg.com/vue@2.6.11/dist/vue.js',
-      '//unpkg.com/vue-router@3.1.5/dist/vue-router.js',
-      '//unpkg.com/vuex@3.1.2/dist/vuex.js',
+      '//unpkg.com/vue@2.6.11/dist/vue.min.js',
+      '//unpkg.com/vue-router@3.1.5/dist/vue-router.min.js',
+      '//unpkg.com/vuex@3.1.2/dist/vuex.min.js',
       '//unpkg.com/axios@0.19.2/dist/axios.min.js',
       '//unpkg.com/element-ui@2.13.0/lib/index.js'
     ],
