@@ -3,7 +3,7 @@
     <el-button v-show="showBack" type="text" @click="$router.go(-1)">返回</el-button>
 
     <!-- 登陆或用户下拉菜单 -->
-    <el-button type="primary" class="float-right" icon="el-icon-mobile-phone" @click="onGoWapPage" circle></el-button>
+    <el-button type="text" class="float-right" icon="el-icon-mobile-phone" @click="onGoWapPage"></el-button>
     <el-button v-if="!userInfo.token" class="float-right" type="text" @click="onShowLogin">登录~</el-button>
     <el-dropdown v-else class="float-right" @command="handleCommand" trigger="click">
       <span style="cursor: pointer;">
