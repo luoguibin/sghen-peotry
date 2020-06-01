@@ -368,7 +368,7 @@ export default {
           const time0 = new Date(o0.createTime).getTime()
           const time1 = new Date(o1.createTime).getTime()
           return time0 < time1 ? -1 : 1
-        })
+        }).splice(0, 20)
     },
 
     /**
@@ -383,7 +383,7 @@ export default {
           const time0 = new Date(o0.createTime).getTime()
           const time1 = new Date(o1.createTime).getTime()
           return time0 < time1 ? -1 : 1
-        })
+        }).splice(0, 20)
     },
 
     /**
@@ -391,7 +391,7 @@ export default {
      */
     myPraiseComment() {
       if (!this.userInfo) return
-      return this.praiseComments.find(
+      return (this.peotry.comments || []).find(
         comment => comment.toId === -1 && comment.fromId === this.userInfo.id
       )
     },
