@@ -16,11 +16,10 @@
 
     <!-- 诗词点赞数 -->
     <div v-if="showRank" :class="{'peotry-rank': true, 'peotry-inline': titleInline}">
-      <span class="peotry-count" v-show="showPraiseCount && praiseComments.length">
-      <i class="el-icon-s-data"></i>
-      {{praiseComments.length}}
+      <span class="peotry-count" v-show="showPraiseCount">
+        <i class="el-icon-s-data"></i>
       </span>
-      <span @click="onCommentPraise(true)" class="rank-praise">
+      <span v-if="false" @click="onCommentPraise(true)" class="rank-praise">
         <i :class="[isPraise ? 'el-icon-star-on' : 'el-icon-star-off']"></i>
       </span>
     </div>
@@ -64,7 +63,7 @@
     </div>
 
     <!-- 诗词功能按钮 -->
-    <div v-show="showMore" class="peotry-more">
+    <div v-if="false" v-show="showMore" class="peotry-more">
       <template v-if="showMoreDirect">
         <el-button type="text" :icon="isPraise ? 'el-icon-star-on' : 'el-icon-star-off'"
           @click="onCommandMore('praise')">{{isPraise ? "取消点赞" : "点赞"}}</el-button>

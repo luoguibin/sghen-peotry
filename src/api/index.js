@@ -74,19 +74,23 @@ export const queryUsers = ids => {
   })
 }
 
-export const queryPeotries = params =>
-  request({
+export const queryPeotries = params => {
+  params.needComment = false
+  return request({
     url: '/sapi/v1/peotry/query',
     method: 'get',
     params
   })
+}
 
-export const queryPopularPeotries = params =>
-  request({
+export const queryPopularPeotries = params => {
+  params.needComment = false
+  return request({
     url: '/sapi/v1/peotry/query-popular',
     method: 'get',
     params
   })
+}
 
 export const queryPeotrySets = userId =>
   request({
