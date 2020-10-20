@@ -33,7 +33,7 @@
         <!-- 诗词主区域 -->
         <div class="ph-main">
           <!-- 热门诗词 -->
-          <div class="board-hot-list board-top-3">
+          <div v-if="false" class="board-hot-list board-top-3">
             <h3>
               {{boards[0].name}}
               <el-button
@@ -163,7 +163,7 @@ export default {
     this.showBack(false)
     this.getCarousels()
     this.queryPeotries()
-    this.queryPopularPeotries()
+    // this.queryPopularPeotries()
     window.home = this
   },
 
