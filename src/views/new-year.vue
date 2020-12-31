@@ -1,6 +1,6 @@
 <template>
   <div class="new-year">
-    <div style="padding: 20px; font-size: 18px; text-align: center;" v-show="yearMonthDate === '2020-1-1'">2020~元旦快乐</div>
+    <div style="padding: 20px; font-size: 18px; text-align: center;" v-show="yearMonthDate === '2021-1-1'">2021~元旦快乐</div>
   </div>
 </template>
 
