@@ -33,15 +33,26 @@
         <!-- 诗词主区域 -->
         <div class="ph-main">
           <!-- 热门诗词 -->
-          <div class="board-hot-list board-top-3">
+          <div v-if="false" class="board-hot-list board-top-3">
             <h3>
               {{boards[0].name}}
-              <el-button v-if="boards[0].hasMore" type="text" @click="onPeotryMore" class="peotry-more">更多</el-button>
+              <el-button
+                v-if="boards[0].hasMore"
+                type="text"
+                @click="onPeotryMore"
+                class="peotry-more"
+              >更多</el-button>
             </h3>
             <div v-loading="boards[0].isLoading">
-              <peotry v-for="peotry in boards[0].list" :key="peotry.id"
-                :peotry="peotry" :titleInline="true" :showComment="false" :showRank="true"
-                  @update="onUpdatePeotry($event, 0)"></peotry>
+              <peotry
+                v-for="peotry in boards[0].list"
+                :key="peotry.id"
+                :peotry="peotry"
+                :titleInline="true"
+                :showComment="false"
+                :showRank="true"
+                @update="onUpdatePeotry($event, 0)"
+              ></peotry>
             </div>
           </div>
 
@@ -49,17 +60,36 @@
           <div class="board-latest-list">
             <h3 ref="latestAnchor">
               {{boards[1].name}}
-              <el-button type="text" icon="el-icon-refresh-left" @click="queryPeotries(false, true)"></el-button>
-              <el-button v-if="boards[1].hasMore" class="peotry-more"
-                type="text" @click="onPeotryMore">更多</el-button>
+              <el-button
+                type="text"
+                icon="el-icon-refresh-left"
+                @click="queryPeotries(false, true)"
+              ></el-button>
+              <el-button
+                v-if="boards[1].hasMore"
+                class="peotry-more"
+                type="text"
+                @click="onPeotryMore"
+              >更多</el-button>
             </h3>
             <div v-loading="boards[1].isLoading">
               <el-timeline>
-                <el-timeline-item v-for="peotry in boards[1].list" :key="peotry.id"
-                  :timestamp="peotry.time | time-format"  type="success" placement="top">
+                <el-timeline-item
+                  v-for="peotry in boards[1].list"
+                  :key="peotry.id"
+                  :timestamp="peotry.time | time-format"
+                  type="success"
+                  placement="top"
+                >
                   <el-card>
-                    <peotry :peotry="peotry" :titleInline="true" :showTime="false" :showMore="true"
-                      :showMoreDirect="true" @update="onUpdatePeotry($event, 1)"></peotry>
+                    <peotry
+                      :peotry="peotry"
+                      :titleInline="true"
+                      :showTime="false"
+                      :showMore="true"
+                      :showMoreDirect="true"
+                      @update="onUpdatePeotry($event, 1)"
+                    ></peotry>
                   </el-card>
                 </el-timeline-item>
               </el-timeline>
@@ -69,6 +99,22 @@
 
         <!-- 右侧诗词概况面板 -->
         <peotry-word-cloud class="ph-float"></peotry-word-cloud>
+      </div>
+    </div>
+
+    <!-- 停止维护提示 -->
+    <div v-if="globalTipVisible" class="global-tip">
+      <div class="tip-wrapper">
+        <p style="text-indent: 2em;">
+          因开发者头发不多，BUG不少，经二般考虑，决定对本网站（WEB端）停止维护，更多诗词操作请在
+          <el-button
+            type="text"
+            class="float-right"
+            icon="el-icon-mobile-phone"
+            @click="onGoWapPage"
+          >WAP端</el-button>进行，不便之处可入坑维护！
+        </p>
+        <el-button class="tip-confirm" type="text" @click="globalTipVisible = false">关闭</el-button>
       </div>
     </div>
   </div>
@@ -88,6 +134,8 @@ export default {
 
   data() {
     return {
+      globalTipVisible: true,
+
       carouselItems: [],
       carouselType: 'card',
 
@@ -115,7 +163,7 @@ export default {
     this.showBack(false)
     this.getCarousels()
     this.queryPeotries()
-    this.queryPopularPeotries()
+    // this.queryPopularPeotries()
     window.home = this
   },
 
@@ -153,6 +201,9 @@ export default {
   },
 
   methods: {
+    onGoWapPage() {
+      window.open('https://www.sghen.cn/sghen-wap/index.html', '_blank')
+    },
     /**
      * 获取卡片列表数据
      */
@@ -313,6 +364,30 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.global-tip {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translate(-50%, 0);
+  z-index: 999;
+  padding: 16px;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  .tip-wrapper {
+    position: relative;
+    font-size: 16px;
+    line-height: 26px;
+    padding-bottom: 20px;
+  }
+  .tip-confirm {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+  }
+  .el-button {
+    padding: 0;
+  }
+}
 .page-home {
   position: relative;
   min-height: inherit;

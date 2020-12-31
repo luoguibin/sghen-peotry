@@ -1,6 +1,6 @@
 <template>
   <div class="api-manage">
-    <div class="am-header">
+    <div class="am-header" v-if="isLogin">
       <el-button @click="onConfirmTempPeotry">添加系统临时诗词</el-button>
       <el-button @click="queryDynamicApi()">刷新</el-button>
       <el-button type="primary" @click="onOpenUpdate()">新建</el-button>
@@ -20,15 +20,15 @@
 
       <el-table-column label="配置" width="230px" fixed="right">
         <el-button-group slot-scope="scope">
-          <el-button
+          <el-button :disabled="!isLogin"
             :type="scope.row.status === 2 ? 'primary' : ''"
             @click="onChangeStatus(2, scope.row)"
           >缓存</el-button>
-          <el-button
+          <el-button :disabled="!isLogin"
             :type="scope.row.status === 1 ? 'primary' : ''"
             @click="onChangeStatus(1, scope.row)"
           >启用</el-button>
-          <el-button
+          <el-button :disabled="!isLogin"
             :type="scope.row.status < 1 ? 'primary' : ''"
             @click="onChangeStatus(0, scope.row)"
           >禁用</el-button>
@@ -48,9 +48,9 @@
       </el-table-column>
       <el-table-column label="操作" width="180px" fixed="right">
         <template slot-scope="scope">
-          <el-button type="text" @click="onOpenTest(scope.row)">测试</el-button>
-          <el-button type="text" @click="onOpenUpdate(scope.row)">编辑</el-button>
-          <el-button type="text" @click="deleteDynamicApi(scope.row.id)">删除</el-button>
+          <el-button type="text" :disabled="!isLogin" @click="onOpenTest(scope.row)">测试</el-button>
+          <el-button type="text" :disabled="!isLogin" @click="onOpenUpdate(scope.row)">编辑</el-button>
+          <el-button type="text" :disabled="!isLogin" @click="deleteDynamicApi(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -117,6 +117,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import {
   queryDynamicApi,
   createDynamicApi,
@@ -166,6 +167,15 @@ export default {
         ]
       }
     }
+  },
+
+  computed: {
+    isLogin() {
+      return !!(this.userInfo && this.userInfo.token)
+    },
+    ...mapState({
+      userInfo: state => state.user
+    })
   },
 
   created() {
